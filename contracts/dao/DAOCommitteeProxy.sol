@@ -26,7 +26,7 @@ contract DAOCommitteeProxy is StorageStateCommittee , Ownabled {
   }
   function setProxyAgendaManager(address _addr) onlyOwner validStore public {
       require(_addr != address(0)); 
-      agendaManager = IDAOAgendamanager(_addr); 
+      agendaManager = IDAOAgendaManager(_addr); 
       store.setAgendaManager(_addr);
   }
   

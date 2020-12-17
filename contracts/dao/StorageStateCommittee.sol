@@ -2,13 +2,13 @@
 pragma solidity ^0.6.0;
 
 import "./DAOCommitteeStore.sol"; 
-import { IDAOAgendamanager } from "../interfaces/IDAOAgendamanager.sol"; 
+import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol"; 
 import { IDAOActivityFeeManager } from "../interfaces/IDAOActivityFeeManager.sol"; 
 
 
 contract StorageStateCommittee {
     DAOCommitteeStore  store; 
-    IDAOAgendamanager agendaManager ;
+    IDAOAgendaManager agendaManager ;
     IDAOActivityFeeManager activityfeeManager; 
     
     struct Ratio {

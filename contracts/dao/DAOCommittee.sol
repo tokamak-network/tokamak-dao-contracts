@@ -29,7 +29,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function setAgendamanager(address _manager)  public onlyOwner validStore { 
         require( _manager != address(0)); 
         store.setAgendaManager(_manager);   
-        agendaManager = IDAOAgendamanager(_manager); 
+        agendaManager = IDAOAgendaManager(_manager); 
     } 
     function setActivityfeemanager(address _manager)  public onlyOwner validStore { 
         require( _manager != address(0)); 

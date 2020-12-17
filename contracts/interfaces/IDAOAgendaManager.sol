@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
-interface IDAOAgendamanager  {
+interface IDAOAgendaManager  {
 
     function setCreateAgendaFees(uint256 _createAgendaFees) external;  
     function setMinimunNoticePeriodMin(uint256 _minimunNoticePeriodMin)  external;
