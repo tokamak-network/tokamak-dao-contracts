@@ -8,3 +8,7 @@ contracts/factory/artifacts
 contracts/interfaces/artifacts
 contracts/roles/artifacts
 contracts/shared/artifacts
+deployed.json
+l2.json
+migrations/old/
+truffle-config.js

@@ -4,7 +4,9 @@ pragma solidity ^0.6.0;
 interface CommitteeL2I {
     
     function setSeigManager(address _seigMan) external ;
+    function setLayer2Registry(address _layer2Registry) external ;
     function updateSeigniorage() external returns (bool);
+    function registerAndDeployCoinage() external returns (bool) ;
     function isCommitteeLayer() external view returns (bool) ;
 }
 

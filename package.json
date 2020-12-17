@@ -7,7 +7,8 @@
     "test": "test"
   },
   "dependencies": {
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "web3-abi-helper": "^4.2.3"
   },
   "devDependencies": {
     "@makerdao/currency": "^0.9.6",

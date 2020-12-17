@@ -34,6 +34,30 @@ contract DAOElectionStore is OwnableAdmin{
         ton = _ton;
     }  
    
+    function setDaoCommittee(address _daoCommittee)  onlyOwner public {
+        require(_daoCommittee != address(0)); 
+        daoCommittee = _daoCommittee;
+    }  
+    
+    function seLayer2Registry(address _layer2Registry)  onlyOwner public {
+        require(_layer2Registry != address(0)); 
+        layer2Registry = _layer2Registry;
+    }  
+    
+    function setDepositManager(address _depositManager)  onlyOwner public {
+        require(_depositManager != address(0)); 
+        depositManager = _depositManager;
+    }  
+    
+    function setSeigManager(address _seigManager)  onlyOwner public {
+        require(_seigManager != address(0)); 
+        seigManager = _seigManager;
+    }  
+    
+    function setCommitteeL2Factory(address _committeeL2Factory)  onlyOwner public {
+        require(_committeeL2Factory != address(0)); 
+        committeeL2Factory = _committeeL2Factory;
+    }   
     
     function existLayerByOperator(address _operator) public view returns (bool exist , uint256 _layerId ){
        if( layer2Id[_operator] > 0 ) return (true,layer2Id[_operator]);
@@ -64,32 +88,6 @@ contract DAOElectionStore is OwnableAdmin{
             return layerIndex;
         }
         
-    }  
-    
-    
-    function setDaoCommittee(address _daoCommittee)  onlyOwner public {
-        require(_daoCommittee != address(0)); 
-        daoCommittee = _daoCommittee;
-    }  
-    
-    function seLayer2Registry(address _layer2Registry)  onlyOwner public {
-        require(_layer2Registry != address(0)); 
-        layer2Registry = _layer2Registry;
-    }  
-    
-    function setDepositManager(address _depositManager)  onlyOwner public {
-        require(_depositManager != address(0)); 
-        depositManager = _depositManager;
-    }  
-    
-    function setSeigManager(address _seigManager)  onlyOwner public {
-        require(_seigManager != address(0)); 
-        seigManager = _seigManager;
-    }  
-    
-    function setCommitteeL2Factory(address _committeeL2Factory)  onlyOwner public {
-        require(_committeeL2Factory != address(0)); 
-        committeeL2Factory = _committeeL2Factory;
     }   
 
     function getTON() public view returns (address) { return ton;}
@@ -99,7 +97,6 @@ contract DAOElectionStore is OwnableAdmin{
     function getDepositManager() public view returns (address) { return depositManager;}
     function getSeigManager() public view returns (address) { return seigManager;}
     function getCommitteeL2Factory() public view returns (address) { return committeeL2Factory;}
-    
     function getNumLayer2s() public view returns (uint256 ){ return numLayer2s; }
     
     

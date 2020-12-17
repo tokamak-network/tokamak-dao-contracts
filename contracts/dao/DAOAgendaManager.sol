@@ -80,8 +80,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }
     function setMinimunVotingPeriodMin(uint256 _minimunVotingPeriodMin)  onlyOwner public { 
         minimunVotingPeriodMin = _minimunVotingPeriodMin;
-    }
-     
+    } 
       
     function setActivityFeeManager(address _man)  onlyOwner public {
         require(_man != address(0)); 

@@ -14,6 +14,16 @@ import { CommitteeL2I } from "../interfaces/CommitteeL2I.sol";
 contract DAOElection is StorageStateElection , Ownabled { 
     using SafeMath for uint256; 
     
+    //////////////////////////////
+    // Events
+    ////////////////////////////// 
+    event CommitteeLayer2Created(address indexed from, uint256 indexed layerId, address layer, string name); 
+    event CommitteeLayer2UpdateSeigniorage(address indexed from, uint256 indexed layerId, address layer); 
+    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
+    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
+    
+    enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
+     
     function setStore(address _store)  public onlyOwner{
         require( _store != address(0)); 
         store = DAOElectionStore(_store); 
@@ -38,7 +48,10 @@ contract DAOElection is StorageStateElection , Ownabled {
         require( manager != address(0)); 
         seigManager = SeigManagerI(manager); 
     }  
-    
+    function setDepositManager(address _depositManager)  public onlyOwner validStore { 
+        store.setDepositManager(_depositManager); 
+    }   
+
     // 
     function applyCommitteeByOperator() public validStore validDAOCommittee validSeigManager returns (uint) {
         (bool exist , uint256 _layerIndex  ) = store.existLayerByOperator(msg.sender);
@@ -56,34 +69,50 @@ contract DAOElection is StorageStateElection , Ownabled {
          
         uint applyResultCode = daoCommittee.applyCommittee(_index, layer2, operator,name ,totalbalance );
          
+        if(applyResultCode == uint(ApplyResult.SUCCESS)){
+            emit ApplyCommitteeSuccess(msg.sender, _index, operator, totalbalance, applyResultCode); 
+        }else{
+            emit ApplyCommitteeFail(msg.sender, _index, operator, totalbalance, applyResultCode); 
+        }
+        
+
         return applyResultCode;
     } 
     
     //  need to check 
-    function createLayer2( string memory name) public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256 layerIndex){
+    function createCommitteeLayer2( string memory name) public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256 layerIndex){
         address operator = msg.sender;
         require( operator!= address(0),'operator is zero');  
         (bool exist ,   ) = store.existLayerByOperator(operator); 
         require( !exist,'operator already registerd'); 
-         
+          
         //  create CommitteeL2 , set seigManager 
-        address layer = committeeL2Factory.deploy(operator, address(seigManager));
-        require( layer!= address(0),'deployed layer is zero');
+        address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
+        require( layer!= address(0),'deployed layer is zero'); 
         
-        // register CommitteeL2 to registry : registerAndDeployCoinage or register 
-        require ( layer2Registry.registerAndDeployCoinage(layer, address(seigManager) ) ); 
+        //register CommitteeL2 to registry : registerAndDeployCoinage or register 
+        // I don't know ... error .. 
+        //require ( layer2Registry.registerAndDeployCoinage(layer, address(seigManager) ) ); 
+        //require ( CommitteeL2I(layer).registerAndDeployCoinage() , ' CommitteeL2 registerAndDeployCoinage fail '  );
+        (bool success,) = address(layer2Registry).delegatecall(abi.encodePacked(bytes4(keccak256("registerAndDeployCoinage(address,address)")),layer, address(seigManager)));
+        require(success,'layer registerAndDeployCoinage fail');
         
         // register.store 
         layerIndex = store.registerLayer2( layer,operator,name) ; 
         require( layerIndex > 0);
+    
+        emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
+    
         return layerIndex; 
     }  
          
     
     function updateSeigniorage(address _layer)  public validStore returns (bool){ 
-        (bool exist ,   ) = store.existLayerByLayer(_layer); 
+        (bool exist , uint256 layerId  ) = store.existLayerByLayer(_layer); 
         require(exist ,'not exist layer address');
         CommitteeL2I(_layer).updateSeigniorage();
+
+        emit CommitteeLayer2UpdateSeigniorage(msg.sender, layerId, _layer); 
     }
     
     function numLayer2s() public view returns (uint256 ){ return store.getNumLayer2s(); } 
@@ -100,7 +129,15 @@ contract DAOElection is StorageStateElection , Ownabled {
         require( coinagelayer!= address(0),'coinagelayer is zero');
         return IERC20(coinagelayer).balanceOf(msg.sender);
     }
-    
+
+    //
+    function getTON() public view returns (address) { return store.getTON();}
+
+    function getDaoCommittee() public view returns (address) { return store.getDaoCommittee();}
+    function getLayer2Registry() public view returns (address) { return store.getLayer2Registry();}
+    function getDepositManager() public view returns (address) { return store.getDepositManager();}
+    function getSeigManager() public view returns (address) { return store.getSeigManager();}
+    function getCommitteeL2Factory() public view returns (address) { return store.getCommitteeL2Factory();}
     
     
 }

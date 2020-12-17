@@ -43,6 +43,39 @@ contract DAOCommitteeStore is OwnableAdmin{
         if(committees.length==0)  committees.push(address(0)); 
     } 
     
+    function setMaxCommittees(uint256 _maxCommittees)  onlyOwner public { 
+        maxCommittees = _maxCommittees;
+        initCommitteeSlot();
+    }
+    
+    function setDaoElection(address _daoElection)  onlyOwner public {
+        require(_daoElection != address(0)); 
+        daoElection = _daoElection;
+    }
+    function setAgendaManager(address _agendaManager)  onlyOwner public {
+        require(_agendaManager != address(0)); 
+        agendaManager = _agendaManager;
+    }
+     
+    function setDaoVault(address _daoVault)  onlyOwner public {
+        require(_daoVault != address(0)); 
+        daoVault = _daoVault;
+    } 
+    
+    function setActivityFeeManager(address _man)  onlyOwner public {
+        require(_man != address(0)); 
+        activityFeeManager = _man;
+    }   
+    
+    //=====  
+    
+    function castVote( address voter ) onlyOwner public  
+    {   
+        // add castingcount of member , for statistics 
+        uint256 _memberId = memberId[voter];
+        members[_memberId].castingcount = members[_memberId].castingcount.add(1); 
+    }  
+     
     function initCommitteeSlot() public returns (bool) { 
         
         if( committees.length < (maxCommittees+1) ){
@@ -153,37 +186,4 @@ contract DAOCommitteeStore is OwnableAdmin{
     function getDaoVault() public view returns (address) { return daoVault;} 
     function getAganedManager() public view returns (address) { return agendaManager;} 
       
-    function setMaxCommittees(uint256 _maxCommittees)  onlyOwner public { 
-        maxCommittees = _maxCommittees;
-        initCommitteeSlot();
-    }
-    
-    function setDaoElection(address _daoElection)  onlyOwner public {
-        require(_daoElection != address(0)); 
-        daoElection = _daoElection;
-    }
-    function setAgendaManager(address _agendaManager)  onlyOwner public {
-        require(_agendaManager != address(0)); 
-        agendaManager = _agendaManager;
-    }
-     
-    function setDaoVault(address _daoVault)  onlyOwner public {
-        require(_daoVault != address(0)); 
-        daoVault = _daoVault;
-    } 
-    
-    function setActivityFeeManager(address _man)  onlyOwner public {
-        require(_man != address(0)); 
-        activityFeeManager = _man;
-    }   
-    
-    //=====  
-    
-    function castVote( address voter ) onlyOwner public  
-    {   
-        // add castingcount of member , for statistics 
-        uint256 _memberId = memberId[voter];
-        members[_memberId].castingcount = members[_memberId].castingcount.add(1); 
-    }  
-     
 }
