@@ -1,0 +1,8 @@
+
+node_modules/
+contracts/artifacts
+contracts/dao/artifacts
+contracts/factory/artifacts
+contracts/interfaces/artifacts
+contracts/roles/artifacts
+contracts/shared/artifacts
