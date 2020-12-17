@@ -8,5 +8,6 @@ interface CommitteeL2I {
     function updateSeigniorage() external returns (bool);
     function registerAndDeployCoinage() external returns (bool) ;
     function isCommitteeLayer() external view returns (bool) ;
+    function operatorAndOwner() external  view returns (address, address ) ;
 }
 

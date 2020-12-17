@@ -181,15 +181,6 @@ contract("DAOElection", async accounts => {
             //console.log('AgendaCreated Event Args ', l.args) ;  
             return l.args.amount;
           } 
-          if (l.event === 'createLayer') {
-           // console.log('createLayer Event Args ', l.args) ;  
-            return l.args;
-          } 
-          if (l.event === 'CommitteeLayer2Created') {
-            console.log('CommitteeLayer2Created Event Args ', l.args) ;  
-            return l.args;
-          } 
-
       }  
       assert(true, 'Did not find initial Transfer event');
     } 
@@ -366,8 +357,6 @@ contract("DAOElection", async accounts => {
     it("11.1. CommitteeLayer2를 생성할 수 있다. ", async () => {
       
       tx = await election.createCommitteeLayer2('i am user9', {from : user9});
-      let args = verifyTransaction(tx, user9);
-      console.log('CommitteeLayer2Created :  ',args );
       recordGasUsed(tx, 'Election.createLayer2');
       expect(verifyEvent(tx, 'CommitteeLayer2Created')).to.be.true; 
     });

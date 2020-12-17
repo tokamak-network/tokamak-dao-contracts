@@ -39,5 +39,10 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
     function isCommitteeLayer() public override view returns (bool) { 
         return true;
     }
+
+    function operatorAndOwner() public override view returns (address, address ) { 
+        return ( operator, owner);
+    }
+
  
 }

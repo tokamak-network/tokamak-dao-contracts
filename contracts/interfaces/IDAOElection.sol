@@ -15,7 +15,7 @@ interface IDAOElection  {
     function applyCommittee(uint256 _index) external  returns (uint) ;
     
      //--anybody  
-    function createLayer2( string calldata name) external  returns (uint256 layerIndex);
+    function createCommitteeLayer2( string calldata name) external  returns (uint256 layerIndex , address layer , address operator );
     function updateSeigniorage(address _layer)  external  returns (bool);    
     
     // view functions 

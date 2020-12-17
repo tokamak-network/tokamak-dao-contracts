@@ -11,6 +11,7 @@ contract CommitteeL2Factory is CommitteeL2FactoryI, Ownabled {
     CommitteeL2 c = new CommitteeL2(_operator);
     c.setSeigManager(_seigManager); 
     c.setLayer2Registry(_layer2registry); 
+    c.transferOwnership(_operator); 
     return address(c);
   }
 }

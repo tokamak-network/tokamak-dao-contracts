@@ -21,7 +21,8 @@ contract DAOElection is StorageStateElection , Ownabled {
     event CommitteeLayer2UpdateSeigniorage(address indexed from, uint256 indexed layerId, address layer); 
     event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
     event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
-    
+    event createLayer(address sender, address oper,  address owner, address layer); 
+
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
      
     function setStore(address _store)  public onlyOwner{
@@ -80,7 +81,8 @@ contract DAOElection is StorageStateElection , Ownabled {
     } 
     
     //  need to check 
-    function createCommitteeLayer2( string memory name) public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256 layerIndex){
+    function createCommitteeLayer2( string memory name) 
+        public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256 layerIndex ,  address layer , address operator  ){
         address operator = msg.sender;
         require( operator!= address(0),'operator is zero');  
         (bool exist ,   ) = store.existLayerByOperator(operator); 
@@ -90,20 +92,24 @@ contract DAOElection is StorageStateElection , Ownabled {
         address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
         require( layer!= address(0),'deployed layer is zero'); 
         
+        (address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
+        //emit createLayer(msg.sender, _oper, _owner, layer); 
+         
         //register CommitteeL2 to registry : registerAndDeployCoinage or register 
         // I don't know ... error .. 
         //require ( layer2Registry.registerAndDeployCoinage(layer, address(seigManager) ) ); 
         //require ( CommitteeL2I(layer).registerAndDeployCoinage() , ' CommitteeL2 registerAndDeployCoinage fail '  );
         (bool success,) = address(layer2Registry).delegatecall(abi.encodePacked(bytes4(keccak256("registerAndDeployCoinage(address,address)")),layer, address(seigManager)));
-        require(success,'layer registerAndDeployCoinage fail');
-        
+         require(success,'layer registerAndDeployCoinage fail');
+         
         // register.store 
         layerIndex = store.registerLayer2( layer,operator,name) ; 
         require( layerIndex > 0);
     
         emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
     
-        return layerIndex; 
+        return ( layerIndex,  layer ,  _oper ) ;
+        
     }  
          
     
