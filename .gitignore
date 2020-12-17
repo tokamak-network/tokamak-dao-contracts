@@ -1,4 +1,6 @@
 
+build/
+plasma-evm-contracts/
 node_modules/
 contracts/artifacts
 contracts/dao/artifacts

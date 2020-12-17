@@ -34,6 +34,9 @@
     "web3-utils": "^1.2.1"
   },
   "scripts": {
+    "compile": "truffle compile",
+    "compile:plasma": "bash scripts/build-plasma-evm-contracts.sh",
+    "deploy:dev": "DEV=true truffle migrate --network development --reset",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
