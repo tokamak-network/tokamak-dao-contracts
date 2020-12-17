@@ -1,0 +1,3 @@
+[submodule "plasma-evm-contracts"]
+	path = plasma-evm-contracts
+	url = https://github.com/Onther-Tech/plasma-evm-contracts
