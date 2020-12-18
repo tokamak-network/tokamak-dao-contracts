@@ -3,7 +3,6 @@ const fs = require('fs');
 
 const _WTON = createCurrency('WTON');
 
-const Layer2 = artifacts.require('Layer2');
 const TON = artifacts.require('TON');
 const WTON = artifacts.require('WTON');
 const Layer2Registry = artifacts.require('Layer2Registry');
