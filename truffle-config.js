@@ -10,7 +10,7 @@ module.exports = {
       host: 'localhost',
       port: 8546,
       gas: 6721975,
-      network_id: '*', // eslint-disable-line camelcase
+      network_id: '*', // eslint-disable-line camelcase,
     },
     rootchain: {
       host: 'localhost',
@@ -73,8 +73,10 @@ module.exports = {
       gasPrice: 21,
     },
     useColors: true,
+    before_timeout: 520000 ,
     enableTimeouts: false,
-    bail: true,
+    bail: true, 
+    // Here is 2min but can be whatever timeout is suitable for you.
   },
   compilers: {
     solc: {
