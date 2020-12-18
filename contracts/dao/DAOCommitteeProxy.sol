@@ -26,13 +26,13 @@ contract DAOCommitteeProxy is StorageStateCommittee , Ownabled {
   }
   function setProxyAgendaManager(address _addr) onlyOwner validStore public {
       require(_addr != address(0)); 
-      agendaManager = IDAOAgendaManager(_addr); 
+      agendaManager = DAOAgendaManager(_addr); 
       store.setAgendaManager(_addr);
   }
   
   function setProxyAactivityfeeManager(address _addr) onlyOwner validStore public {
       require(_addr != address(0)); 
-      activityfeeManager = IDAOActivityFeeManager(_addr); 
+      activityfeeManager = DAOActivityFeeManager(_addr); 
       store.setActivityFeeManager(_addr);
   }
 

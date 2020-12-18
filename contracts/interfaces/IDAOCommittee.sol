@@ -11,6 +11,7 @@ interface IDAOCommittee {
     function setAgendamanager(address _manager)  external ;
     function setActivityfeemanager(address _manager)  external  ; 
     function setMaxCommittees(uint256 _maxCommittees) external ;
+    function popCommitteeSlot() external;
     
     //--committee 
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string calldata _name , uint256 totalbalance ) 
@@ -31,5 +32,5 @@ interface IDAOCommittee {
       
     function checkRisk( address _target, bytes calldata _functionBytecode)  external pure returns (bool);
     function getMajority() external view  returns (uint256 majority) ;
-   
+    function getTON() external view returns (address) ;
 }

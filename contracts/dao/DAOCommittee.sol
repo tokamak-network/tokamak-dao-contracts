@@ -23,21 +23,22 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require( _store != address(0)); 
         store = DAOCommitteeStore(_store); 
     } 
+
     function setDaoElection(address _daoElection)   public  onlyOwner {  store.setDaoElection(_daoElection); }
     function setDaoVault(address _daoVault)  public  onlyOwner {  store.setDaoVault(_daoVault); } 
-     
     function setAgendamanager(address _manager)  public onlyOwner validStore { 
         require( _manager != address(0)); 
         store.setAgendaManager(_manager);   
-        agendaManager = IDAOAgendaManager(_manager); 
+        agendaManager = DAOAgendaManager(_manager); 
     } 
     function setActivityfeemanager(address _manager)  public onlyOwner validStore { 
         require( _manager != address(0)); 
         store.setActivityFeeManager(_manager);   
-        activityfeeManager = IDAOActivityFeeManager(_manager); 
+        activityfeeManager = DAOActivityFeeManager(_manager); 
     } 
     function setMaxCommittees(uint256 _maxCommittees) public onlyOwner  {  store.setMaxCommittees(_maxCommittees); }  
-    
+    function popCommitteeSlot() public onlyOwner  {  store.popCommitteeSlot();}
+
     //--dao election
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string memory _name , uint256 totalbalance ) 
         public returns (uint applyResultCode) { 
@@ -89,9 +90,11 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         if( createAgendaFees > 0 ){  
             require( IERC20(store.getTON()).balanceOf(msg.sender) >= createAgendaFees , 'not enough ton balance');
             require( IERC20(store.getTON()).allowance(msg.sender,address(this)) >= createAgendaFees, 'token allowance is lack');  
-            (bool success, ) = address(store.getTON()).call(abi.encodeWithSignature("burnFrom(address,uint256)",msg.sender,createAgendaFees));
-            
-            require(success,'CreateAgendaFees-burn failed');   
+            // ton did not have burn function. we transfer createAgendaFees to  address(1) . 
+            // (bool success, ) = address(store.getTON()).call(abi.encodeWithSignature("burnFrom(address,uint256)",msg.sender,createAgendaFees));
+            // require(success,'CreateAgendaFees-burn failed'); 
+            (bool success, ) = address(store.getTON()).call(abi.encodeWithSignature("transferFrom(address,address,uint256)",msg.sender,address(1),createAgendaFees));
+            require(success,'CreateAgendaFees-burn failed');  
         } 
          
         uint256 _fees = activityfeeManager.calculateActivityFees() ;
@@ -209,6 +212,9 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         
        // if( total % ratioDeno > 0 ) majority =  majority.add(1) ;
     }
-     
+    
+    function getTON() public view returns (address) {
+        return store.getTON();
+    }
      
 }

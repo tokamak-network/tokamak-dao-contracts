@@ -13,9 +13,9 @@ import { Layer2RegistryI } from "../interfaces/Layer2RegistryI.sol";
 
 contract CommitteeL2 is Ownabled , CommitteeL2I{ 
     using SafeMath for uint256; 
-    address operator;
-    address seigManager;
-    address layer2Registry;
+    address public operator;
+    address public seigManager;
+    address public layer2Registry;
     
     constructor(address _operator) public { 
         operator = _operator; 
@@ -44,5 +44,15 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
         return ( operator, owner);
     }
 
+    /* 
+    // -- Layer2I 
+    //function operator() public view returns (address){ return operator; }
+    function isLayer2() public view returns (bool){ return true; }
+    function currentFork() public view returns (uint){ return 1; }
+    function lastEpoch(uint forkNumber) public view returns (uint){ return 1; }
+    function changeOperator(address _operator) public { 
+        operator = _operator;  
+    }
+    */
  
 }

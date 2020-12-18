@@ -88,6 +88,15 @@ contract DAOCommitteeStore is OwnableAdmin{
             }
         }
     } 
+
+    function popCommitteeSlot() public onlyOwner  { 
+        if(committees.length > 0){ 
+            uint256 _idx = committees.length-1;
+            address _addr = committees[_idx];
+            committeeId[_addr] = 0;
+            committees.pop();
+        }  
+    }
     
     function totalCommittees() public view returns (uint256) { return committees.length-1;}
     function lengthCommitteeSlotIndex() public view returns (uint256) { return committees.length;}

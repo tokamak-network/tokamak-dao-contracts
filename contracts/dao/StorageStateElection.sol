@@ -9,11 +9,11 @@ import { SeigManagerI } from "../interfaces/SeigManagerI.sol";
 
 
 contract StorageStateElection {
-    DAOElectionStore  store;
-    IDAOCommittee daoCommittee ;
-    CommitteeL2FactoryI committeeL2Factory;
-    Layer2RegistryI layer2Registry;
-    SeigManagerI seigManager;
+    DAOElectionStore  public store;
+    IDAOCommittee public daoCommittee ;
+    CommitteeL2FactoryI public committeeL2Factory;
+    Layer2RegistryI public layer2Registry;
+    SeigManagerI public seigManager;
     
     struct Ratio {
         uint256 numerator;
