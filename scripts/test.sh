@@ -4,7 +4,7 @@
 set -o errexit
 
 # Executes cleanup function at script exit.
-#trap cleanup EXIT
+trap cleanup EXIT
 
 cleanup() {
   # Kill the ganache instance that we started (if we started one and if it's still running).
@@ -16,7 +16,7 @@ cleanup() {
 if [ "$SOLIDITY_COVERAGE" = true ]; then
   ganache_port=8555
 else
-  ganache_port=8545
+  ganache_port=8546
 fi
 
 ganache_running() {
@@ -71,6 +71,6 @@ if [ "$SOLIDITY_COVERAGE" = true ]; then
     cat coverage/lcov.info | npx coveralls
   fi
 else
-  #npx truffle test "$@"
+  npx truffle test "$@"
 fi
 

@@ -7,7 +7,7 @@ import { IDAOElection } from "../interfaces/IDAOElection.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 
-contract DAOVault is Ownabled {
+contract DAOVault2 is Ownabled {
     using SafeMath for uint256;
     
     address public ton;
