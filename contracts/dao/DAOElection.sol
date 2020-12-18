@@ -82,17 +82,19 @@ contract DAOElection is StorageStateElection , Ownabled {
     
     //  need to check 
     function createCommitteeLayer2( string memory name) 
-        public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256 layerIndex ,  address layer , address operator  ){
+        public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256  ,  address  , address   ){
         address operator = msg.sender;
         require( operator!= address(0),'operator is zero');  
         (bool exist ,   ) = store.existLayerByOperator(operator); 
         require( !exist,'operator already registerd'); 
           
         //  create CommitteeL2 , set seigManager 
-        address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
-        require( layer!= address(0),'deployed layer is zero'); 
         
-        (address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
+        // CommitteeL2 
+        address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
+        require( layer!= address(0),'deployed layer is zero');  
+        
+        //(address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
         //emit createLayer(msg.sender, _oper, _owner, layer); 
          
         //register CommitteeL2 to registry : registerAndDeployCoinage or register 
@@ -101,14 +103,14 @@ contract DAOElection is StorageStateElection , Ownabled {
         //require ( CommitteeL2I(layer).registerAndDeployCoinage() , ' CommitteeL2 registerAndDeployCoinage fail '  );
         (bool success,) = address(layer2Registry).delegatecall(abi.encodePacked(bytes4(keccak256("registerAndDeployCoinage(address,address)")),layer, address(seigManager)));
          require(success,'layer registerAndDeployCoinage fail');
-         
+          
         // register.store 
-        layerIndex = store.registerLayer2( layer,operator,name) ; 
+        uint256 layerIndex = store.registerLayer2( layer,operator,name) ; 
         require( layerIndex > 0);
     
         emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
     
-        return ( layerIndex,  layer ,  _oper ) ;
+        return ( layerIndex,  layer ,  operator ) ;
         
     }  
          

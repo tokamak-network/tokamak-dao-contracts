@@ -36,7 +36,7 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
         return Layer2RegistryI(layer2Registry).registerAndDeployCoinage(address(this), seigManager) ;
     }
 
-    function isCommitteeLayer() public override view returns (bool) { 
+    function isCommitteeLayer2() public override view returns (bool) { 
         return true;
     }
 

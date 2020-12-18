@@ -2,7 +2,7 @@
 pragma solidity ^0.6.0;
 import "../shared/Ownabled.sol";
 import { CommitteeL2 } from "../dao/CommitteeL2.sol";
-import { CommitteeL2FactoryI } from "../interfaces/CommitteeL2FactoryI.sol";
+import { CommitteeL2FactoryI } from "../interfaces/CommitteeL2FactoryI.sol"; 
 
 contract CommitteeL2Factory is CommitteeL2FactoryI, Ownabled {
    
@@ -13,5 +13,6 @@ contract CommitteeL2Factory is CommitteeL2FactoryI, Ownabled {
     c.setLayer2Registry(_layer2registry); 
     c.transferOwnership(_operator); 
     return address(c);
-  }
+  } 
+
 }

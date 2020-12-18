@@ -12,3 +12,4 @@ deployed.json
 l2.json
 migrations/old/
 truffle-config.js
+old_test/

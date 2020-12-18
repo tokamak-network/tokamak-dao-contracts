@@ -7,7 +7,7 @@ interface CommitteeL2I {
     function setLayer2Registry(address _layer2Registry) external ;
     function updateSeigniorage() external returns (bool);
     function registerAndDeployCoinage() external returns (bool) ;
-    function isCommitteeLayer() external view returns (bool) ;
+    function isCommitteeLayer2() external view returns (bool) ;
     function operatorAndOwner() external  view returns (address, address ) ;
 }
 
