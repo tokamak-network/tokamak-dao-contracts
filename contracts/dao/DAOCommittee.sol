@@ -16,8 +16,10 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     event AgendaCreated(address indexed from, uint256 indexed id, uint indexed group, address target, uint[5] times ,bytes functionBytecode,string description); 
     event AgendaVoteCasted( address indexed from, uint256 indexed id, uint voting ); 
     event AgendaExecuted(  address indexed from, uint256 indexed id, address target, bytes functionBytecode );
+    event AgendaElectCommittee( address indexed from, uint256 indexed id, uint status, uint[5] times );
     
-    enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
+    
+    enum  ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
      
     function setStore(address _store)  public onlyOwner {
         require( _store != address(0)); 
@@ -122,7 +124,10 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require( datas[4] < now  ,'noticeEndTime is not ended' );
         require( datas[5]==0 &&  datas[6]==0 && datas[7]==0 ,'It is not committee election period.' );
          
-        require(agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees() ),' electCommiitteeForAgenda fails') ;  
+         (bool result ,uint status, uint[5] memory times ) = agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees());
+ 
+        require( result ,' electCommiitteeForAgenda fails') ;  
+        emit AgendaElectCommittee( msg.sender, _AgendaID, status, times );
     } 
     
     function checkRisk( address _target, bytes memory _functionBytecode)  public pure returns (bool){

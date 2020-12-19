@@ -211,7 +211,8 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }
     
     
-    function electCommiitteeForAgenda(uint256 _AgendaID, address[] memory committees ) onlyOwner public returns (bool) {
+    function electCommiitteeForAgenda(uint256 _AgendaID, address[] memory committees ) 
+         public onlyOwner returns (bool result ,uint status, uint[5] memory times ) {
        
         require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.NOTICE, "agenda has expired." );  
         Agenda storage curagenda = agendas[_AgendaID]; 
@@ -224,7 +225,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         curagenda.times[2] = now;
         curagenda.times[3] = now + 60 * minimunVotingPeriodMin * 1 seconds;  
         curagenda.status = AgendaStatus.VOTING ;  
-        return true;
+        return ( true, uint(curagenda.status), times );
     }
     
     function validCommitteeForAgenda(uint256 _AgendaID, address user) public view returns (bool) {
