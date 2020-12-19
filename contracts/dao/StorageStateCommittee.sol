@@ -52,7 +52,7 @@ contract StorageStateCommittee {
     } 
     
     enum VoteChoice { ABSTAIN, YES, NO }
-    enum AgendaStatus { NOTICE, VOTING, EXEC, ENDED }
+    enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
     enum AgendaGroup { DAOVault, TON, PowerTON, SeigManager, Others }
     
