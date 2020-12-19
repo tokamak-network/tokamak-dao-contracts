@@ -19,8 +19,8 @@ contract DAOElection is StorageStateElection , Ownabled {
     ////////////////////////////// 
     event CommitteeLayer2Created(address indexed from, uint256 indexed layerId, address layer, string name); 
     event CommitteeLayer2UpdateSeigniorage(address indexed from, uint256 indexed layerId, address layer); 
-    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
-    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
+    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode,uint256 memberIndex); 
+    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode,uint256 memberIndex); 
     event createLayer(address sender, address oper,  address owner, address layer); 
 
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
@@ -60,22 +60,21 @@ contract DAOElection is StorageStateElection , Ownabled {
         return applyCommittee(_layerIndex);
     } 
     
-    function applyCommittee(uint256 _index) public validStore validDAOCommittee validSeigManager returns (uint) {
-        (bool exist ,   ) = store.existLayerByOperator(msg.sender);
+    function applyCommittee(uint256 _slotindex) public validStore validDAOCommittee validSeigManager returns (uint) {
+        (bool exist , uint256 _layerIndex  ) = store.existLayerByOperator(msg.sender);
         require( exist ,'you are not operator'); 
          
-        (address layer2,address operator, string memory name,  ) = store.detailedLayer2s(_index) ;
+        (address layer2,address operator, string memory name,  ) = store.detailedLayer2s(_layerIndex) ;
          
         uint256 totalbalance = totalSupplyLayer2s(layer2) ;
          
-        uint applyResultCode = daoCommittee.applyCommittee(_index, layer2, operator,name ,totalbalance );
+        (uint applyResultCode, uint256 memberIndex )= daoCommittee.applyCommittee(_slotindex, layer2, operator,name ,totalbalance );
          
         if(applyResultCode == uint(ApplyResult.SUCCESS)){
-            emit ApplyCommitteeSuccess(msg.sender, _index, operator, totalbalance, applyResultCode); 
+            emit ApplyCommitteeSuccess(msg.sender, _slotindex, operator, totalbalance, applyResultCode, memberIndex); 
         }else{
-            emit ApplyCommitteeFail(msg.sender, _index, operator, totalbalance, applyResultCode); 
-        }
-        
+            emit ApplyCommitteeFail(msg.sender, _slotindex, operator, totalbalance, applyResultCode, memberIndex); 
+        } 
 
         return applyResultCode;
     } 

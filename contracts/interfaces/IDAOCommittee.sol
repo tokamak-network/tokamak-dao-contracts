@@ -15,7 +15,7 @@ interface IDAOCommittee {
     
     //--committee 
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string calldata _name , uint256 totalbalance ) 
-        external returns (uint applyResultCode) ;
+        external returns (uint applyResultCode,uint256 _memberindex) ;
     function retireCommittee() external returns (bool); 
     
     //--for agenda  

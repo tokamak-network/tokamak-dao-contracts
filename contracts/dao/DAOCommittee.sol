@@ -41,28 +41,29 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
 
     //--dao election
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string memory _name , uint256 totalbalance ) 
-        public returns (uint applyResultCode) { 
+        public returns (uint applyResultCode , uint256 _memberindex) { 
         
         require( _layer2!=address(0) && _operator!=address(0),' operator can not zero address' );
         
         address elect = store.getDaoElection();  
-        if(elect != msg.sender ){ return uint(ApplyResult.NOT_ELECTION);  } 
+        if(elect != msg.sender ){ return (uint(ApplyResult.NOT_ELECTION), 0);  } 
         (bool _iscommittee, ) = store.isCommittee(_operator) ;
          
-        if( _iscommittee ) {  return uint(ApplyResult.ALREADY_COMMITTEE);  }   
-        if( _indexSlot >= store.lengthCommitteeSlotIndex() ) {  return uint(ApplyResult.SLOT_INVALID);  }   
-        uint256 _memberindex = store.addMember( _layer2, _operator, _name) ; 
+        if( _iscommittee ) {  return (uint(ApplyResult.ALREADY_COMMITTEE), 0);  }   
+        if( _indexSlot >= store.lengthCommitteeSlotIndex() ) {  return (uint(ApplyResult.SLOT_INVALID), 0 );  }   
         
-        if( _memberindex < 1 ) {  return uint(ApplyResult.ADDMEMBER_FAIL);  }    
+        _memberindex = store.addMember( _layer2, _operator, _name) ; 
+        
+        if( _memberindex < 1 ) {  return (uint(ApplyResult.ADDMEMBER_FAIL), 0);  }    
        
         // compare prev committee's balance 
         ( , , , , , uint256 balance,,) = store.detailedCommittee(_indexSlot) ;
         
-        if( balance > totalbalance ) { return uint(ApplyResult.LOW_BALANCE); }
+        if( balance > totalbalance ) { return (uint(ApplyResult.LOW_BALANCE) , _memberindex); }
          
         require( store.changeCommittee(_indexSlot, _memberindex, _operator, totalbalance) );
         
-        return uint(ApplyResult.SUCCESS); 
+        return (uint(ApplyResult.SUCCESS), _memberindex); 
     } 
     
     function retireCommittee() public returns (bool){  
