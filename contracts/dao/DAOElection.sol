@@ -98,15 +98,11 @@ contract DAOElection is StorageStateElection , Ownabled {
         //emit createLayer(msg.sender, _oper, _owner, layer); 
          
         //register CommitteeL2 to registry : registerAndDeployCoinage or register 
-        // I don't know ... error .. 
-        //require ( layer2Registry.registerAndDeployCoinage(layer, address(seigManager) ) ); 
-        //require ( CommitteeL2I(layer).registerAndDeployCoinage() , ' CommitteeL2 registerAndDeployCoinage fail '  );
-        (bool success,) = address(layer2Registry).delegatecall(abi.encodePacked(bytes4(keccak256("registerAndDeployCoinage(address,address)")),layer, address(seigManager)));
-         require(success,'layer registerAndDeployCoinage fail');
+        require (layer2Registry.registerAndDeployCoinage(layer, address(seigManager))); 
           
         // register.store 
         uint256 layerIndex = store.registerLayer2( layer,operator,name) ; 
-        require( layerIndex > 0);
+        require( layerIndex > 0, "createCommitteeLayer2: error 1");
     
         emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
     

@@ -44,7 +44,6 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
         return ( operator, owner);
     }
 
-    /* 
     // -- Layer2I 
     //function operator() public view returns (address){ return operator; }
     function isLayer2() public view returns (bool){ return true; }
@@ -53,6 +52,5 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
     function changeOperator(address _operator) public { 
         operator = _operator;  
     }
-    */
  
 }

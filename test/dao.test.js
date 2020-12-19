@@ -315,6 +315,9 @@ describe('Test 1', function () {
     }
 
     //=================================================== 
+
+    await registry.transferOwnership(election.address);
+
     console.log('\n\n');
  
   } 
