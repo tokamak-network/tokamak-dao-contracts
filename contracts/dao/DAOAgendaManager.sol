@@ -58,7 +58,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     } 
      
     enum VoteChoice { ABSTAIN, YES, NO }
-    enum AgendaStatus { NOTICE, VOTING, EXEC, ENDED }
+    enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
      
     
@@ -71,7 +71,19 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         ton = _ton;
         numAgendas =0; 
     } 
-         
+    function getStatus(uint _status) public view returns (AgendaStatus emnustatus) {
+        if(_status == uint(AgendaStatus.NOTICE) ) return  AgendaStatus.NOTICE;
+        else if(_status == uint(AgendaStatus.VOTING) ) return  AgendaStatus.VOTING;
+        else if(_status == uint(AgendaStatus.EXEC) ) return  AgendaStatus.EXEC;
+        else if(_status == uint(AgendaStatus.ENDED) ) return  AgendaStatus.ENDED;
+        else if(_status == uint(AgendaStatus.PENDING) ) return  AgendaStatus.PENDING;
+        else if(_status == uint(AgendaStatus.RISK) ) return  AgendaStatus.RISK;
+        else return AgendaStatus.NONE;
+    } 
+    function setStatus(uint256 _AgendaID, uint _status)  onlyOwner public { 
+        require( _AgendaID < numAgendas,  "Not a valid Proposal Id" );
+        agendas[_AgendaID].status = getStatus(_status);
+    }
     function setCreateAgendaFees(uint256 _createAgendaFees)  onlyOwner public { 
         createAgendaFees = _createAgendaFees;
     }
