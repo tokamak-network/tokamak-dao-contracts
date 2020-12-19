@@ -169,7 +169,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }
    
     function newAgenda( uint _group, address _target, address _creator, uint _noticePeriodMin,bytes memory _functionBytecode,string memory _description, uint256 _fees ) 
-        onlyOwner public returns (uint256 agendaID) {
+        onlyOwner public returns (uint256 agendaID , uint status, uint result, uint[5] memory times ) {
         
         require(_noticePeriodMin >= minimunNoticePeriodMin ,'minimunNoticePeriod is short') ;
          
@@ -195,7 +195,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         
         numAgendas = agendas.length; 
         agendaID = numAgendas.sub(1);
-        return agendaID;
+        return ( agendaID, uint(p.status) , uint(p.result), p.times ) ;
     }
     
     

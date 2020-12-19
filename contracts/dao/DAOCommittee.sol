@@ -13,7 +13,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     //////////////////////////////
     // Events
     ////////////////////////////// 
-    event AgendaCreated(address indexed from, uint256 indexed id, uint indexed group, address target, uint256 noticePeriodMin,bytes functionBytecode,string description); 
+    event AgendaCreated(address indexed from, uint256 indexed id, uint indexed group, address target, uint[5] times ,bytes functionBytecode,string description); 
     event AgendaVoteCasted( address indexed from, uint256 indexed id, uint voting ); 
     event AgendaExecuted(  address indexed from, uint256 indexed id, address target, bytes functionBytecode );
     
@@ -99,9 +99,9 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         } 
          
         uint256 _fees = activityfeeManager.calculateActivityFees() ;
-        uint256 agendaID = agendaManager.newAgenda( _group, _target, msg.sender, _noticePeriodMin ,functionBytecode, _description, _fees ) ;
-        
-        emit AgendaCreated(msg.sender, agendaID, _group, _target, _noticePeriodMin, functionBytecode, _description);
+        (uint256 agendaID , , , uint[5] memory _times ) = agendaManager.newAgenda( _group, _target, msg.sender, _noticePeriodMin ,functionBytecode, _description, _fees ) ;
+          
+        emit AgendaCreated(msg.sender, agendaID, _group, _target, _times, functionBytecode, _description);
         return agendaID; 
     } 
     
