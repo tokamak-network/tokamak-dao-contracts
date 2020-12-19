@@ -120,7 +120,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         //uint[8] memory args1 = [ uint(agenda.status) ,uint(agenda.result) , uint(agenda.group) , agenda.times[0],
         // 4: noticeEndTime , 5:votingStartTime , 6:votingEndTime , 7:execTime ];
         
-        require( datas[0] == uint(AgendaStatus.NOTICE) && datas[0]==uint(AgendaResult.UNDEFINED) ,'Unsuitable status or result' );
+        require( datas[0] == uint(AgendaStatus.NOTICE) && datas[1]==uint(AgendaResult.UNDEFINED) ,'Unsuitable status or result' );
         require( datas[4] < now  ,'noticeEndTime is not ended' );
         require( datas[5]==0 &&  datas[6]==0 && datas[7]==0 ,'It is not committee election period.' );
          
