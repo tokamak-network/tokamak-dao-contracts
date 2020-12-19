@@ -14,7 +14,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     // Events
     ////////////////////////////// 
     event AgendaCreated(address indexed from, uint256 indexed id, uint indexed group, address target, uint[5] times ,bytes functionBytecode,string description); 
-    event AgendaVoteCasted( address indexed from, uint256 indexed id, uint voting ); 
+    event AgendaVoteCasted( address indexed from, uint256 indexed id, uint voting , string comment, uint256[3] counting, uint result); 
     event AgendaExecuted(  address indexed from, uint256 indexed id, address target, bytes functionBytecode );
     event AgendaElectCommittee( address indexed from, uint256 indexed id, uint status, uint[5] times );
     
@@ -159,10 +159,10 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require( agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= now && now <=agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID) , "for this agenda, the voting time expired" );
         require( agendaManager.validCommitteeForAgenda(_AgendaID, msg.sender ),"you are not a committee member on this agenda."); 
         
-        agendaManager.castVote(_AgendaID, msg.sender, _layer2, _vote, _comment, _majority);
+        (uint256[3] memory counting, uint result) = agendaManager.castVote(_AgendaID, msg.sender, _layer2, _vote, _comment, _majority);
         store.castVote( msg.sender); 
         
-        emit AgendaVoteCasted( msg.sender, _AgendaID, _vote ); 
+        emit AgendaVoteCasted( msg.sender, _AgendaID, _vote , _comment, counting, result ); 
     } 
 
      

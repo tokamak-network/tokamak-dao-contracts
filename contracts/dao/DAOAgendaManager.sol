@@ -238,7 +238,8 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         return false; 
     }
     
-    function castVote(uint256 _AgendaID,  address voter,address _layer, uint _vote , string memory _comment, uint256 _majority ) onlyOwner public  
+    function castVote(uint256 _AgendaID,  address voter,address _layer, uint _vote , string memory _comment, uint256 _majority ) 
+         public  onlyOwner returns (uint256[3] memory counting, uint result) 
     {  
         
         require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.VOTING, "status is not voting." ); 
@@ -267,6 +268,8 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         if( _majority < curagenda.counting[0] ){  curagenda.result = AgendaResult.DISMISS; }
         else if(_majority < curagenda.counting[1] ) { curagenda.result = AgendaResult.ACCEPT; }
         else if(_majority < curagenda.counting[2] ) { curagenda.result = AgendaResult.REJECT; } 
+
+        return ( curagenda.counting, uint(curagenda.result) );
           
     }  
     
