@@ -274,7 +274,8 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }  
     
     
-    function setExecuteAgenda(uint256 _AgendaID) onlyOwner public returns ( bool success,  uint result, bool executed, address target, bytes memory functionBytecode)  
+    function setExecuteAgenda(uint256 _AgendaID) 
+        public onlyOwner returns ( bool success,  uint status,uint result, bool executed, address target, bytes memory functionBytecode , uint[5] memory times)  
     {   
         require( _AgendaID < agendas.length   ,"_AgendaID is invalid." );   
         /*
@@ -289,7 +290,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         curagenda.status = AgendaStatus.EXEC;
         numExecAgendas = numExecAgendas.add(1);
         
-        return ( true, uint(curagenda.result), curagenda.executed, curagenda.target, curagenda.functionBytecode );
+        return ( true, uint(curagenda.status), uint(curagenda.result), curagenda.executed, curagenda.target, curagenda.functionBytecode , curagenda.times );
     }   
      
 }

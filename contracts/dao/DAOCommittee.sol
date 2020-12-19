@@ -15,7 +15,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     ////////////////////////////// 
     event AgendaCreated(address indexed from, uint256 indexed id, uint indexed group, address target, uint[5] times ,bytes functionBytecode,string description); 
     event AgendaVoteCasted( address indexed from, uint256 indexed id, uint voting , string comment, uint256[3] counting, uint result); 
-    event AgendaExecuted(  address indexed from, uint256 indexed id, address target, bytes functionBytecode );
+    event AgendaExecuted(  address indexed from, uint256 indexed id, address target, bytes functionBytecode, uint status, uint[5] times);
     event AgendaElectCommittee( address indexed from, uint256 indexed id, uint status, uint[5] times );
     
     
@@ -172,23 +172,23 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         //(bool exist ,  ) = agendaManager.getAgendaStatus(_AgendaID);
         
         //uint[8] memory datas = [ uint(agenda.status) ,uint(agenda.result) , uint(agenda.group) , 
-        //3:agenda.times[0], 4: agenda.times[1], 5:agenda.times[2], 6:agenda.times[3] , 7: agenda.times[4] ];
+        //3:creationDate, 4: noticeEndTime, 5:votingStartTime, 6:votingEndTime , 7: execTime ];
          
              
         ( address[2] memory creator, uint[8] memory datas, ,  , bool executed, ,, )  = agendaManager.detailedAgenda(_AgendaID) ;
-        require( creator[0]!=address(0) && datas[0] == uint(AgendaStatus.VOTING) ,"agenda status must be IN_PROGRESS." );   
+        require( creator[0]!=address(0) && datas[0] == uint(AgendaStatus.VOTING) ,"agenda status must be VOTING." );   
         require( datas[6] < now , "for this agenda, the voting time is not expired" );
         require( datas[1] == uint(AgendaResult.ACCEPT) , "for this agenda, not accept" );
         require( executed == false , "for this agenda, already executed" );
         
-        (bool agendaupdate, uint result, bool exec, address target, bytes memory functionBytecode) = agendaManager.setExecuteAgenda(_AgendaID) ;
+        (bool agendaupdate, uint status, uint result, bool exec, address target, bytes memory functionBytecode, uint[5] memory times) = agendaManager.setExecuteAgenda(_AgendaID) ;
        
         require( agendaupdate && result == uint(AgendaResult.ACCEPT) && exec && target!=address(0) ,'fail setExecuteAgenda');
          
         (bool success, ) = address(target).call(functionBytecode); 
         require(success,'execute function fail');  
          
-        emit AgendaExecuted( msg.sender, _AgendaID, target, functionBytecode ); 
+        emit AgendaExecuted( msg.sender, _AgendaID, target, functionBytecode , status, times); 
     }   
     
     /* 
