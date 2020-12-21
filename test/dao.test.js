@@ -23,8 +23,8 @@ const CommitteeL2Factory = contract.fromArtifact('CommitteeL2Factory');
 const DAOCommitteeStore = contract.fromArtifact('DAOCommitteeStore');
 const DAOCommitteeProxy = contract.fromArtifact('DAOCommitteeProxy');
 const DAOElectionStore = contract.fromArtifact('DAOElectionStore');
-const DAOElection = contract.fromArtifact('DAOElection');
-const DAOElectionProxy = contract.fromArtifact('DAOElectionProxy');
+//const DAOElection = contract.fromArtifact('DAOElection');
+//const DAOElectionProxy = contract.fromArtifact('DAOElectionProxy');
 
 // plasma-evm-contracts
 const TON = contract.fromArtifact('TON');
@@ -59,8 +59,8 @@ const WTON_TON_RATIO = _WTON_TON('1');
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
 const TON_INITIAL_SUPPLY = _TON('50000000');
-const TON_INITIAL_HOLDERS = _TON('10000');
-const TON_VAULT_AMOUNT = _TON('10000000');
+const TON_INITIAL_HOLDERS = _TON('1000000');
+const TON_VAULT_AMOUNT = _WTON('10000000');
 
 const WITHDRAWAL_DELAY = 10;
 const SEIG_PER_BLOCK = _WTON('3.92');
@@ -72,7 +72,7 @@ const PSEIG_RATE = _WTON('0.4');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2,committee, election, electionProxy, committeeStore, activityFeeManager , agendaManager, committeeL2Factory;
+let daoVault2, committee, committeeStore, activityFeeManager , agendaManager, committeeL2Factory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -178,7 +178,10 @@ describe('Test 1', function () {
       WITHDRAWAL_DELAY,
     );
     factory = await CoinageFactory.new();
-    daoVault = await DAOVault.new(ton.address, 0);
+
+    currentTime = await time.latest();
+    console.log(`currentTime1: ${currentTime}`);
+    daoVault = await DAOVault.new(wton.address, currentTime);
     seigManager = await SeigManager.new(
       ton.address,
       wton.address,
@@ -214,11 +217,10 @@ describe('Test 1', function () {
     seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await committees.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await ton.transfer(daoVault.address, TON_VAULT_AMOUNT.toFixed(TON_UNIT));
-    
+    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
   }
 
-  async function initializeDaoContracts( ) {
+  async function initializeDaoContracts() {
     debugLog =false;
     this.ton = ton;
     if(debugLog) console.log('ton :', this.ton.address) ;
@@ -289,12 +291,12 @@ describe('Test 1', function () {
 
     //===================================================
     this.dAOElectionStore = await DAOElectionStore.new(this.ton.address);
-    this.dAOElection = await DAOElection.new();
-    this.dAOElectionProxy = await DAOElectionProxy.new(this.dAOElectionStore.address);
-    await this.dAOElectionStore.transferOwnership(this.dAOElectionProxy.address);
-    await this.dAOElectionProxy.upgradeTo(this.dAOElection.address);
-    await this.dAOElectionProxy.setProxyPause(false);
-    electionProxy = this.dAOElectionProxy;
+    //this.dAOElection = await DAOElection.new();
+    //this.dAOElectionProxy = await DAOElectionProxy.new(this.dAOElectionStore.address);
+    //await this.dAOElectionStore.transferOwnership(committee.address);
+    //await this.dAOElectionProxy.upgradeTo(this.dAOElection.address);
+    //await this.dAOElectionProxy.setProxyPause(false);
+    //electionProxy = this.dAOElectionProxy;
 
     /*
     await this.dAOElectionProxy.setProxyDaoCommittee(committee.address);
@@ -302,83 +304,225 @@ describe('Test 1', function () {
     await this.dAOElectionProxy.setProxyLayer2Registry(addrs.Layer2Registry);
     await this.dAOElectionProxy.setProxySeigManager(addrs.SeigManager);
     */
-    let implelection = await this.dAOElectionProxy.implementation() ;
-    election = await DAOElection.at(this.dAOElectionProxy.address);
+    //let implelection = await this.dAOElectionProxy.implementation() ;
+    //election = await DAOElection.at(this.dAOElectionProxy.address);
+    election = this.dAOElectionStore;
 
-    committeeL2Factory.transferOwnership(election.address);
-
-    if(debugLog){
-      console.log('dAOElectionStore :', this.dAOElectionStore.address) ;
-      console.log('dAOElection :', this.dAOElection.address) ;
-      console.log('dAOElectionProxy :', this.dAOElectionProxy.address) ;
-      console.log('dAOElectionProxy implementation :', implelection) ;
-    }
-
+    //committeeL2Factory.transferOwnership(election.address);
     //=================================================== 
 
-    await registry.transferOwnership(election.address);
+    await committee.setElection(election.address);
+    await election.setSeigManager(seigManager.address);
+    await committee.setSeigManager();
+    await election.setLayer2Registry(registry.address);
+    await committee.setLayer2Registry();
+    await election.setCommitteeL2Factory(committeeL2Factory.address);
+    await committee.setCommitteeL2Factory();
+
+    await registry.transferOwnership(committee.address);
+    await daoVault2.setDaoCommittee(committee.address);
+    await daoVault2.setDAOActivityFeeManager(activityFeeManager.address);
+    await daoVault2.transferOwnership(committee.address);
+    await activityFeeManager.transferOwnership(committee.address);
+    await agendaManager.transferOwnership(committee.address);
+    await committeeL2Factory.transferOwnership(committee.address);
+    await election.transferOwnership(committee.address);
+    await this.dAOCommittee.transferOwnership(committee.address);
+    //await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
 
     console.log('\n\n');
- 
   } 
+
+  async function addCommitteeCandidate(candidate, stakeAmount) {
+    const result = await committee.createCommitteeLayer2(candidate, {from: user1});
+  }
+
+  describe('Committee candidate', function () {
+    it('add new candidate', async function () {
+      await addCommitteeCandidate(user1, _TON('1000').toFixed(TON_UNIT));
+    });
+
+  });
 
   describe('Test 1-1', function () {
     
     before(async function () { 
     });
-    
-    it('subtest 1 : DaoCommittee 주소 설정은 오너만 할 수 있다. ', async function () {
-      this.timeout(1000000);
-      await expectRevert.unspecified(electionProxy.setProxyDaoCommittee(committee.address, {from : user6}));
-      tx = await electionProxy.setProxyDaoCommittee(committee.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyDaoCommittee');
 
-      let res = await election.getDaoCommittee(); 
-      expect(res).to.equal(committee.address);
+    describe('contracts ownership', function () {
+      it('check ownership', async function () {
+      });
+
+      it('check ownership functions', async function () {
+      });
     });
 
-    it('subtest 2 : CommitteeLayer2 Factory 주소 설정은 오너만 할 수 있다.  ', async  function () {
-      await expectRevert.unspecified(electionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address, {from : user6}));
-      tx = await electionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyCommitteeL2Factory');
+    describe('DaoVault', function () {
+      it('claim', async function () {
+        let amount = await wton.balanceOf(daoVault.address);
+        console.log(`vault amount: ${amount}`);
+        amount.should.be.bignumber.gt(toBN('0'));
+        beforeBalance = await wton.balanceOf(daoVault2.address);
+        const owner = await daoVault.owner();
+        console.log(`owner: ${owner}`);
+        console.log(`deployer: ${deployer}`);
+        currentTime = await time.latest();
+        console.log(`currentTime2: ${currentTime}`);
+        await daoVault.claim(daoVault2.address);
+        //await daoVault.claim(deployer, {from: owner});
+        afterBalance = await ton.balanceOf(daoVault2.address);
 
-      let res = await election.getCommitteeL2Factory(); 
-      expect(res).to.equal(committeeL2Factory.address);
+        afterBalance.sub(beforeBalance).should.be.bignumber.equal(TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        amount = await wton.balanceOf(daoVault.address);
+        amount.should.be.bignumber.equal(toBN('0'));
+      });
     });
 
-    it('subtest 3 : Layer2 Registry 설정은 오너만 할 수 있다.  ', async  function () {
-      await expectRevert.unspecified(electionProxy.setProxyLayer2Registry(registry.address, {from : user6}));
-      tx = await electionProxy.setProxyLayer2Registry(registry.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyLayer2Registry');
+    /*describe('DaoVault2', function () {
+      beforeEach(async function () { 
+        await daoVault2.approveTonDao(0);
+      });
 
-      let res = await election.getLayer2Registry(); 
-      expect(res).to.equal(registry.address);
-    });
+      it('approveTonDao', async function () {
+        const testAmount = 10000;
+        await daoVault2.approveTonDao(testAmount);
+        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN(testAmount));
+        expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN(testAmount));
+      });
 
-    it('subtest 4 : SeigManager 설정은 오너만 할 수 있다. ',  async function () {
-      await expectRevert.unspecified(electionProxy.setProxySeigManager(seigManager.address, {from : user6}));
-      tx = await electionProxy.setProxySeigManager(seigManager.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxySeigManager');
+      it('approveTonDaoCommittee', async function () {
+        const testAmount = 10000;
 
-      let res = await election.getSeigManager(); 
-      expect(res).to.equal(seigManager.address);
-    });
-    /* 
-    it('subtest 5 : DepositManager 설정은 오너만 할 수 있다.',  async function () {
-      await expectRevert.unspecified(election.setDepositManager(depositManager.address, {from : user6}));
-      tx = await election.setDepositManager(depositManager.address, {from : owner});
-      recordGasUsed(tx, 'Election.setDepositManager');
+        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
 
-      let res = await election.getDepositManager(); 
-      expect(res).to.equal(depositManager.address);
-    });*/ 
-    it('subtest 6 : 누구나 CommitteeLayer2를 생성할 수 있다. ',  async function () {
-      tx = await election.createCommitteeLayer2('i am user6', {from : user6});
-      let args = verifyTransaction(tx, user6);
-      console.log('CommitteeLayer2Created :  ',args );
-      recordGasUsed(tx, 'Election.createLayer2');
-      expect(verifyEvent(tx, 'CommitteeLayer2Created')).to.be.true; 
-    });
+        await daoVault2.approveTonDaoCommittee(testAmount);
+        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN(testAmount));
+        expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
+      });
 
+      it('approveTonDAOActivityFeeManager', async function () {
+        const testAmount = 10000;
+
+        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
+
+        await daoVault2.approveTonDAOActivityFeeManager(testAmount);
+        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN(testAmount));
+      });
+
+      it('approveTon', async function () {
+        const testAmount = 10000;
+
+        expect(await ton.allowance(daoVault2.address, user1)).to.bignumber.equal(toBN('0'));
+
+        await daoVault2.approveTon(user1, testAmount);
+        expect(await ton.allowance(daoVault2.address, user1)).to.bignumber.equal(toBN(testAmount));
+      });
+
+      it('claimCommittee', async function () {
+        //const testAmount = 10000;
+
+        //await daoVault2.claimCommittee(user1, testAmount);
+      });
+
+      it('claimActivityFeeManager', async function () {
+      });
+
+      it('transfer', async function () {
+      });
+
+    });*/
+
+    /*describe('DAOElection', function () {
+      it('applyCommitteeByOperator', async function () {
+      });
+
+      it('applyCommittee', async function () {
+      });
+
+      it('createCommitteeLayer2', async function () {
+      });
+
+      it('numLayer2s', async function () {
+      });
+
+      it('totalSupplyLayer2s', async function () {
+      });
+
+      it('balanceOfLayer2s', async function () {
+      });
+
+    });*/
+
+    /*describe('DAOCommittee', function () {
+      it('setDaoElection', async function () {
+      });
+
+      it('setDaoVault', async function () {
+      });
+
+      it('setAgendamanager', async function () {
+      });
+
+      it('setActivityfeemanager', async function () {
+      });
+
+      it('setMaxCommittees', async function () {
+      });
+
+      it('popCommitteeSlot', async function () {
+      });
+
+      it('applyCommittee', async function () {
+      });
+
+      it('retireCommittee', async function () {
+      });
+
+      it('setMinimunNoticePeriodMin', async function () {
+      });
+
+      it('setMinimunVotingPeriodMin', async function () {
+      });
+
+      it('setQuorum', async function () {
+      });
+
+      it('setCreateAgendaFees', async function () {
+      });
+
+      it('createAgenda', async function () {
+      });
+
+      it('electCommiitteeForAgenda', async function () {
+      });
+
+      it('checkRisk', async function () {
+      });
+
+      it('castVote', async function () {
+      });
+
+      it('executeAgenda', async function () {
+      });
+
+      it('detailedAgenda', async function () {
+      });
+
+      it('detailedAgendaVoteInfo', async function () {
+      });
+
+      it('totalAgendas', async function () {
+      });
+
+      it('getMajority', async function () {
+      });
+
+      it('getMajority', async function () {
+      });
+
+    });*/
   });
 });

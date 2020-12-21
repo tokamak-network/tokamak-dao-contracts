@@ -269,23 +269,23 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     
     //  need to check 
     function createCommitteeLayer2( string memory name) 
-        public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256  ,  address  , address   ){
+        public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256, address, address) {
         address operator = msg.sender;
         require(operator != address(0), "DAOCommittee: operator is zero");
-        (bool exist ,   ) = election.existLayerByOperator(operator); 
+        (bool exist, ) = election.existLayerByOperator(operator);
         require(!exist, "DAOCommittee: operator already registerd");
           
         // create CommitteeL2 , set seigManager 
         
         // CommitteeL2 
-        address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
+        address layer = committeeL2Factory.deploy(operator, address(seigManager), address(layer2Registry));
         require(layer != address(0), "DAOCommittee: deployed layer is zero");
         
-        //(address _oper, address _owner ) = CommitteeL2I(layer).operatorAndOwner();
-        //emit createLayer(msg.sender, _oper, _owner, layer); 
+        //(address _oper, address _owner) = CommitteeL2I(layer).operatorAndOwner();
+        //emit createLayer(msg.sender, _oper, _owner, layer);
          
-        //register CommitteeL2 to registry : registerAndDeployCoinage or register 
-        require (layer2Registry.registerAndDeployCoinage(layer, address(seigManager))); 
+        //register CommitteeL2 to registry : registerAndDeployCoinage or register
+        require(layer2Registry.registerAndDeployCoinage(layer, address(seigManager)), "DAOCommittee: failed to registerAndDeployCoinage");
           
         // register.store 
         uint256 layerIndex = election.registerLayer2(layer, operator, name);
@@ -294,9 +294,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name);
     
         return (layerIndex, layer, operator);
-        
     }  
-         
     
     function updateSeigniorage(address _layer)  public validElection returns (bool){ 
         (bool exist , uint256 layerId  ) = election.existLayerByLayer(_layer); 
