@@ -39,7 +39,7 @@ contract DAOElectionStore is OwnableAdmin{
         daoCommittee = _daoCommittee;
     }  
     
-    function seLayer2Registry(address _layer2Registry)  onlyOwner public {
+    function setLayer2Registry(address _layer2Registry) onlyOwner public {
         require(_layer2Registry != address(0), "DAOElectionStore: registry address is zero");
         layer2Registry = _layer2Registry;
     }  

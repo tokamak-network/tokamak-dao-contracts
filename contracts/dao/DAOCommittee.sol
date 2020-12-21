@@ -46,7 +46,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         activityfeeManager = DAOActivityFeeManager(_manager); 
     } 
     //-----
-    function setElection(address _election)  public validElection {
+    function setElection(address _election)  public onlyOwner {
         require(_election != address(0), "DAOCommittee: election is zero");
         election = DAOElectionStore(_election); 
     }  
@@ -275,25 +275,25 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         (bool exist ,   ) = election.existLayerByOperator(operator); 
         require(!exist, "DAOCommittee: operator already registerd");
           
-        //  create CommitteeL2 , set seigManager 
+        // create CommitteeL2 , set seigManager 
         
         // CommitteeL2 
         address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
         require(layer != address(0), "DAOCommittee: deployed layer is zero");
         
-        //(address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
+        //(address _oper, address _owner ) = CommitteeL2I(layer).operatorAndOwner();
         //emit createLayer(msg.sender, _oper, _owner, layer); 
          
         //register CommitteeL2 to registry : registerAndDeployCoinage or register 
         require (layer2Registry.registerAndDeployCoinage(layer, address(seigManager))); 
           
         // register.store 
-        uint256 layerIndex = election.registerLayer2( layer,operator,name) ; 
+        uint256 layerIndex = election.registerLayer2(layer, operator, name);
         require(layerIndex > 0, "DAOCommittee: createCommitteeLayer2: error 1");
     
-        emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
+        emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name);
     
-        return ( layerIndex,  layer ,  operator ) ;
+        return (layerIndex, layer, operator);
         
     }  
          

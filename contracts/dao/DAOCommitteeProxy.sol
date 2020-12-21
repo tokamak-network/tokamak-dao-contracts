@@ -48,7 +48,7 @@ contract DAOCommitteeProxy is StorageStateCommittee , Ownabled {
   function setProxyLayer2Registry(address _addr) onlyOwner validElection public {
       require(_addr != address(0), "DAOCommitteeProxy: registry address is zero");
       layer2Registry = Layer2RegistryI(_addr); 
-      election.seLayer2Registry(_addr);
+      election.setLayer2Registry(_addr);
   } 
   function setProxySeigManager(address _addr) onlyOwner validElection public {
       require(_addr != address(0), "DAOCommitteeProxy: SeigManager address is zero");

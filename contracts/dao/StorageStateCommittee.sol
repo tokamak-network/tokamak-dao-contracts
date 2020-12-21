@@ -98,13 +98,13 @@ contract StorageStateCommittee {
         _;
     }
 
-    function getProxyStore() public view returns( address ) { return address(store); }
-    function getProxyAgendamanager() public view  returns( address ) { return address(agendaManager); }
-    function getProxyActivityFeeManager() public view returns( address ) { return address(activityfeeManager); }
+    //function getProxyStore() public view returns( address ) { return address(store); }
+    //function getProxyAgendamanager() public view  returns( address ) { return address(agendaManager); }
+    //function getProxyActivityFeeManager() public view returns( address ) { return address(activityfeeManager); }
 
-    function getProxyElection () public view  returns (address){ return address(election); }
-    function getProxySeigManager () public view  returns (address){ return address(seigManager); }
-    function getProxyLayer2Registry() public view  returns (address){ return address(layer2Registry); }
-    function getProxyCommitteeL2Factory() public view  returns (address){ return address(committeeL2Factory); }
+    //function getProxyElection () public view  returns (address){ return address(election); }
+    //function getProxySeigManager () public view  returns (address){ return address(seigManager); }
+    //function getProxyLayer2Registry() public view  returns (address){ return address(layer2Registry); }
+    //function getProxyCommitteeL2Factory() public view  returns (address){ return address(committeeL2Factory); }
 
 }
