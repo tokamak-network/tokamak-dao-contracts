@@ -31,11 +31,11 @@ contract DAOActivityFeeManager is OwnableAdmin , DAOActivityFeeManagerRole {
         ton = _ton;
     }
             
-    function setActivityfeePerVoting(uint256 _activityfeePerVoting)  onlyAdminAndOwner public { 
+    function setActivityfeePerVoting(uint256 _activityfeePerVoting)  onlyAdminOrOwner public { 
         activityfeePerVoting = _activityfeePerVoting;
     }  
      
-    function setDaoVault(address _daoVault)  onlyAdminAndOwner public {
+    function setDaoVault(address _daoVault)  onlyAdminOrOwner public {
         require(_daoVault != address(0)); 
         daoVault = _daoVault;
     } 
