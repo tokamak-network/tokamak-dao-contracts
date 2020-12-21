@@ -23,7 +23,7 @@ contract OwnableAdmin {
         require(msg.sender == admin);
         _;
     }
-    modifier onlyAdminAndOwner() {
+    modifier onlyAdminOrOwner() {
         require(msg.sender == owner || msg.sender == admin );
         _;
     }
