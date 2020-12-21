@@ -75,7 +75,7 @@ contract DAOVault2 is Ownabled {
     
     function claimCommittee(address committee, uint256 amount) external onlyDAOCommittee returns (uint256) {
          
-        require( IERC20(ton).balanceOf(address(this)) > amount ); 
+        require( IERC20(ton).balanceOf(address(this)) >= amount ); 
         require( IERC20(ton).transfer(committee,amount) ) ; 
         emit TransferCommittee(committee, amount);
         return amount;
