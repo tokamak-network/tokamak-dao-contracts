@@ -72,12 +72,12 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
 
     //--dao election
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string memory _name , uint256 totalbalance ) 
-        public returns (uint applyResultCode , uint256 _memberindex) { 
+        internal returns (uint applyResultCode , uint256 _memberindex) { 
         
         require( _layer2!=address(0) && _operator!=address(0),' operator can not zero address' );
         
-        address elect = store.getDaoElection();  
-        if(elect != msg.sender ){ return (uint(ApplyResult.NOT_ELECTION), 0);  } 
+        //address elect = store.getDaoElection();  
+        //if(elect != msg.sender ){ return (uint(ApplyResult.NOT_ELECTION), 0);  } 
         (bool _iscommittee, ) = store.isCommittee(_operator) ;
          
         if( _iscommittee ) {  return (uint(ApplyResult.ALREADY_COMMITTEE), 0);  }   
@@ -237,26 +237,27 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
      
 
      //=== election 
-      function applyCommitteeElectByOperator() public validElection validSeigManager returns (uint) {
+    /*   function applyCommitteeElectByOperator() public validElection validSeigManager returns (uint) {
         (bool exist , uint256 _layerIndex  ) = election.existLayerByOperator(msg.sender);
         require(exist,'not exist layer');
         return applyCommitteeElect(_layerIndex);
-    } 
+    }  */ 
     
-    function applyCommitteeElect(uint256 _index) public validElection validSeigManager returns (uint) {
-        (bool exist ,   ) = election.existLayerByOperator(msg.sender);
+    function applyCommitteeElect(uint256 _indexSlot) public validElection validSeigManager returns (uint) {
+        (bool exist , uint256 _layer2Index  ) = election.existLayerByOperator(msg.sender);
         require( exist ,'you are not operator'); 
          
-        (address layer2,address operator, string memory name,  ) = election.detailedLayer2s(_index) ;
-         
+        (address layer2,address operator, string memory name,  ) = election.detailedLayer2s(_layer2Index) ;
+        require( operator == msg.sender ,'your are not operator' );
+        
         uint256 totalbalance = totalSupplyLayer2s(layer2) ;
          
-        (uint applyResultCode , uint256 _memberindex) = applyCommittee(_index, layer2, operator,name ,totalbalance );
+        (uint applyResultCode , uint256 _memberindex) = applyCommittee(_indexSlot, layer2, operator, name ,totalbalance );
          
         if(applyResultCode == uint(ApplyResult.SUCCESS)){
-            emit ApplyCommitteeSuccess(msg.sender, _index, operator, totalbalance, applyResultCode, _memberindex); 
+            emit ApplyCommitteeSuccess(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex); 
         }else{
-            emit ApplyCommitteeFail(msg.sender, _index, operator, totalbalance, applyResultCode, _memberindex); 
+            emit ApplyCommitteeFail(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex); 
         } 
 
         return applyResultCode;

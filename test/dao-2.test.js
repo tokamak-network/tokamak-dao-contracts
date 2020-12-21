@@ -149,7 +149,7 @@ describe('Test 1', function () {
           return l.args;
         } 
         if (l.event === 'CommitteeLayer2Created') {
-          console.log('CommitteeLayer2Created Event Args ', l.args) ;  
+          //console.log('CommitteeLayer2Created Event Args ', l.args) ;  
           return l.args;
         }  
     }  
@@ -219,7 +219,7 @@ describe('Test 1', function () {
   }
 
   async function initializeDaoContracts( ) {
-    debugLog =true;
+    debugLog = false;
     this.ton = ton;
     if(debugLog) console.log('ton :', this.ton.address) ;
    
