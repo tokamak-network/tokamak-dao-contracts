@@ -112,7 +112,9 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function createAgenda( uint _group, address _target, uint _noticePeriodMin,bytes memory functionBytecode,string memory _description ) 
         public  validStore validAgendaManager validActivityfeeManager returns (uint256) {
          
-        require( _target != address(this) ); 
+        require( _target != address(this) ,' target can not be a self' ); 
+        require( _target != address(store) && _target != address(agendaManager) && 
+        _target != address(activityfeeManager) && _target != address(election)  ,'target can not be storages'); 
          
         require( _noticePeriodMin >= agendaManager.getMinimunNoticePeriodMin(), "The notice period is short"); 
         address tonaddress = store.getTON();
