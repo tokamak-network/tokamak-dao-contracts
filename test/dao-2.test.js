@@ -23,8 +23,8 @@ const CommitteeL2Factory = contract.fromArtifact('CommitteeL2Factory');
 const DAOCommitteeStore = contract.fromArtifact('DAOCommitteeStore');
 const DAOCommitteeProxy = contract.fromArtifact('DAOCommitteeProxy');
 const DAOElectionStore = contract.fromArtifact('DAOElectionStore');
-const DAOElection = contract.fromArtifact('DAOElection');
-const DAOElectionProxy = contract.fromArtifact('DAOElectionProxy');
+//const DAOElection = contract.fromArtifact('DAOElection');
+//const DAOElectionProxy = contract.fromArtifact('DAOElectionProxy');
 
 // plasma-evm-contracts
 const TON = contract.fromArtifact('TON');
@@ -219,7 +219,7 @@ describe('Test 1', function () {
   }
 
   async function initializeDaoContracts( ) {
-    debugLog =false;
+    debugLog =true;
     this.ton = ton;
     if(debugLog) console.log('ton :', this.ton.address) ;
    
@@ -247,6 +247,10 @@ describe('Test 1', function () {
     committeeL2Factory = await CommitteeL2Factory.new();
     if(debugLog)  console.log('committeeL2Factory :', committeeL2Factory.address) ;
     //===================================================
+    this.dAOElectionStore = await DAOElectionStore.new(this.ton.address);
+    election = this.dAOElectionStore ; 
+    if(debugLog)  console.log('election :', election.address) ;
+    //=================
     this.dAOCommitteeStore = await DAOCommitteeStore.new(this.ton.address);
     if(debugLog)  console.log('dAOCommitteeStore :', this.dAOCommitteeStore.address) ;
 
@@ -258,9 +262,17 @@ describe('Test 1', function () {
 
     this.dAOCommitteeProxy = await DAOCommitteeProxy.new(committeeStore.address);
     if(debugLog)  console.log('dAOCommitteeProxy :', dAOCommitteeProxy.address) ;
-   
-   
+    
     await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
+    await election.transferOwnership(this.dAOCommitteeProxy.address);
+    electionProxy = this.dAOCommitteeProxy;
+
+    /*
+    await this.dAOCommitteeProxy.setProxyDaoCommittee(committee.address);
+    await this.dAOCommitteeProxy.setProxyCommitteeL2Factory(committeeL2Factory.address);
+    await this.dAOCommitteeProxy.setProxyLayer2Registry(addrs.Layer2Registry);
+    await this.dAOCommitteeProxy.setProxySeigManager(addrs.SeigManager);
+    */
     await this.dAOCommitteeProxy.upgradeTo(this.dAOCommittee.address);
     await this.dAOCommitteeProxy.setProxyPause(false);
     await this.dAOCommitteeProxy.setProxyAgendaManager(this.dAOCommittee.address);
@@ -287,36 +299,12 @@ describe('Test 1', function () {
       console.log('dAOCommitteeProxy implementation :', impl) ;
     }
 
-    //===================================================
-    this.dAOElectionStore = await DAOElectionStore.new(this.ton.address);
-    this.dAOElection = await DAOElection.new();
-    this.dAOElectionProxy = await DAOElectionProxy.new(this.dAOElectionStore.address);
-    await this.dAOElectionStore.transferOwnership(this.dAOElectionProxy.address);
-    await this.dAOElectionProxy.upgradeTo(this.dAOElection.address);
-    await this.dAOElectionProxy.setProxyPause(false);
-    electionProxy = this.dAOElectionProxy;
-
-    /*
-    await this.dAOElectionProxy.setProxyDaoCommittee(committee.address);
-    await this.dAOElectionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address);
-    await this.dAOElectionProxy.setProxyLayer2Registry(addrs.Layer2Registry);
-    await this.dAOElectionProxy.setProxySeigManager(addrs.SeigManager);
-    */
-    let implelection = await this.dAOElectionProxy.implementation() ;
-    election = await DAOElection.at(this.dAOElectionProxy.address);
-
-    committeeL2Factory.transferOwnership(election.address);
-
-    if(debugLog){
-      console.log('dAOElectionStore :', this.dAOElectionStore.address) ;
-      console.log('dAOElection :', this.dAOElection.address) ;
-      console.log('dAOElectionProxy :', this.dAOElectionProxy.address) ;
-      console.log('dAOElectionProxy implementation :', implelection) ;
-    }
+    //=================================================== 
+    await committeeL2Factory.transferOwnership(committee.address); 
 
     //=================================================== 
 
-    await registry.transferOwnership(election.address);
+    await registry.transferOwnership(committee.address);
 
     console.log('\n\n');
  
@@ -325,22 +313,25 @@ describe('Test 1', function () {
   describe('Test 1-1', function () {
     
     before(async function () { 
+      
     });
     
-    it('subtest 1 : DaoCommittee 주소 설정은 오너만 할 수 있다. ', async function () {
+    it('subtest 1 : Election 주소 설정은 오너만 할 수 있다. ', async function () {
       this.timeout(1000000);
-      await expectRevert.unspecified(electionProxy.setProxyDaoCommittee(committee.address, {from : user6}));
-      tx = await electionProxy.setProxyDaoCommittee(committee.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyDaoCommittee');
+      console.log('election.address',election.address);
 
-      let res = await election.getDaoCommittee(); 
-      expect(res).to.equal(committee.address);
+      await expectRevert.unspecified(electionProxy.setProxyElection(election.address, {from : user6}));
+      tx = await electionProxy.setProxyElection(election.address, {from : owner});
+      recordGasUsed(tx, 'CommitteeProxy.setProxyElection');
+
+      let res = await electionProxy.getProxyElection(); 
+      expect(res).to.equal(election.address);
     });
 
     it('subtest 2 : CommitteeLayer2 Factory 주소 설정은 오너만 할 수 있다.  ', async  function () {
       await expectRevert.unspecified(electionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address, {from : user6}));
       tx = await electionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyCommitteeL2Factory');
+      recordGasUsed(tx, 'CommitteeProxy.setProxyCommitteeL2Factory');
 
       let res = await election.getCommitteeL2Factory(); 
       expect(res).to.equal(committeeL2Factory.address);
@@ -349,7 +340,7 @@ describe('Test 1', function () {
     it('subtest 3 : Layer2 Registry 설정은 오너만 할 수 있다.  ', async  function () {
       await expectRevert.unspecified(electionProxy.setProxyLayer2Registry(registry.address, {from : user6}));
       tx = await electionProxy.setProxyLayer2Registry(registry.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxyLayer2Registry');
+      recordGasUsed(tx, 'CommitteeProxy.setProxyLayer2Registry');
 
       let res = await election.getLayer2Registry(); 
       expect(res).to.equal(registry.address);
@@ -358,7 +349,7 @@ describe('Test 1', function () {
     it('subtest 4 : SeigManager 설정은 오너만 할 수 있다. ',  async function () {
       await expectRevert.unspecified(electionProxy.setProxySeigManager(seigManager.address, {from : user6}));
       tx = await electionProxy.setProxySeigManager(seigManager.address, {from : owner});
-      recordGasUsed(tx, 'Election.setProxySeigManager');
+      recordGasUsed(tx, 'CommitteeProxy.setProxySeigManager');
 
       let res = await election.getSeigManager(); 
       expect(res).to.equal(seigManager.address);
@@ -371,14 +362,16 @@ describe('Test 1', function () {
 
       let res = await election.getDepositManager(); 
       expect(res).to.equal(depositManager.address);
-    });*/ 
-    it('subtest 6 : 누구나 CommitteeLayer2를 생성할 수 있다. ',  async function () {
-      tx = await election.createCommitteeLayer2('i am user6', {from : user6});
+    }); 
+    */ 
+     
+    it('subtest 5 : 누구나 CommitteeLayer2를 생성할 수 있다. ',  async function () {
+      tx = await committee.createCommitteeLayer2('i am user6', {from : user6});
       let args = verifyTransaction(tx, user6);
-      console.log('CommitteeLayer2Created :  ',args );
+      //console.log('CommitteeLayer2Created :  ',args );
       recordGasUsed(tx, 'Election.createLayer2');
       expect(verifyEvent(tx, 'CommitteeLayer2Created')).to.be.true; 
     });
-
+     
   });
 });

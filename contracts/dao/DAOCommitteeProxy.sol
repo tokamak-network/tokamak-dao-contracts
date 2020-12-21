@@ -35,6 +35,27 @@ contract DAOCommitteeProxy is StorageStateCommittee , Ownabled {
       activityfeeManager = DAOActivityFeeManager(_addr); 
       store.setActivityFeeManager(_addr);
   }
+  //-- 
+  function setProxyElection(address _addr) onlyOwner public {
+      require(_addr != address(0)); 
+      election = DAOElectionStore(_addr);  
+  }
+  function setProxyCommitteeL2Factory(address _addr) onlyOwner validElection public {
+      require(_addr != address(0)); 
+      committeeL2Factory = CommitteeL2FactoryI(_addr); 
+      election.setCommitteeL2Factory(_addr);
+  } 
+  function setProxyLayer2Registry(address _addr) onlyOwner validElection public {
+      require(_addr != address(0)); 
+      layer2Registry = Layer2RegistryI(_addr); 
+      election.seLayer2Registry(_addr);
+  } 
+  function setProxySeigManager(address _addr) onlyOwner validElection public {
+      require(_addr != address(0)); 
+      seigManager = SeigManagerI(_addr); 
+      election.setSeigManager(_addr);
+  }  
+  //-- 
 
   function upgradeTo(address impl) public onlyOwner {
     require(_implementation != impl);

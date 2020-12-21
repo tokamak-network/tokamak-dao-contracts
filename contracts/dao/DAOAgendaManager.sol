@@ -71,7 +71,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         ton = _ton;
         numAgendas =0; 
     } 
-    function getStatus(uint _status) public view returns (AgendaStatus emnustatus) {
+    function getStatus(uint _status) public pure returns (AgendaStatus emnustatus) {
         if(_status == uint(AgendaStatus.NOTICE) ) return  AgendaStatus.NOTICE;
         else if(_status == uint(AgendaStatus.VOTING) ) return  AgendaStatus.VOTING;
         else if(_status == uint(AgendaStatus.EXEC) ) return  AgendaStatus.EXEC;

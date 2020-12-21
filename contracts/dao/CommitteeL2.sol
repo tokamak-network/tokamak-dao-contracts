@@ -48,7 +48,7 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
     //function operator() public view returns (address){ return operator; }
     function isLayer2() public view returns (bool){ return true; }
     function currentFork() public view returns (uint){ return 1; }
-    function lastEpoch(uint forkNumber) public view returns (uint){ return 1; }
+    function lastEpoch(uint forkNumber) public view returns (uint){ return 1; } 
     function changeOperator(address _operator) public { 
         operator = _operator;  
     }

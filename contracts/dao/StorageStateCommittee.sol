@@ -5,11 +5,21 @@ import "./DAOCommitteeStore.sol";
 import "./DAOAgendaManager.sol"; 
 import "./DAOActivityFeeManager.sol";  
 
+import "./DAOElectionStore.sol"; 
+import { CommitteeL2FactoryI } from "../interfaces/CommitteeL2FactoryI.sol"; 
+import { Layer2RegistryI } from "../interfaces/Layer2RegistryI.sol"; 
+import { SeigManagerI } from "../interfaces/SeigManagerI.sol"; 
+
 contract StorageStateCommittee {
     DAOCommitteeStore  public store; 
     DAOAgendaManager public agendaManager ;
     DAOActivityFeeManager public activityfeeManager;  
-
+    
+    DAOElectionStore  public election; 
+    CommitteeL2FactoryI public committeeL2Factory;
+    Layer2RegistryI public layer2Registry;
+    SeigManagerI public seigManager;
+    /* 
     struct Ratio {
         uint256 numerator;
         uint256 denominator;
@@ -20,9 +30,8 @@ contract StorageStateCommittee {
         uint256 remain;
         uint256 claim;
     }
-    
-    // times    creationDate  expirationTime execTime
-    // counting abstainVotes yesVotes noVotes
+    */
+    /* 
     struct Agenda {
         address creator;
         AgendaStatus status;
@@ -50,7 +59,7 @@ contract StorageStateCommittee {
         uint memberSince;
         uint256 castingcount;
     } 
-    
+    */
     enum VoteChoice { ABSTAIN, YES, NO }
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
@@ -71,8 +80,31 @@ contract StorageStateCommittee {
         _;
     }  
 
+    //==
+    modifier validElection() {
+        require(address(election) != address(0),'unvalid election'); 
+        _;
+    } 
+    modifier validCommitteeL2Factory() {
+        require(address(committeeL2Factory) != address(0),'unvalid CommitteeL2Factory'); 
+        _;
+    }
+    modifier validLayer2Registry() {
+        require(address(layer2Registry) != address(0),'unvalid Layer2Registry'); 
+        _;
+    }
+    modifier validSeigManager() {
+        require(address(seigManager) != address(0),'unvalid SeigManagere'); 
+        _;
+    }
+
     function getProxyStore() public view returns( address ) { return address(store); }
     function getProxyAgendamanager() public view  returns( address ) { return address(agendaManager); }
     function getProxyActivityFeeManager() public view returns( address ) { return address(activityfeeManager); }
+
+    function getProxyElection () public view  returns (address){ return address(election); }
+    function getProxySeigManager () public view  returns (address){ return address(seigManager); }
+    function getProxyLayer2Registry() public view  returns (address){ return address(layer2Registry); }
+    function getProxyCommitteeL2Factory() public view  returns (address){ return address(committeeL2Factory); }
 
 }

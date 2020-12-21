@@ -11,7 +11,7 @@ contract DAOElectionStore is OwnableAdmin{
     
     address public daoCommittee ;   
     address public layer2Registry ;  
-    address public depositManager ;  
+    //address public depositManager ;  
     address public seigManager ; 
     address public committeeL2Factory ;  
     
@@ -43,12 +43,12 @@ contract DAOElectionStore is OwnableAdmin{
         require(_layer2Registry != address(0)); 
         layer2Registry = _layer2Registry;
     }  
-    
+    /* 
     function setDepositManager(address _depositManager)  onlyOwner public {
         require(_depositManager != address(0)); 
         depositManager = _depositManager;
     }  
-    
+    */
     function setSeigManager(address _seigManager)  onlyOwner public {
         require(_seigManager != address(0)); 
         seigManager = _seigManager;
@@ -94,7 +94,7 @@ contract DAOElectionStore is OwnableAdmin{
     function getDaoCommittee() public view returns (address) { return daoCommittee;}
     function getLayer2Registry() public view returns (address) { return layer2Registry;}
     
-    function getDepositManager() public view returns (address) { return depositManager;}
+    //function getDepositManager() public view returns (address) { return depositManager;}
     function getSeigManager() public view returns (address) { return seigManager;}
     function getCommitteeL2Factory() public view returns (address) { return committeeL2Factory;}
     function getNumLayer2s() public view returns (uint256 ){ return numLayer2s; }

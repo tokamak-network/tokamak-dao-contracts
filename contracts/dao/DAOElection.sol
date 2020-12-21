@@ -19,9 +19,10 @@ contract DAOElection is StorageStateElection , Ownabled {
     ////////////////////////////// 
     event CommitteeLayer2Created(address indexed from, uint256 indexed layerId, address layer, string name); 
     event CommitteeLayer2UpdateSeigniorage(address indexed from, uint256 indexed layerId, address layer); 
-    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode,uint256 memberIndex); 
-    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode,uint256 memberIndex); 
-     
+    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
+    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode); 
+    event createLayer(address sender, address oper,  address owner, address layer); 
+
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
      
     function setStore(address _store)  public onlyOwner{
@@ -48,9 +49,10 @@ contract DAOElection is StorageStateElection , Ownabled {
         require( manager != address(0)); 
         seigManager = SeigManagerI(manager); 
     }  
+    /* 
     function setDepositManager(address _depositManager)  public onlyOwner validStore { 
         store.setDepositManager(_depositManager); 
-    }   
+    }  */ 
 
     // 
     function applyCommitteeByOperator() public validStore validDAOCommittee validSeigManager returns (uint) {
@@ -59,21 +61,22 @@ contract DAOElection is StorageStateElection , Ownabled {
         return applyCommittee(_layerIndex);
     } 
     
-    function applyCommittee(uint256 _slotindex) public validStore validDAOCommittee validSeigManager returns (uint) {
-        (bool exist , uint256 _layerIndex  ) = store.existLayerByOperator(msg.sender);
+    function applyCommittee(uint256 _index) public validStore validDAOCommittee validSeigManager returns (uint) {
+        (bool exist ,   ) = store.existLayerByOperator(msg.sender);
         require( exist ,'you are not operator'); 
          
-        (address layer2,address operator, string memory name,  ) = store.detailedLayer2s(_layerIndex) ;
+        (address layer2,address operator, string memory name,  ) = store.detailedLayer2s(_index) ;
          
         uint256 totalbalance = totalSupplyLayer2s(layer2) ;
          
-        (uint applyResultCode, uint256 memberIndex )= daoCommittee.applyCommittee(_slotindex, layer2, operator,name ,totalbalance );
+        (uint applyResultCode, ) = daoCommittee.applyCommittee(_index, layer2, operator,name ,totalbalance );
          
         if(applyResultCode == uint(ApplyResult.SUCCESS)){
-            emit ApplyCommitteeSuccess(msg.sender, _slotindex, operator, totalbalance, applyResultCode, memberIndex); 
+            emit ApplyCommitteeSuccess(msg.sender, _index, operator, totalbalance, applyResultCode); 
         }else{
-            emit ApplyCommitteeFail(msg.sender, _slotindex, operator, totalbalance, applyResultCode, memberIndex); 
-        } 
+            emit ApplyCommitteeFail(msg.sender, _index, operator, totalbalance, applyResultCode); 
+        }
+        
 
         return applyResultCode;
     } 
@@ -93,10 +96,11 @@ contract DAOElection is StorageStateElection , Ownabled {
         require( layer!= address(0),'deployed layer is zero');  
         
         //(address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
-          
+        //emit createLayer(msg.sender, _oper, _owner, layer); 
+         
         //register CommitteeL2 to registry : registerAndDeployCoinage or register 
         require (layer2Registry.registerAndDeployCoinage(layer, address(seigManager))); 
-          
+         
         // register.store 
         uint256 layerIndex = store.registerLayer2( layer,operator,name) ; 
         require( layerIndex > 0, "createCommitteeLayer2: error 1");
@@ -136,7 +140,7 @@ contract DAOElection is StorageStateElection , Ownabled {
 
     function getDaoCommittee() public view returns (address) { return store.getDaoCommittee();}
     function getLayer2Registry() public view returns (address) { return store.getLayer2Registry();}
-    function getDepositManager() public view returns (address) { return store.getDepositManager();}
+   // function getDepositManager() public view returns (address) { return store.getDepositManager();}
     function getSeigManager() public view returns (address) { return store.getSeigManager();}
     function getCommitteeL2Factory() public view returns (address) { return store.getCommitteeL2Factory();}
     
