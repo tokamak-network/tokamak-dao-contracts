@@ -8,6 +8,13 @@ import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/
 
 contract DAOElectionStore is OwnableAdmin{
     using SafeMath for uint256;   
+
+    struct CommitteeInfo {
+        address committeeContract;
+        address committee;
+        string name;
+        uint since; 
+    }
     
     address public daoCommittee ;   
     address public layer2Registry ;  
@@ -17,18 +24,11 @@ contract DAOElectionStore is OwnableAdmin{
     
     address public ton ; 
     uint256 public numLayer2s; 
-    Layer[] public layer2s; 
+    CommitteeInfo[] public committeeInfos;
 
     mapping (address => uint256) public layer2Id; 
     mapping (address => uint256) public layer2IdByLayer; 
     mapping (address => bool) public layer2Valid; 
-    
-    struct Layer {
-        address layer2;
-        address operator;
-        string name;
-        uint since; 
-    }
     
     constructor(address _ton) public { 
         ton = _ton;
@@ -71,25 +71,23 @@ contract DAOElectionStore is OwnableAdmin{
        else return (false,0); 
     } 
     
-    function registerLayer2(address _layer, address _operator, string memory _name) onlyOwner public returns (uint256 ) {
+    function registerCommitteeContract(address committeeContract, address _operator, string memory _name) onlyOwner public returns (uint256) {
+        require(committeeContract!=address(0) && _operator != address(0), "DAOElectionStore: layer or operator is zero address");
+        if (committeeInfos.length == 0)
+            committeeInfos.push(CommitteeInfo(address(0), address(0), "", now));
         
-        require(_layer!=address(0) && _operator != address(0), "DAOElectionStore: layer or operator is zero address");
-        if( layer2s.length == 0 ) layer2s.push( Layer(address(0),address(0), '', now) );
-        
-        if(layer2Id[_operator] !=0 ) { 
+        if (layer2Id[_operator] !=0 ) {
             return 0;
-            
-        } else{ 
-            Layer memory la = Layer(_layer,_operator, _name, now);
-            layer2s.push(la);  
-            uint256 layerIndex = layer2s.length;
-            layer2Id[_operator] = layerIndex; 
-            layer2IdByLayer[_layer] = layerIndex; 
-            numLayer2s = layer2s.length;
+        } else {
+            CommitteeInfo memory la = CommitteeInfo(committeeContract,_operator, _name, now);
+            committeeInfos.push(la);
+            uint256 layerIndex = committeeInfos.length;
+            layer2Id[_operator] = layerIndex;
+            layer2IdByLayer[committeeContract] = layerIndex;
+            numLayer2s = committeeInfos.length;
             
             return layerIndex;
         }
-        
     }   
 
     function getTON() public view returns (address) { return ton;}
@@ -101,21 +99,18 @@ contract DAOElectionStore is OwnableAdmin{
     function getCommitteeL2Factory() public view returns (address) { return committeeL2Factory;}
     function getNumLayer2s() public view returns (uint256 ){ return numLayer2s; }
     
-    
-    function detailedLayer2s(uint256 _index) public view returns (address layer2,address operator, string memory name, uint since){ 
+    function detailedCommitteeInfo(uint256 _index) public view returns (address layer2, address operator, string memory name, uint since) {
         require(_index < numLayer2s, "DAOElectionStore: invalid _index");
-        return ( layer2s[_index].layer2 , layer2s[_index].operator ,  layer2s[_index].name ,  layer2s[_index].since );
+        return (committeeInfos[_index].committeeContract, committeeInfos[_index].committee, committeeInfos[_index].name, committeeInfos[_index].since);
     }
     
     function detailedLayer2sByOperator(address _operator) public view returns (address layer2,address operator, string memory name, uint since){ 
-        
         uint256 _index = layer2Id[_operator];
-        return detailedLayer2s(  _index);  
+        return detailedCommitteeInfo(  _index);  
     }
     function detailedLayer2sByLayer(address _layer) public view returns (address layer2,address operator, string memory name, uint since){ 
-        
         uint256 _index = layer2IdByLayer[_layer];
-        return detailedLayer2s(  _index);  
+        return detailedCommitteeInfo(_index);
     }
      
 }

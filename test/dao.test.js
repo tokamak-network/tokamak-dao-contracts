@@ -334,7 +334,8 @@ describe('Test 1', function () {
   } 
 
   async function addCommitteeCandidate(candidate, stakeAmount) {
-    const result = await committee.createCommitteeLayer2(candidate, {from: user1});
+    await ton.approve(committee.address, stakeAmount);
+    await committee.createCommitteeCandidate(candidate, {from: user1});
   }
 
   describe('Committee candidate', function () {

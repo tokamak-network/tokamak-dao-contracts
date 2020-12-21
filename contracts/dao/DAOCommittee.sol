@@ -251,7 +251,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         (bool exist , uint256 _layer2Index  ) = election.isExistCommitteeContract(msg.sender);
         require(exist, "DAOCommittee: you are not operator");
          
-        (address layer2,address operator, string memory name, ) = election.detailedLayer2s(_layer2Index);
+        (address layer2, address operator, string memory name, ) = election.detailedCommitteeInfo(_layer2Index);
         require(operator == msg.sender, "DAOCommittee: your are not operator");
         
         uint256 totalbalance = totalSupplyLayer2s(layer2);
@@ -281,7 +281,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require(layer2Registry.registerAndDeployCoinage(committeeContract, address(seigManager)), "DAOCommittee: failed to registerAndDeployCoinage");
           
         // register.store 
-        uint256 layerIndex = election.registerLayer2(committeeContract, msg.sender, name);
+        uint256 layerIndex = election.registerCommitteeContract(committeeContract, msg.sender, name);
         require(layerIndex > 0, "DAOCommittee: createCommitteeCandidate: error 1");
     
         emit CommitteeLayer2Created(msg.sender, layerIndex, committeeContract, name);
