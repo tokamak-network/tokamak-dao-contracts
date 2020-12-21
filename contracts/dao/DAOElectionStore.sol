@@ -35,12 +35,12 @@ contract DAOElectionStore is OwnableAdmin{
     }  
    
     function setDaoCommittee(address _daoCommittee)  onlyOwner public {
-        require(_daoCommittee != address(0)); 
+        require(_daoCommittee != address(0), "DAOElectionStore: committee address is zero");
         daoCommittee = _daoCommittee;
     }  
     
     function seLayer2Registry(address _layer2Registry)  onlyOwner public {
-        require(_layer2Registry != address(0)); 
+        require(_layer2Registry != address(0), "DAOElectionStore: registry address is zero");
         layer2Registry = _layer2Registry;
     }  
     /* 
@@ -50,12 +50,12 @@ contract DAOElectionStore is OwnableAdmin{
     }  
     */
     function setSeigManager(address _seigManager)  onlyOwner public {
-        require(_seigManager != address(0)); 
+        require(_seigManager != address(0), "DAOElectionStore: SeigManager is zero");
         seigManager = _seigManager;
     }  
     
     function setCommitteeL2Factory(address _committeeL2Factory)  onlyOwner public {
-        require(_committeeL2Factory != address(0)); 
+        require(_committeeL2Factory != address(0), "DAOElectionStore: factory address is zero");
         committeeL2Factory = _committeeL2Factory;
     }   
     
@@ -71,7 +71,7 @@ contract DAOElectionStore is OwnableAdmin{
     
     function registerLayer2(address _layer, address _operator, string memory _name) onlyOwner public returns (uint256 ) {
         
-        require( _layer!=address(0) && _operator!=address(0) ,'layer or operator is zero address ');
+        require(_layer!=address(0) && _operator != address(0), "DAOElectionStore: layer or operator is zero address");
         if( layer2s.length == 0 ) layer2s.push( Layer(address(0),address(0), '', now) );
         
         if(layer2Id[_operator] !=0 ) { 
@@ -101,7 +101,7 @@ contract DAOElectionStore is OwnableAdmin{
     
     
     function detailedLayer2s(uint256 _index) public view returns (address layer2,address operator, string memory name, uint since){ 
-        require(_index < numLayer2s ,'invalid _index' );  
+        require(_index < numLayer2s, "DAOElectionStore: invalid _index");
         return ( layer2s[_index].layer2 , layer2s[_index].operator ,  layer2s[_index].name ,  layer2s[_index].since );
     }
     

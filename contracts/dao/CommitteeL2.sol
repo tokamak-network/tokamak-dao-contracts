@@ -28,7 +28,7 @@ contract CommitteeL2 is Ownabled , CommitteeL2I{
         layer2Registry = _layer2Registry; 
     } 
     function updateSeigniorage() public override returns (bool) { 
-        require(seigManager!=address(0));
+        require(seigManager != address(0), "CommitteeL2: SeigManager is zero");
         return SeigManagerI(seigManager).updateSeigniorage();
     }
     

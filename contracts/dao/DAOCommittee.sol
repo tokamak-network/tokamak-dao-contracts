@@ -29,40 +29,40 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     enum  ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
      
     function setStore(address _store)  public onlyOwner {
-        require( _store != address(0)); 
+        require(_store != address(0), "DAOCommittee: store is zero");
         store = DAOCommitteeStore(_store); 
     } 
 
    // function setDaoElection(address _daoElection)   public  onlyOwner {  store.setDaoElection(_daoElection); }
     function setDaoVault(address _daoVault)  public  onlyOwner {  store.setDaoVault(_daoVault); } 
     function setAgendamanager(address _manager)  public onlyOwner validStore { 
-        require( _manager != address(0)); 
+        require(_manager != address(0), "DAOCommittee: manager is zero");
         store.setAgendaManager(_manager);   
         agendaManager = DAOAgendaManager(_manager); 
     } 
     function setActivityfeemanager(address _manager)  public onlyOwner validStore { 
-        require( _manager != address(0)); 
+        require(_manager != address(0), "DAOCommittee: manager is zero");
         store.setActivityFeeManager(_manager);   
         activityfeeManager = DAOActivityFeeManager(_manager); 
     } 
     //-----
     function setElection(address _election)  public validElection {
-        require( _election != address(0)); 
+        require(_election != address(0), "DAOCommittee: election is zero");
         election = DAOElectionStore(_election); 
     }  
     function setCommitteeL2Factory()  public onlyOwner validElection { 
-        address manager = election.getCommitteeL2Factory();
-        require( manager != address(0)); 
-        committeeL2Factory = CommitteeL2FactoryI(manager); 
+        address factory = election.getCommitteeL2Factory();
+        require(factory != address(0), "DAOCommittee: factory is zero");
+        committeeL2Factory = CommitteeL2FactoryI(factory); 
     } 
     function setLayer2Registry()  public onlyOwner validElection { 
-        address manager = election.getLayer2Registry();
-        require( manager != address(0)); 
-        layer2Registry = Layer2RegistryI(manager); 
+        address registry = election.getLayer2Registry();
+        require(registry != address(0), "DAOCommittee: registry is zero");
+        layer2Registry = Layer2RegistryI(registry);
     } 
     function setSeigManager()  public onlyOwner validElection { 
         address manager = election.getSeigManager();
-        require( manager != address(0)); 
+        require(manager != address(0), "DAOCommittee: SeigManager is zero");
         seigManager = SeigManagerI(manager); 
     }  
     
@@ -74,7 +74,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function applyCommittee( uint256 _indexSlot, address _layer2, address _operator, string memory _name , uint256 totalbalance ) 
         internal returns (uint applyResultCode , uint256 _memberindex) { 
         
-        require( _layer2!=address(0) && _operator!=address(0),' operator can not zero address' );
+        require(_layer2 != address(0) && _operator != address(0), "DAOCommittee: operator can not zero address");
         
         //address elect = store.getDaoElection();  
         //if(elect != msg.sender ){ return (uint(ApplyResult.NOT_ELECTION), 0);  } 
@@ -92,14 +92,14 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         
         if( balance > totalbalance ) { return (uint(ApplyResult.LOW_BALANCE) , _memberindex); }
          
-        require( store.changeCommittee(_indexSlot, _memberindex, _operator, totalbalance) );
+        require(store.changeCommittee(_indexSlot, _memberindex, _operator, totalbalance), "DAOCommittee: failed to change committee");
         
         return (uint(ApplyResult.SUCCESS), _memberindex); 
     } 
     
     function retireCommittee() public returns (bool){  
         (bool _iscommittee, ) = store.isCommittee(msg.sender) ;
-        require(_iscommittee,'you are not commiittee');
+        require(_iscommittee, "DAOCommittee: you are not commiittee");
         return store.retireCommittee(msg.sender) ; 
     } 
     
@@ -112,25 +112,25 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function createAgenda( uint _group, address _target, uint _noticePeriodMin,bytes memory functionBytecode,string memory _description ) 
         public  validStore validAgendaManager validActivityfeeManager returns (uint256) {
          
-        require( _target != address(this) ,' target can not be a self' ); 
-        require( _target != address(store) && _target != address(agendaManager) && 
-        _target != address(activityfeeManager) && _target != address(election)  ,'target can not be storages'); 
+        require(_target != address(this), "DAOCommittee: target can not be a self");
+        require(_target != address(store) && _target != address(agendaManager) &&
+            _target != address(activityfeeManager) && _target != address(election), "DAOCommittee: target can not be storages");
          
-        require( _noticePeriodMin >= agendaManager.getMinimunNoticePeriodMin(), "The notice period is short"); 
+        require(_noticePeriodMin >= agendaManager.getMinimunNoticePeriodMin(), "DAOCommittee: The notice period is short"); 
         address tonaddress = store.getTON();
-        require( tonaddress != address(0) ); 
+        require(tonaddress != address(0), "DAOCommittee: ton address is zero");
         
         // pay to create agenda, burn ton. 
         uint256 createAgendaFees = agendaManager.getCreateAgendaFees(); 
             
         if( createAgendaFees > 0 ){  
-            require( IERC20(store.getTON()).balanceOf(msg.sender) >= createAgendaFees , 'not enough ton balance');
-            require( IERC20(store.getTON()).allowance(msg.sender,address(this)) >= createAgendaFees, 'token allowance is lack');  
+            require(IERC20(store.getTON()).balanceOf(msg.sender) >= createAgendaFees, "DAOCommittee: not enough ton balance");
+            require(IERC20(store.getTON()).allowance(msg.sender,address(this)) >= createAgendaFees, "DAOCommittee: token allowance is lack");
             // ton did not have burn function. we transfer createAgendaFees to  address(1) . 
             // (bool success, ) = address(store.getTON()).call(abi.encodeWithSignature("burnFrom(address,uint256)",msg.sender,createAgendaFees));
             // require(success,'CreateAgendaFees-burn failed'); 
             (bool success, ) = address(store.getTON()).call(abi.encodeWithSignature("transferFrom(address,address,uint256)",msg.sender,address(1),createAgendaFees));
-            require(success,'CreateAgendaFees-burn failed');  
+            require(success, "DAOCommittee: CreateAgendaFees-burn failed");
         } 
          
         uint256 _fees = activityfeeManager.calculateActivityFees() ;
@@ -142,30 +142,30 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     
     function electCommiitteeForAgenda(uint256 _AgendaID) public validStore validAgendaManager  {
         
-        require( _AgendaID < agendaManager.totalAgendas(),  "Not a valid Agenda Id" );
+        require(_AgendaID < agendaManager.totalAgendas(), "DAOCommittee: Not a valid Agenda Id");
         (address[2] memory _address, uint[8] memory datas,  , , bool executed, bytes memory functionBytecode, ,  ) = agendaManager.detailedAgenda(_AgendaID);
          
         address _target = _address[1];
-        require(_target!=address(0) && !executed ,'check target - fail or already executed'  ); 
-        require(!checkRisk(_target, functionBytecode),'can be risk');
+        require(_target!=address(0) && !executed, "DAOCommittee: check target - fail or already executed");
+        require(!checkRisk(_target, functionBytecode), "DAOCommittee: can be risk");
         
         //// times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
         //uint[8] memory args1 = [ uint(agenda.status) ,uint(agenda.result) , uint(agenda.group) , agenda.times[0],
         // 4: noticeEndTime , 5:votingStartTime , 6:votingEndTime , 7:execTime ];
         
-        require( datas[0] == uint(AgendaStatus.NOTICE) && datas[1]==uint(AgendaResult.UNDEFINED) ,'Unsuitable status or result' );
-        require( datas[4] < now  ,'noticeEndTime is not ended' );
-        require( datas[5]==0 &&  datas[6]==0 && datas[7]==0 ,'It is not committee election period.' );
+        require(datas[0] == uint(AgendaStatus.NOTICE) && datas[1] == uint(AgendaResult.UNDEFINED), "DAOCommittee: Unsuitable status or result");
+        require(datas[4] < now, "DAOCommittee: noticeEndTime is not ended");
+        require(datas[5] == 0 && datas[6] == 0 && datas[7] == 0, "DAOCommittee: It is not committee election period.");
          
          (bool result ,uint status, uint[5] memory times ) = agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees());
  
-        require( result ,' electCommiitteeForAgenda fails') ;  
-        emit AgendaElectCommittee( msg.sender, _AgendaID, status, times );
+        require(result, "DAOCommittee: electCommiitteeForAgenda fails");
+        emit AgendaElectCommittee(msg.sender, _AgendaID, status, times);
     } 
     
     function checkRisk( address _target, bytes memory _functionBytecode)  public pure returns (bool){
-        require(_target!=address(0)  ,'check target'  );
-        require(_functionBytecode.length > 0 ,'check functionBytecode'  ); 
+        require(_target!=address(0), "DAOCommittee: check target");
+        require(_functionBytecode.length > 0, "DAOCommittee: check functionBytecode");
         return false; 
     }
 
@@ -177,20 +177,20 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function castVote(uint256 _AgendaID, uint _vote, string calldata _comment) external validStore validAgendaManager
     { 
         uint256 _majority = getMajority();
-        require( _majority > 0 ,'majority is zero');
+        require(_majority > 0, "DAOCommittee: majority is zero");
         
-        require(_vote <= uint(VoteChoice.NO) );  
+        require(_vote <= uint(VoteChoice.NO), "DAOCommittee: invalid vote");
         
         //(bool _iscommittee, uint256 _committeeIndex ) = store.isCommittee(msg.sender) ;
         //_committeeIndex 
         (uint256 _committeeId, address _layer2, , , , ) = store.detailedMember(msg.sender) ;
         
-        require(_committeeId > 0 , "you are not a committee member."); 
+        require(_committeeId > 0, "DAOCommittee: you are not a committee member.");
         (bool exist, uint status) =  agendaManager.getAgendaStatus(_AgendaID); 
-        require( exist && status == uint(AgendaStatus.VOTING),"agenda has expired." ); 
-        require( !agendaManager.userHasVoted(_AgendaID, msg.sender), "user already voted on this agenda" );
-        require( agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= now && now <=agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID) , "for this agenda, the voting time expired" );
-        require( agendaManager.validCommitteeForAgenda(_AgendaID, msg.sender ),"you are not a committee member on this agenda."); 
+        require(exist && status == uint(AgendaStatus.VOTING), "DAOCommittee: agenda has expired.");
+        require(!agendaManager.userHasVoted(_AgendaID, msg.sender), "DAOCommittee: user already voted on this agenda");
+        require(agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= now && now <= agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID), "DAOCommittee: for this agenda, the voting time expired");
+        require(agendaManager.validCommitteeForAgenda(_AgendaID, msg.sender), "DAOCommittee: you are not a committee member on this agenda.");
         
         (uint256[3] memory counting, uint result) = agendaManager.castVote(_AgendaID, msg.sender, _layer2, _vote, _comment, _majority);
         store.castVote( msg.sender); 
@@ -209,24 +209,24 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
          
              
         ( address[2] memory creator, uint[8] memory datas, ,  , bool executed, ,, )  = agendaManager.detailedAgenda(_AgendaID) ;
-        require( creator[0]!=address(0) && datas[0] == uint(AgendaStatus.VOTING) ,"agenda status must be VOTING." );   
-        require( datas[6] < now , "for this agenda, the voting time is not expired" );
-        require( datas[1] == uint(AgendaResult.ACCEPT) , "for this agenda, not accept" );
-        require( executed == false , "for this agenda, already executed" );
+        require(creator[0] != address(0) && datas[0] == uint(AgendaStatus.VOTING), "DAOCommittee: agenda status must be VOTING.");
+        require(datas[6] < now, "DAOCommittee: for this agenda, the voting time is not expired");
+        require(datas[1] == uint(AgendaResult.ACCEPT), "DAOCommittee: for this agenda, not accept");
+        require(executed == false, "DAOCommittee: for this agenda, already executed");
         
         (bool agendaupdate, uint status, uint result, bool exec, address target, bytes memory functionBytecode, uint[5] memory times) = agendaManager.setExecuteAgenda(_AgendaID) ;
        
-        require( agendaupdate && result == uint(AgendaResult.ACCEPT) && exec && target!=address(0) ,'fail setExecuteAgenda');
+        require(agendaupdate && result == uint(AgendaResult.ACCEPT) && exec && target != address(0), "DAOCommittee: fail setExecuteAgenda");
          
         (bool success, ) = address(target).call(functionBytecode); 
-        require(success,'execute function fail');  
+        require(success, "DAOCommittee: execute function fail");
          
         emit AgendaExecuted( msg.sender, _AgendaID, target, functionBytecode , status, times); 
     }   
      
     function getMajority() public view validAgendaManager returns (uint256 majority) {
         (uint256 ratioNum, uint256 ratioDeno ) = agendaManager.getQuorumRatio();
-        require( ratioNum > 0 && ratioDeno > 0  && ratioDeno > ratioNum , "Not a valid quorum"  );
+        require(ratioNum > 0 && ratioDeno > 0  && ratioDeno > ratioNum, "DAOCommittee: Not a valid quorum");
         uint256 totalcommittees = store.totalCommittees();
          
         uint256  total = totalcommittees.mul(ratioNum);
@@ -249,10 +249,10 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     
     function applyCommitteeElect(uint256 _indexSlot) public validElection validSeigManager returns (uint) {
         (bool exist , uint256 _layer2Index  ) = election.existLayerByOperator(msg.sender);
-        require( exist ,'you are not operator'); 
+        require(exist, "DAOCommittee: you are not operator");
          
         (address layer2,address operator, string memory name,  ) = election.detailedLayer2s(_layer2Index) ;
-        require( operator == msg.sender ,'your are not operator' );
+        require(operator == msg.sender, "DAOCommittee: your are not operator");
         
         uint256 totalbalance = totalSupplyLayer2s(layer2) ;
          
@@ -271,15 +271,15 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function createCommitteeLayer2( string memory name) 
         public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256  ,  address  , address   ){
         address operator = msg.sender;
-        require( operator!= address(0),'operator is zero');  
+        require(operator != address(0), "DAOCommittee: operator is zero");
         (bool exist ,   ) = election.existLayerByOperator(operator); 
-        require( !exist,'operator already registerd'); 
+        require(!exist, "DAOCommittee: operator already registerd");
           
         //  create CommitteeL2 , set seigManager 
         
         // CommitteeL2 
         address layer = committeeL2Factory.deploy(operator, address(seigManager) , address(layer2Registry));
-        require( layer!= address(0),'deployed layer is zero');  
+        require(layer != address(0), "DAOCommittee: deployed layer is zero");
         
         //(address _oper, address _owner ) =  CommitteeL2I(layer).operatorAndOwner();
         //emit createLayer(msg.sender, _oper, _owner, layer); 
@@ -289,7 +289,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
           
         // register.store 
         uint256 layerIndex = election.registerLayer2( layer,operator,name) ; 
-        require( layerIndex > 0, "createCommitteeLayer2: error 1");
+        require(layerIndex > 0, "DAOCommittee: createCommitteeLayer2: error 1");
     
         emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name); 
     
@@ -300,7 +300,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     
     function updateSeigniorage(address _layer)  public validElection returns (bool){ 
         (bool exist , uint256 layerId  ) = election.existLayerByLayer(_layer); 
-        require(exist ,'not exist layer address');
+        require(exist, "DAOCommittee: not exist layer address");
         CommitteeL2I(_layer).updateSeigniorage();
 
         emit CommitteeLayer2UpdateSeigniorage(msg.sender, layerId, _layer); 
@@ -310,7 +310,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     
     function totalSupplyLayer2s(address _layer) public view validSeigManager returns (uint256 totalsupply){  
         address coinagelayer = seigManager.coinages(_layer);
-        require( coinagelayer!= address(0),'coinagelayer is zero');
+        require(coinagelayer != address(0), "DAOCommittee: coinagelayer is zero");
         return IERC20(coinagelayer).totalSupply();
     }
     /*

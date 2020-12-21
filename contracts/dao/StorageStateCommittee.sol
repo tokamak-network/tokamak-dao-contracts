@@ -66,35 +66,35 @@ contract StorageStateCommittee {
     enum AgendaGroup { DAOVault, TON, PowerTON, SeigManager, Others }
     
     modifier validStore() {
-        require(address(store) != address(0)); 
+        require(address(store) != address(0), "StorageStateCommittee: store address is zero");
         _;
     }  
     
     modifier validAgendaManager() {
-        require(address(agendaManager) != address(0)); 
+        require(address(agendaManager) != address(0), "StorageStateCommittee: AgendaManager is zero");
         _;
     }  
     
     modifier validActivityfeeManager() {
-        require(address(activityfeeManager) != address(0)); 
+        require(address(activityfeeManager) != address(0), "StorageStateCommittee: ActivityFeeManager is zero");
         _;
     }  
 
     //==
     modifier validElection() {
-        require(address(election) != address(0),'unvalid election'); 
+        require(address(election) != address(0), "StorageStateCommittee: unvalid election");
         _;
     } 
     modifier validCommitteeL2Factory() {
-        require(address(committeeL2Factory) != address(0),'unvalid CommitteeL2Factory'); 
+        require(address(committeeL2Factory) != address(0), "StorageStateCommittee: unvalid CommitteeL2Factory");
         _;
     }
     modifier validLayer2Registry() {
-        require(address(layer2Registry) != address(0),'unvalid Layer2Registry'); 
+        require(address(layer2Registry) != address(0), "StorageStateCommittee: unvalid Layer2Registry");
         _;
     }
     modifier validSeigManager() {
-        require(address(seigManager) != address(0),'unvalid SeigManagere'); 
+        require(address(seigManager) != address(0), "StorageStateCommittee: unvalid SeigManagere");
         _;
     }
 

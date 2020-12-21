@@ -81,7 +81,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         else return AgendaStatus.NONE;
     } 
     function setStatus(uint256 _AgendaID, uint _status)  onlyOwner public { 
-        require( _AgendaID < numAgendas,  "Not a valid Proposal Id" );
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Proposal Id");
         agendas[_AgendaID].status = getStatus(_status);
     }
     function setCreateAgendaFees(uint256 _createAgendaFees)  onlyOwner public { 
@@ -95,17 +95,17 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     } 
       
     function setActivityFeeManager(address _man)  onlyOwner public {
-        require(_man != address(0)); 
+        require(_man != address(0), "DAOAgendaManager: ActivityFeeManager is zero");
         activityFeeManager = _man;
     }   
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator)  onlyOwner public {
-        require( quorumNumerator > 0 && quorumDenominator > 0 &&  quorumNumerator < quorumDenominator ); 
+        require(quorumNumerator > 0 && quorumDenominator > 0 && quorumNumerator < quorumDenominator, "DAOAgendaManager: invalid quorum");
         quorum = Ratio(quorumNumerator,quorumDenominator);
     }  
     
     function userHasVoted(uint256 _AgendaID, address _user) public view  returns (bool)
     {
-        require( _AgendaID < numAgendas,  "Not a valid Proposal Id" );
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Proposal Id");
         return (agendas[_AgendaID].voterInfo[_user].hasVoted);
     }
     
@@ -116,27 +116,27 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     function getAgendaNoticeEndTimeSeconds(uint256 _AgendaID) public view  returns (uint)
     {
          // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
-        require( _AgendaID < numAgendas,  "Not a valid Agenda Id" ); 
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
         return ( agendas[_AgendaID].times[1] );
     } 
     
     function getAgendaVotingStartTimeSeconds(uint256 _AgendaID) public view  returns (uint)
     {
          // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
-        require( _AgendaID < numAgendas,  "Not a valid Agenda Id" ); 
-        return ( agendas[_AgendaID].times[2] );
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
+        return (agendas[_AgendaID].times[2]);
     }
     function getAgendaVotingEndTimeSeconds(uint256 _AgendaID) public view  returns (uint)
     {
          // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
-        require( _AgendaID < numAgendas,  "Not a valid Agenda Id" ); 
-        return ( agendas[_AgendaID].times[3] );
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
+        return (agendas[_AgendaID].times[3]);
     }
     
     function detailedAgenda(uint256 _AgendaID) 
         public view  returns (address[2] memory  creator, uint[8] memory datas, uint256[3] memory counting,uint256 fees, bool executed, bytes memory functionBytecode,string memory description,  address[] memory voters ) {
         //returns (address,uint[3] memory,uint[3] memory ,uint256[5] memory ,bool ,address[] memory ) {
-        require( _AgendaID < numAgendas,  "Not a valid Agenda Id" );
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
         Agenda memory agenda = agendas[_AgendaID]; 
         uint[8] memory args1 = [ uint(agenda.status) ,uint(agenda.result) , uint(agenda.group) , agenda.times[0],agenda.times[1],agenda.times[2],agenda.times[3] ,agenda.times[4] ];
         
@@ -146,7 +146,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     function detailedAgendaVoteInfo(uint256 _AgendaID, address voter) 
         public view returns (bool hasVoted , uint256 vote, string memory comment) {
             
-        require( _AgendaID < numAgendas,  "Not a valid Agenda Id" );     
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
 
         if(agendas[_AgendaID].voterInfo[voter].hasVoted )  {
             return ( agendas[_AgendaID].voterInfo[voter].hasVoted , agendas[_AgendaID].voterInfo[voter].vote , agendas[_AgendaID].voterInfo[voter].comment );  
@@ -176,14 +176,14 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
      
     function getActivityFeeManager() public view returns (address) { return activityFeeManager;}
     function getAgendaResult(uint256 _AgendaID) public view  returns (uint result,bool executed, address target, bytes memory functionBytecode){
-        require( _AgendaID < numAgendas,  "Not a valid _AgendaID Id" );    
+        require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid _AgendaID Id");
         return ( uint(agendas[_AgendaID].result), agendas[_AgendaID].executed, agendas[_AgendaID].target, agendas[_AgendaID].functionBytecode );
     }
    
     function newAgenda( uint _group, address _target, address _creator, uint _noticePeriodMin,bytes memory _functionBytecode,string memory _description, uint256 _fees ) 
         onlyOwner public returns (uint256 agendaID , uint status, uint result, uint[5] memory times ) {
         
-        require(_noticePeriodMin >= minimunNoticePeriodMin ,'minimunNoticePeriod is short') ;
+        require(_noticePeriodMin >= minimunNoticePeriodMin, "DAOAgendaManager: minimunNoticePeriod is short");
          
         Agenda memory p;
         p.creator = _creator;
@@ -214,7 +214,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     function electCommiitteeForAgenda(uint256 _AgendaID, address[] memory committees ) 
          public onlyOwner returns (bool result ,uint status, uint[5] memory times ) {
        
-        require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.NOTICE, "agenda has expired." );  
+        require(_AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.NOTICE, "DAOAgendaManager: agenda has expired.");
         Agenda storage curagenda = agendas[_AgendaID]; 
         
         uint256 i=0; 
@@ -229,7 +229,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }
     
     function validCommitteeForAgenda(uint256 _AgendaID, address user) public view returns (bool) {
-        require(user!=address(0));
+        require(user != address(0), "DAOAgendaManager: user address is zero");
         Agenda storage curagenda = agendas[_AgendaID]; 
         uint256 i=0; 
         for(i=0; i< curagenda.committees.length; i++){
@@ -242,7 +242,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
          public  onlyOwner returns (uint256[3] memory counting, uint result) 
     {  
         
-        require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.VOTING, "status is not voting." ); 
+        require(_AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.VOTING, "DAOAgendaManager: status is not voting.");
         /*
         require( agendas[_AgendaID].times[2] >= now  && agendas[_AgendaID].times[3] <= now , "voting period has expired." );
         require( validCommitteeForAgenda(  _AgendaID, voter ),"you are not a committee member on this agenda."); 
@@ -277,7 +277,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     function setExecuteAgenda(uint256 _AgendaID) 
         public onlyOwner returns ( bool success,  uint status,uint result, bool executed, address target, bytes memory functionBytecode , uint[5] memory times)  
     {   
-        require( _AgendaID < agendas.length   ,"_AgendaID is invalid." );   
+        require(_AgendaID < agendas.length, "DAOAgendaManager: _AgendaID is invalid.");
         /*
         require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.IN_PROGRESS ,"agenda has expired." );   
         require( getAgendaExpirationTimeSeconds(_AgendaID) < now && agendas[_AgendaID].target != address(0), "for this agenda, the voting time is not expired" );

@@ -20,12 +20,12 @@ contract DAOVault2 is Ownabled {
     //////////////////////////////
     
     modifier onlyDAOCommittee() {
-      require( ton!=address(0) && daoCommittee!=address(0) && msg.sender == daoCommittee , "not daoCommittee");
+      require(ton != address(0) && daoCommittee != address(0) && msg.sender == daoCommittee, "DAOVault2: not daoCommittee");
       _;
     }
     
     modifier onlyDAOActivityFeeManager() {
-      require( ton!=address(0) && daoActivityFeeManager!=address(0) && msg.sender == daoActivityFeeManager , "not daoActivityFeeManager");
+      require(ton != address(0) && daoActivityFeeManager != address(0) && msg.sender == daoActivityFeeManager, "DAOVault2: not daoActivityFeeManager");
       _;
     } 
     
@@ -53,30 +53,30 @@ contract DAOVault2 is Ownabled {
     }
 
     function approveTonDao( uint256 amount ) public onlyOwner {
-       require( ton != address(0) ); 
+       require(ton != address(0), "DAOVault2: ton address is zero");
        approveTon(daoCommittee, amount );  
        approveTon(daoActivityFeeManager, amount ); 
     }
     
     function approveTonDaoCommittee( uint256 amount ) public onlyOwner {
-       require( ton != address(0) ); 
+       require(ton != address(0), "DAOVault2: ton address is zero");
        approveTon(daoCommittee, amount ); 
     }
     
     function approveTonDAOActivityFeeManager( uint256 amount ) public onlyOwner {
-       require( ton != address(0) ); 
+       require(ton != address(0), "DAOVault2: ton address is zero");
        approveTon(daoActivityFeeManager, amount ); 
     }
     
     function approveTon( address to, uint256 amount ) public onlyOwner {
-       require( ton != address(0) ); 
+       require(ton != address(0), "DAOVault2: ton address is zero");
        IERC20(ton).approve(to , amount); 
     }
     
     function claimCommittee(address committee, uint256 amount) external onlyDAOCommittee returns (uint256) {
          
-        require( IERC20(ton).balanceOf(address(this)) >= amount ); 
-        require( IERC20(ton).transfer(committee,amount) ) ; 
+        require(IERC20(ton).balanceOf(address(this)) >= amount, "DAOVault2: not enough balance");
+        require(IERC20(ton).transfer(committee,amount), "DAOVault2: failed to transfer");
         emit TransferCommittee(committee, amount);
         return amount;
     }
@@ -98,8 +98,8 @@ contract DAOVault2 is Ownabled {
     }
     
     function transfer(address erc20token, address to,  uint256 amount) external onlyOwner {
-        require( erc20token != address(0) && amount > 0 ) ;
-        require(IERC20(erc20token).transfer(to,amount));
+        require(erc20token != address(0) && amount > 0, "DAOVault2: invalid parameter");
+        require(IERC20(erc20token).transfer(to,amount), "DAOVault2: failed to transfer");
         emit TransferErc20(erc20token, to, amount);
     }
     

@@ -21,23 +21,23 @@ contract StorageStateElection {
     }
     
     modifier validStore() {
-        require(address(store) != address(0)); 
+        require(address(store) != address(0), "StorageStateElection: store address is zero");
         _;
     }
     modifier validDAOCommittee() {
-        require(address(daoCommittee) != address(0),'unvalid DAOCommittee'); 
+        require(address(daoCommittee) != address(0), "StorageStateElection: unvalid DAOCommittee");
         _;
     }
     modifier validCommitteeL2Factory() {
-        require(address(committeeL2Factory) != address(0),'unvalid CommitteeL2Factory'); 
+        require(address(committeeL2Factory) != address(0), "StorageStateElection: unvalid CommitteeL2Factory");
         _;
     }
     modifier validLayer2Registry() {
-        require(address(layer2Registry) != address(0),'unvalid Layer2Registry'); 
+        require(address(layer2Registry) != address(0), "StorageStateElection: unvalid Layer2Registry");
         _;
     }
     modifier validSeigManager() {
-        require(address(seigManager) != address(0),'unvalid SeigManagere'); 
+        require(address(seigManager) != address(0), "StorageStateElection: unvalid SeigManagere");
         _;
     }
 

@@ -36,7 +36,7 @@ contract DAOActivityFeeManager is OwnableAdmin , DAOActivityFeeManagerRole {
     }  
      
     function setDaoVault(address _daoVault)  onlyAdminOrOwner public {
-        require(_daoVault != address(0)); 
+        require(_daoVault != address(0), "DAOActivityFeeManager: Vault is zero"); 
         daoVault = _daoVault;
     } 
       

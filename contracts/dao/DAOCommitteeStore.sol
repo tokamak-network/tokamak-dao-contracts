@@ -49,21 +49,21 @@ contract DAOCommitteeStore is OwnableAdmin{
     }
     
     function setDaoElection(address _daoElection)  onlyOwner public {
-        require(_daoElection != address(0)); 
+        require(_daoElection != address(0), "DAOCommitteeStore: election address is zero");
         daoElection = _daoElection;
     }
     function setAgendaManager(address _agendaManager)  onlyOwner public {
-        require(_agendaManager != address(0)); 
+        require(_agendaManager != address(0), "DAOCommitteeStore: AgendaManager address is zero");
         agendaManager = _agendaManager;
     }
      
     function setDaoVault(address _daoVault)  onlyOwner public {
-        require(_daoVault != address(0)); 
+        require(_daoVault != address(0), "DAOCommitteeStore: vault is zero");
         daoVault = _daoVault;
     } 
     
     function setActivityFeeManager(address _man)  onlyOwner public {
-        require(_man != address(0)); 
+        require(_man != address(0), "DAOCommitteeStore: ActivityFeeManager address is zero");
         activityFeeManager = _man;
     }   
     
@@ -105,7 +105,7 @@ contract DAOCommitteeStore is OwnableAdmin{
     function detailedCommittee(uint256 _indexSlot) 
         public view returns ( address layer2,  address operator, string memory name, uint memberSince , uint256 castingcount , uint256 balance, uint joinTime, uint balanceTime) {
         
-        require( _indexSlot > 0 && _indexSlot < committees.length ,'invalid slot' );
+        require(_indexSlot > 0 && _indexSlot < committees.length, "DAOCommitteeStore: invalid slot");
         address _operator = committees[_indexSlot];
         uint256 memIndex = memberId[_operator]; 
         
@@ -141,8 +141,8 @@ contract DAOCommitteeStore is OwnableAdmin{
     }
     
     function changeCommittee( uint256 _indexSlot, uint256 _indexMember, address _newOperator, uint256 _balance)  onlyOwner public returns (bool result) { 
-        require( _indexSlot > 0 && _indexSlot < committees.length ,'slot is not available'); 
-        require( _indexMember > 0 &&  _indexMember < members.length ,'memberIndex is not available'); 
+        require(_indexSlot > 0 && _indexSlot < committees.length, "DAOCommitteeStore: slot is not available");
+        require(_indexMember > 0 && _indexMember < members.length, "DAOCommitteeStore: memberIndex is not available");
         
         address _preOperator = committees[_indexSlot];
         committeeId[_preOperator] = 0;
@@ -151,7 +151,7 @@ contract DAOCommitteeStore is OwnableAdmin{
         committeeId[_newOperator] = _indexSlot; 
         
         Member storage curmember = members[_indexMember]; 
-        require(curmember.operator == _newOperator );   
+        require(curmember.operator == _newOperator, "DAOCommitteeStore: same operator");
         
         curmember.l2balance = _balance;
         curmember.committeeJoinTime = now;
@@ -181,10 +181,10 @@ contract DAOCommitteeStore is OwnableAdmin{
         
         uint256 mindex = memberId[user];
         if( mindex > 0  && mindex < members.length ){
-            require( user == members[mindex].operator ); 
-            return ( committeeId[user],members[mindex].layer2, members[mindex].operator, members[mindex].name, members[mindex].memberSince, members[mindex].castingcount );   
+            require(user == members[mindex].operator, "DAOCommitteeStore: the user is operator");
+            return (committeeId[user],members[mindex].layer2, members[mindex].operator, members[mindex].name, members[mindex].memberSince, members[mindex].castingcount);
         } else {
-            return ( 0, address(0),address(0), '', 0, 0);
+            return (0, address(0),address(0), "", 0, 0);
         } 
     } 
     
