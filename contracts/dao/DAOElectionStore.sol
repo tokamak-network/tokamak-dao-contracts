@@ -59,9 +59,11 @@ contract DAOElectionStore is OwnableAdmin{
         committeeL2Factory = _committeeL2Factory;
     }   
     
-    function existLayerByOperator(address _operator) public view returns (bool exist , uint256 _layerId ){
-       if( layer2Id[_operator] > 0 ) return (true,layer2Id[_operator]);
-       else return (false,0); 
+    function isExistCommitteeContract(address _operator) public view returns (bool exist, uint256 _layerId) {
+       if (layer2Id[_operator] > 0)
+           return (true, layer2Id[_operator]);
+       else
+           return (false, 0); 
     } 
     
     function existLayerByLayer(address _layer) public view returns (bool exist , uint256 _layerId){

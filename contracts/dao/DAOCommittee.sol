@@ -242,58 +242,51 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
 
      //=== election 
     /*   function applyCommitteeElectByOperator() public validElection validSeigManager returns (uint) {
-        (bool exist , uint256 _layerIndex  ) = election.existLayerByOperator(msg.sender);
+        (bool exist , uint256 _layerIndex  ) = election.isExistCommitteeContract(msg.sender);
         require(exist,'not exist layer');
         return applyCommitteeElect(_layerIndex);
     }  */ 
     
     function applyCommitteeElect(uint256 _indexSlot) public validElection validSeigManager returns (uint) {
-        (bool exist , uint256 _layer2Index  ) = election.existLayerByOperator(msg.sender);
+        (bool exist , uint256 _layer2Index  ) = election.isExistCommitteeContract(msg.sender);
         require(exist, "DAOCommittee: you are not operator");
          
-        (address layer2,address operator, string memory name,  ) = election.detailedLayer2s(_layer2Index) ;
+        (address layer2,address operator, string memory name, ) = election.detailedLayer2s(_layer2Index);
         require(operator == msg.sender, "DAOCommittee: your are not operator");
         
-        uint256 totalbalance = totalSupplyLayer2s(layer2) ;
+        uint256 totalbalance = totalSupplyLayer2s(layer2);
          
-        (uint applyResultCode , uint256 _memberindex) = applyCommittee(_indexSlot, layer2, operator, name ,totalbalance );
+        (uint applyResultCode, uint256 _memberindex) = applyCommittee(_indexSlot, layer2, operator, name, totalbalance);
          
-        if(applyResultCode == uint(ApplyResult.SUCCESS)){
-            emit ApplyCommitteeSuccess(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex); 
-        }else{
-            emit ApplyCommitteeFail(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex); 
-        } 
+        if (applyResultCode == uint(ApplyResult.SUCCESS)) {
+            emit ApplyCommitteeSuccess(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex);
+        } else {
+            emit ApplyCommitteeFail(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex);
+        }
 
         return applyResultCode;
     } 
     
     //  need to check 
-    function createCommitteeLayer2( string memory name) 
+    function createCommitteeCandidate( string memory name) 
         public validSeigManager validLayer2Registry validCommitteeL2Factory returns (uint256, address, address) {
-        address operator = msg.sender;
-        require(operator != address(0), "DAOCommittee: operator is zero");
-        (bool exist, ) = election.existLayerByOperator(operator);
-        require(!exist, "DAOCommittee: operator already registerd");
+        (bool exist, ) = election.isExistCommitteeContract(msg.sender);
+        require(!exist, "DAOCommittee: candidate already registerd");
           
-        // create CommitteeL2 , set seigManager 
-        
         // CommitteeL2 
-        address layer = committeeL2Factory.deploy(operator, address(seigManager), address(layer2Registry));
-        require(layer != address(0), "DAOCommittee: deployed layer is zero");
+        address committeeContract = committeeL2Factory.deploy(msg.sender, address(seigManager), address(layer2Registry));
+        require(committeeContract != address(0), "DAOCommittee: deployed committeeContract is zero");
         
-        //(address _oper, address _owner) = CommitteeL2I(layer).operatorAndOwner();
-        //emit createLayer(msg.sender, _oper, _owner, layer);
-         
-        //register CommitteeL2 to registry : registerAndDeployCoinage or register
-        require(layer2Registry.registerAndDeployCoinage(layer, address(seigManager)), "DAOCommittee: failed to registerAndDeployCoinage");
+        //register CommitteeL2 to registry : registerAndDeployCoinage
+        require(layer2Registry.registerAndDeployCoinage(committeeContract, address(seigManager)), "DAOCommittee: failed to registerAndDeployCoinage");
           
         // register.store 
-        uint256 layerIndex = election.registerLayer2(layer, operator, name);
-        require(layerIndex > 0, "DAOCommittee: createCommitteeLayer2: error 1");
+        uint256 layerIndex = election.registerLayer2(committeeContract, msg.sender, name);
+        require(layerIndex > 0, "DAOCommittee: createCommitteeCandidate: error 1");
     
-        emit CommitteeLayer2Created(msg.sender, layerIndex, layer, name);
+        emit CommitteeLayer2Created(msg.sender, layerIndex, committeeContract, name);
     
-        return (layerIndex, layer, operator);
+        return (layerIndex, committeeContract, msg.sender);
     }  
     
     function updateSeigniorage(address _layer)  public validElection returns (bool){ 
