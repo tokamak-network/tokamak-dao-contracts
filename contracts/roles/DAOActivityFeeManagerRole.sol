@@ -3,43 +3,42 @@ pragma solidity ^0.6.0;
 
 import "../lib/Roles.sol";
 
-
 contract DAOActivityFeeManagerRole {
-  using Roles for Roles.Role;
+    using Roles for Roles.Role;
 
-  event ActivityFeeManagerAdded(address indexed account);
-  event ActivityFeeManagerRemoved(address indexed account);
+    event ActivityFeeManagerAdded(address indexed account);
+    event ActivityFeeManagerRemoved(address indexed account);
 
-  Roles.Role private _activityFeeManagers;
+    Roles.Role private _activityFeeManagers;
 
-  constructor () internal {
-    _addActivityFeeManager(msg.sender);
-  }
+    constructor () internal {
+        _addActivityFeeManager(msg.sender);
+    }
 
-  modifier onlyActivityFeeManager() {
-    require(isActivityFeeManager(msg.sender));
-    _;
-  }
+    modifier onlyActivityFeeManager() {
+        require(isActivityFeeManager(msg.sender));
+        _;
+    }
 
-  function isActivityFeeManager(address account) public view returns (bool) {
-    return _activityFeeManagers.has(account);
-  }
+    function isActivityFeeManager(address account) public view returns (bool) {
+        return _activityFeeManagers.has(account);
+    }
 
-  function addActivityFeeManager(address account) public onlyActivityFeeManager {
-    _addActivityFeeManager(account);
-  }
+    function addActivityFeeManager(address account) public onlyActivityFeeManager {
+        _addActivityFeeManager(account);
+    }
 
-  function renounceActivityFeeManager() public {
-    _removeActivityFeeManager(msg.sender);
-  }
+    function renounceActivityFeeManager() public {
+        _removeActivityFeeManager(msg.sender);
+    }
 
-  function _addActivityFeeManager(address account) internal {
-    _activityFeeManagers.add(account);
-    emit ActivityFeeManagerAdded(account);
-  }
+    function _addActivityFeeManager(address account) internal {
+        _activityFeeManagers.add(account);
+        emit ActivityFeeManagerAdded(account);
+    }
 
-  function _removeActivityFeeManager(address account) internal {
-    _activityFeeManagers.remove(account);
-    emit ActivityFeeManagerRemoved(account);
-  }
+    function _removeActivityFeeManager(address account) internal {
+        _activityFeeManagers.remove(account);
+        emit ActivityFeeManagerRemoved(account);
+    }
 }
