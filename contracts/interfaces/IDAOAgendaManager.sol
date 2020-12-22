@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 interface IDAOAgendaManager  {
     function setCreateAgendaFees(uint256 _createAgendaFees) external;

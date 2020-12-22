@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../shared/Ownabled.sol";
 import "./StorageStateCommittee.sol";
@@ -10,7 +10,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownabled {
 
     event Upgraded(address indexed implementation);
      
-    constructor(DAOCommitteeStore _storage) public {
+    constructor(DAOCommitteeStore _storage) {
         store = _storage;
     }
 

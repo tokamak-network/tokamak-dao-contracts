@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../shared/OwnableAdmin.sol";
 import { CommitteeL2 } from "./CommitteeL2.sol";
@@ -30,7 +30,7 @@ contract DAOElectionStore is OwnableAdmin {
     mapping(address => uint256) public layer2IdByLayer;
     mapping(address => bool) public layer2Valid;
     
-    constructor(address _ton) public {
+    constructor(address _ton) {
         ton = _ton;
     }
    
@@ -78,12 +78,12 @@ contract DAOElectionStore is OwnableAdmin {
     function registerCommitteeContract(address committeeContract, address _operator, string memory _name) onlyOwner public returns (uint256) {
         require(committeeContract!=address(0) && _operator != address(0), "DAOElectionStore: layer or operator is zero address");
         if (committeeInfos.length == 0)
-            committeeInfos.push(CommitteeInfo(address(0), address(0), "", now));
+            committeeInfos.push(CommitteeInfo(address(0), address(0), "", block.timestamp));
        
         if (layer2Id[_operator] != 0) {
             return 0;
         } else {
-            CommitteeInfo memory la = CommitteeInfo(committeeContract, _operator, _name, now);
+            CommitteeInfo memory la = CommitteeInfo(committeeContract, _operator, _name, block.timestamp);
             uint256 layerIndex = committeeInfos.length;
             committeeInfos.push(la);
             layer2Id[_operator] = layerIndex;

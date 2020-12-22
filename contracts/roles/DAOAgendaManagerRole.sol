@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../lib/Roles.sol";
 
@@ -11,7 +11,7 @@ contract DAOAgendaManagerRole {
 
     Roles.Role private _agendaManagers;
 
-    constructor () internal {
+    constructor () {
         _addAgendaManager(msg.sender);
     }
 

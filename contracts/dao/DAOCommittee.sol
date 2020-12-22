@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../shared/Ownabled.sol";
 import "./StorageStateCommittee.sol";
@@ -190,7 +190,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         // 4: noticeEndTime , 5:votingStartTime , 6:votingEndTime , 7:execTime ];
         
         require(datas[0] == uint(AgendaStatus.NOTICE) && datas[1] == uint(AgendaResult.UNDEFINED), "DAOCommittee: Unsuitable status or result");
-        require(datas[4] < now, "DAOCommittee: noticeEndTime is not ended");
+        require(datas[4] < block.timestamp, "DAOCommittee: noticeEndTime is not ended");
         require(datas[5] == 0 && datas[6] == 0 && datas[7] == 0, "DAOCommittee: It is not committee election period.");
          
         (bool result, uint status, uint[5] memory times) = agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees());
@@ -224,7 +224,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         (bool exist, uint status) = agendaManager.getAgendaStatus(_AgendaID);
         require(exist && status == uint(AgendaStatus.VOTING), "DAOCommittee: agenda has expired.");
         require(!agendaManager.userHasVoted(_AgendaID, msg.sender), "DAOCommittee: user already voted on this agenda");
-        require(agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= now && now <= agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID), "DAOCommittee: for this agenda, the voting time expired");
+        require(agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= block.timestamp && block.timestamp <= agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID), "DAOCommittee: for this agenda, the voting time expired");
         require(agendaManager.validCommitteeForAgenda(_AgendaID, msg.sender), "DAOCommittee: you are not a committee member on this agenda.");
         
         (uint256[3] memory counting, uint result) = agendaManager.castVote(_AgendaID, msg.sender, _layer2, _vote, _comment, _majority);
@@ -242,7 +242,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
              
         (address[2] memory creator, uint[8] memory datas, , , bool executed, , , ) = agendaManager.detailedAgenda(_AgendaID);
         require(creator[0] != address(0) && datas[0] == uint(AgendaStatus.VOTING), "DAOCommittee: agenda status must be VOTING.");
-        require(datas[6] < now, "DAOCommittee: for this agenda, the voting time is not expired");
+        require(datas[6] < block.timestamp, "DAOCommittee: for this agenda, the voting time is not expired");
         require(datas[1] == uint(AgendaResult.ACCEPT), "DAOCommittee: for this agenda, not accept");
         require(executed == false, "DAOCommittee: for this agenda, already executed");
         

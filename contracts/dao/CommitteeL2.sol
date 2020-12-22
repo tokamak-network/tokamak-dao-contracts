@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../shared/Ownabled.sol";
 import "./StorageStateElection.sol";
@@ -17,7 +17,7 @@ contract CommitteeL2 is Ownabled, CommitteeL2I {
     address public seigManager;
     address public layer2Registry;
     
-    constructor(address _operator) public {
+    constructor(address _operator) {
         operator = _operator;
     }
     

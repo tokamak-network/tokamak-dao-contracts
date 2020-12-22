@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 interface OwnableTarget {
     function renounceOwnership() external;
@@ -10,7 +10,7 @@ contract OwnableAdmin {
     address public owner;
     address public admin;
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
         admin = msg.sender;
     }

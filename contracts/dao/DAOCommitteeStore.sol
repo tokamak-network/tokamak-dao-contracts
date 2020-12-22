@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
 
 import "../shared/OwnableAdmin.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
@@ -32,11 +32,11 @@ contract DAOCommitteeStore is OwnableAdmin {
         uint getBlanceTime;
     }
     
-    constructor(address _ton) public {
+    constructor(address _ton) {
         ton = _ton;
         maxCommittees = 3;
         if (members.length==0)
-            members.push(Member(address(0), address(0), "", now, 0, 0, 0, 0));
+            members.push(Member(address(0), address(0), "", block.timestamp, 0, 0, 0, 0));
         if (committees.length==0)
             committees.push(address(0));
     }
@@ -74,7 +74,7 @@ contract DAOCommitteeStore is OwnableAdmin {
         members[_memberId].castingcount = members[_memberId].castingcount.add(1);
     }
      
-    function initCommitteeSlot() public returns (bool) {
+    function initCommitteeSlot() public {
         if (committees.length < (maxCommittees+1)) {
             uint256 len = committees.length;
             for (uint256 i = len; i < (maxCommittees+1); i++) {
@@ -163,8 +163,8 @@ contract DAOCommitteeStore is OwnableAdmin {
         require(curmember.operator == _newOperator, "DAOCommitteeStore: same operator");
         
         curmember.l2balance = _balance;
-        curmember.committeeJoinTime = now;
-        curmember.getBlanceTime = now;
+        curmember.committeeJoinTime = block.timestamp;
+        curmember.getBlanceTime = block.timestamp;
         
         return true;
     }
@@ -174,9 +174,9 @@ contract DAOCommitteeStore is OwnableAdmin {
             return memberId[_operator];
         } else {
             if (members.length == 0)
-                members.push(Member(address(0), address(0), "", now, 0, 0, 0, 0));
+                members.push(Member(address(0), address(0), "", block.timestamp, 0, 0, 0, 0));
             
-            members.push(Member(_layer2, _operator, name, now, 0, 0, 0, 0));
+            members.push(Member(_layer2, _operator, name, block.timestamp, 0, 0, 0, 0));
             uint256 _index = members.length;
             memberId[_operator] = _index;
             

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
+
 import "../shared/Ownabled.sol";
 import { CommitteeL2 } from "../dao/CommitteeL2.sol";
 import { CommitteeL2FactoryI } from "../interfaces/CommitteeL2FactoryI.sol";

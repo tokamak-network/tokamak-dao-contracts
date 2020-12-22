@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 library LibAgenda {
-    using LibAgenda for Agenda;
+    //using LibAgenda for Agenda;
 
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
@@ -30,7 +31,7 @@ library LibAgenda {
         bytes functionBytecode;
         string description;
         address[] voters;  
-        mapping(address => Voter) voterInfo;
+        //mapping(address => Voter) voterInfo;
         address[] committees;
     }
 
