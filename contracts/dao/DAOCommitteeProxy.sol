@@ -13,7 +13,6 @@ contract DAOCommitteeProxy is StorageStateCommittee , Ownabled {
      
   constructor(DAOCommitteeStore _storage  ) public { 
     store = _storage; 
-    pauseProxy = true;
   } 
   
   function setProxyPause(bool _pause) onlyOwner public {

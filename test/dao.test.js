@@ -69,10 +69,12 @@ const ROUND_DURATION = time.duration.minutes(5);
 const POWERTON_SEIG_RATE = _WTON('0.1');
 const DAO_SEIG_RATE = _WTON('0.5');
 const PSEIG_RATE = _WTON('0.4');
+
+const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committee, committeeStore, activityFeeManager , agendaManager, committeeL2Factory;
+let daoVault2, committeeProxy, committee, committeeStore, activityFeeManager , agendaManager, committeeL2Factory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -218,13 +220,15 @@ describe('Test 1', function () {
     await committees.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
     await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+
+    await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
   }
 
   async function initializeDaoContracts() {
     debugLog =false;
     this.ton = ton;
     if(debugLog) console.log('ton :', this.ton.address) ;
-   
+
     //===================================================
     this.dAOVault = await DAOVault2.new(this.ton.address);
     //await this.ton.mint(this.dAOVault.address, initialSupplyDAOVault);
@@ -257,27 +261,27 @@ describe('Test 1', function () {
 
     this.dAOCommittee = await DAOCommittee.new();
     if(debugLog)  console.log('dAOCommittee :', dAOCommittee.address) ;
+    committee = this.dAOCommittee;
 
     this.dAOCommitteeProxy = await DAOCommitteeProxy.new(committeeStore.address);
     if(debugLog)  console.log('dAOCommitteeProxy :', dAOCommitteeProxy.address) ;
    
-   
-    await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
     await this.dAOCommitteeProxy.upgradeTo(this.dAOCommittee.address);
-    await this.dAOCommitteeProxy.setProxyPause(false);
+    await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
+    //await this.dAOCommitteeProxy.setProxyPause(false);
     await this.dAOCommitteeProxy.setProxyAgendaManager(this.dAOCommittee.address);
     await this.dAOCommitteeProxy.setProxyAactivityfeeManager(this.dAOCommittee.address);
     if(debugLog)  console.log('dAOCommitteeProxy  set end :' ) ;
 
     let impl = await this.dAOCommitteeProxy.implementation() ;
 
-    committee = await DAOCommittee.at(this.dAOCommitteeProxy.address);
-    if(debugLog)  console.log('committee :', committee.address ) ;
+    committeeProxy = await DAOCommittee.at(this.dAOCommitteeProxy.address);
+    if(debugLog)  console.log('committeeProxy :', committeeProxy.address ) ;
      
     // later ..
-    //await committee.setDaoElection(this.dAOCommittee.address);
-    await committee.setDaoVault(daoVault2.address);
-    if(debugLog)  console.log('committee.setDaoVault end :') ;
+    //await committeeProxy.setDaoElection(this.dAOCommittee.address);
+    await committeeProxy.setDaoVault(daoVault2.address);
+    if(debugLog)  console.log('committeeProxy.setDaoVault end :') ;
 
     //
     await daoVault2.setDaoCommittee(this.dAOCommitteeProxy.address);
@@ -293,13 +297,13 @@ describe('Test 1', function () {
     this.dAOElectionStore = await DAOElectionStore.new(this.ton.address);
     //this.dAOElection = await DAOElection.new();
     //this.dAOElectionProxy = await DAOElectionProxy.new(this.dAOElectionStore.address);
-    //await this.dAOElectionStore.transferOwnership(committee.address);
+    //await this.dAOElectionStore.transferOwnership(committeeProxy.address);
     //await this.dAOElectionProxy.upgradeTo(this.dAOElection.address);
     //await this.dAOElectionProxy.setProxyPause(false);
     //electionProxy = this.dAOElectionProxy;
 
     /*
-    await this.dAOElectionProxy.setProxyDaoCommittee(committee.address);
+    await this.dAOElectionProxy.setProxyDaoCommittee(committeeProxy.address);
     await this.dAOElectionProxy.setProxyCommitteeL2Factory(committeeL2Factory.address);
     await this.dAOElectionProxy.setProxyLayer2Registry(addrs.Layer2Registry);
     await this.dAOElectionProxy.setProxySeigManager(addrs.SeigManager);
@@ -311,36 +315,82 @@ describe('Test 1', function () {
     //committeeL2Factory.transferOwnership(election.address);
     //=================================================== 
 
-    await committee.setElection(election.address);
+    await committeeProxy.setElection(election.address);
     await election.setSeigManager(seigManager.address);
-    await committee.setSeigManager();
+    await committeeProxy.setSeigManager();
     await election.setLayer2Registry(registry.address);
-    await committee.setLayer2Registry();
+    await committeeProxy.setLayer2Registry();
     await election.setCommitteeL2Factory(committeeL2Factory.address);
-    await committee.setCommitteeL2Factory();
+    await committeeProxy.setCommitteeL2Factory();
 
-    await registry.transferOwnership(committee.address);
-    await daoVault2.setDaoCommittee(committee.address);
+    await registry.transferOwnership(committeeProxy.address);
+    await daoVault2.setDaoCommittee(committeeProxy.address);
     await daoVault2.setDAOActivityFeeManager(activityFeeManager.address);
-    await daoVault2.transferOwnership(committee.address);
-    await activityFeeManager.transferOwnership(committee.address);
-    await agendaManager.transferOwnership(committee.address);
-    await committeeL2Factory.transferOwnership(committee.address);
-    await election.transferOwnership(committee.address);
-    await this.dAOCommittee.transferOwnership(committee.address);
+    await daoVault2.transferOwnership(committeeProxy.address);
+    await activityFeeManager.transferOwnership(committeeProxy.address);
+    await agendaManager.transferOwnership(committeeProxy.address);
+    await committeeL2Factory.transferOwnership(committeeProxy.address);
+    await election.transferOwnership(committeeProxy.address);
+    await this.dAOCommittee.transferOwnership(committeeProxy.address);
     //await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
 
     console.log('\n\n');
   } 
 
-  async function addCommitteeCandidate(candidate, stakeAmount) {
-    await ton.approve(committee.address, stakeAmount);
-    await committee.createCommitteeCandidate(candidate, {from: user1});
+  async function deposit(committeeContractAddress, account, tonAmount) {
+    const data = marshalString(
+      [depositManager.address, committeeContractAddress]
+        .map(unmarshalString)
+        .map(str => padLeft(str, 64))
+        .join(''),
+    );
+    await ton.approveAndCall(
+      wton.address,
+      tonAmount,
+      data,
+      {from: account}
+    );
+  }
+
+  async function addCommitteeCandidate(candidate) {
+    const beforeTonBalance = await ton.balanceOf(candidate);
+
+    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+    await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
+    tmp = await ton.allowance(candidate, committeeProxy.address);
+    tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
+    await committeeProxy.createCommitteeCandidate(candidate, {from: candidate});
+
+    // stake
+    const res = await election.detailedLayer2sByOperator(candidate);
+    /*const data = marshalString(
+      [depositManager.address, res[0]]
+        .map(unmarshalString)
+        .map(str => padLeft(str, 64))
+        .join(''),
+    );
+    await ton.approveAndCall(
+      wton.address,
+      stakeAmountTON,
+      data,
+      {from: candidate}
+    );*/
+    await deposit(res[0], candidate, stakeAmountTON);
+
+    const afterTonBalance = await ton.balanceOf(candidate);
+    beforeTonBalance.sub(afterTonBalance).should.be.bignumber.equal(stakeAmountTON);
+
+    const coinageAddress = await seigManager.coinages(res[0]);
+    const coinage = await AutoRefactorCoinage.at(coinageAddress);
+    const stakedAmount = await coinage.balanceOf(candidate);
+    stakedAmount.should.be.bignumber.gt(toBN('0'));
+    stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
   }
 
   describe('Committee candidate', function () {
     it('add new candidate', async function () {
-      await addCommitteeCandidate(user1, _TON('1000').toFixed(TON_UNIT));
+      await addCommitteeCandidate(user1);
     });
 
   });
@@ -387,29 +437,29 @@ describe('Test 1', function () {
       it('approveTonDao', async function () {
         const testAmount = 10000;
         await daoVault2.approveTonDao(testAmount);
-        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN(testAmount));
+        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN(testAmount));
         expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN(testAmount));
       });
 
       it('approveTonDaoCommittee', async function () {
         const testAmount = 10000;
 
-        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
         expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
 
         await daoVault2.approveTonDaoCommittee(testAmount);
-        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN(testAmount));
+        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN(testAmount));
         expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
       });
 
       it('approveTonDAOActivityFeeManager', async function () {
         const testAmount = 10000;
 
-        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
         expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN('0'));
 
         await daoVault2.approveTonDAOActivityFeeManager(testAmount);
-        expect(await ton.allowance(daoVault2.address, committee.address)).to.bignumber.equal(toBN('0'));
+        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
         expect(await ton.allowance(daoVault2.address, activityFeeManager.address)).to.bignumber.equal(toBN(testAmount));
       });
 
