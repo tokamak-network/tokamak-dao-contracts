@@ -6,10 +6,12 @@ import "../shared/OwnableAdmin.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
 import { DAOAgendaManagerRole } from "../roles/DAOAgendaManagerRole.sol"; 
+import { LibAgenda } from "../lib/Agenda.sol"; 
 
 contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole { 
-     
     using SafeMath for uint256; 
+    using LibAgenda for *;
+
     address public ton ;  
     address public activityFeeManager ;  
     
@@ -21,7 +23,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     uint256 public minimunNoticePeriodMin;
     uint256 public minimunVotingPeriodMin; 
     
-    Agenda[] public agendas;  
+    LibAgenda.Agenda[] public agendas;
     
     Ratio public quorum;
     
@@ -30,37 +32,7 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         uint256 denominator;
     } 
     
-    // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
-    // counting abstainVotes yesVotes noVotes
-    struct Agenda {
-        address creator;
-        AgendaStatus status;
-        AgendaResult result;
-        uint group;
-        bool executed;
-        uint[5] times; 
-        uint256[3] counting;
-        uint256 fees;
-        address target;
-        bytes functionBytecode;
-        string description;
-        address[] voters;  
-        mapping(address => Voter) voterInfo;
-        address[] committees;
-    }
-    
-    //votor : based operator 
-    struct Voter {
-        bool hasVoted;
-        address layer2;
-        uint vote;
-        string comment;
-    } 
-     
     enum VoteChoice { ABSTAIN, YES, NO }
-    enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
-    enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
-     
     
     constructor(address _ton) public { 
         minimunNoticePeriodMin = 60*24*15; //  15 days , with minutes 
@@ -71,14 +43,14 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         ton = _ton;
         numAgendas =0; 
     } 
-    function getStatus(uint _status) public pure returns (AgendaStatus emnustatus) {
-        if(_status == uint(AgendaStatus.NOTICE) ) return  AgendaStatus.NOTICE;
-        else if(_status == uint(AgendaStatus.VOTING) ) return  AgendaStatus.VOTING;
-        else if(_status == uint(AgendaStatus.EXEC) ) return  AgendaStatus.EXEC;
-        else if(_status == uint(AgendaStatus.ENDED) ) return  AgendaStatus.ENDED;
-        else if(_status == uint(AgendaStatus.PENDING) ) return  AgendaStatus.PENDING;
-        else if(_status == uint(AgendaStatus.RISK) ) return  AgendaStatus.RISK;
-        else return AgendaStatus.NONE;
+    function getStatus(uint _status) public pure returns (LibAgenda.AgendaStatus emnustatus) {
+        if(_status == uint(LibAgenda.AgendaStatus.NOTICE) ) return  LibAgenda.AgendaStatus.NOTICE;
+        else if(_status == uint(LibAgenda.AgendaStatus.VOTING) ) return  LibAgenda.AgendaStatus.VOTING;
+        else if(_status == uint(LibAgenda.AgendaStatus.EXEC) ) return  LibAgenda.AgendaStatus.EXEC;
+        else if(_status == uint(LibAgenda.AgendaStatus.ENDED) ) return  LibAgenda.AgendaStatus.ENDED;
+        else if(_status == uint(LibAgenda.AgendaStatus.PENDING) ) return  LibAgenda.AgendaStatus.PENDING;
+        else if(_status == uint(LibAgenda.AgendaStatus.RISK) ) return  LibAgenda.AgendaStatus.RISK;
+        else return LibAgenda.AgendaStatus.NONE;
     } 
     function setStatus(uint256 _AgendaID, uint _status)  onlyOwner public { 
         require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Proposal Id");
@@ -109,10 +81,6 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         return (agendas[_AgendaID].voterInfo[_user].hasVoted);
     }
     
-    function getQuorumRatio() public view  returns (uint256 numerator, uint256 denominator ) { 
-        return (quorum.numerator , quorum.denominator);
-    }
-     
     function getAgendaNoticeEndTimeSeconds(uint256 _AgendaID) public view  returns (uint)
     {
          // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
@@ -134,13 +102,39 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     }
     
     function detailedAgenda(uint256 _AgendaID) 
-        public view  returns (address[2] memory  creator, uint[8] memory datas, uint256[3] memory counting,uint256 fees, bool executed, bytes memory functionBytecode,string memory description,  address[] memory voters ) {
-        //returns (address,uint[3] memory,uint[3] memory ,uint256[5] memory ,bool ,address[] memory ) {
+        public view returns (
+            address[2] memory creator,
+            uint[8] memory datas, 
+            uint256[3] memory counting,
+            uint256 fees,
+            bool executed,
+            bytes memory functionBytecode,
+            string memory description,
+            address[] memory voters
+        ) {
         require(_AgendaID < numAgendas, "DAOAgendaManager: Not a valid Agenda Id");
-        Agenda memory agenda = agendas[_AgendaID]; 
-        uint[8] memory args1 = [ uint(agenda.status) ,uint(agenda.result) , uint(agenda.group) , agenda.times[0],agenda.times[1],agenda.times[2],agenda.times[3] ,agenda.times[4] ];
+        LibAgenda.Agenda memory agenda = agendas[_AgendaID]; 
+        uint[8] memory args1 = [
+            uint(agenda.status),
+            uint(agenda.result),
+            uint(agenda.group),
+            agenda.times[0],
+            agenda.times[1],
+            agenda.times[2],
+            agenda.times[3],
+            agenda.times[4]
+        ];
         
-        return ( [agenda.creator, agenda.target], args1, agenda.counting,agenda.fees, agenda.executed , agenda.functionBytecode , agenda.description ,agenda.voters);
+        return (
+            [agenda.creator, agenda.target],
+            args1,
+            agenda.counting,
+            agenda.fees,
+            agenda.executed,
+            agenda.functionBytecode,
+            agenda.description,
+            agenda.voters
+        );
     }
 
     function detailedAgendaVoteInfo(uint256 _AgendaID, address voter) 
@@ -185,10 +179,10 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         
         require(_noticePeriodMin >= minimunNoticePeriodMin, "DAOAgendaManager: minimunNoticePeriod is short");
          
-        Agenda memory p;
+        LibAgenda.Agenda memory p;
         p.creator = _creator;
-        p.status = AgendaStatus.NOTICE;
-        p.result = AgendaResult.UNDEFINED;
+        p.status = LibAgenda.AgendaStatus.NOTICE;
+        p.result = LibAgenda.AgendaResult.UNDEFINED;
         p.executed = false;
         //times   0: creationDate  1: notice-endTime  2: voting-start 3: voting-end 4: execTime
         p.times[0] = now;
@@ -214,8 +208,8 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     function electCommiitteeForAgenda(uint256 _AgendaID, address[] memory committees ) 
          public onlyOwner returns (bool result ,uint status, uint[5] memory times ) {
        
-        require(_AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.NOTICE, "DAOAgendaManager: agenda has expired.");
-        Agenda storage curagenda = agendas[_AgendaID]; 
+        require(_AgendaID < agendas.length && agendas[_AgendaID].status == LibAgenda.AgendaStatus.NOTICE, "DAOAgendaManager: agenda has expired.");
+        LibAgenda.Agenda storage curagenda = agendas[_AgendaID]; 
         
         uint256 i=0; 
         for(i=1; i< committees.length; i++){
@@ -224,13 +218,13 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         }
         curagenda.times[2] = now;
         curagenda.times[3] = now + 60 * minimunVotingPeriodMin * 1 seconds;  
-        curagenda.status = AgendaStatus.VOTING ;  
+        curagenda.status = LibAgenda.AgendaStatus.VOTING ;  
         return ( true, uint(curagenda.status), times );
     }
     
     function validCommitteeForAgenda(uint256 _AgendaID, address user) public view returns (bool) {
         require(user != address(0), "DAOAgendaManager: user address is zero");
-        Agenda storage curagenda = agendas[_AgendaID]; 
+        LibAgenda.Agenda storage curagenda = agendas[_AgendaID]; 
         uint256 i=0; 
         for(i=0; i< curagenda.committees.length; i++){
              if(user == curagenda.committees[i]) return true;
@@ -242,16 +236,18 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
          public  onlyOwner returns (uint256[3] memory counting, uint result) 
     {  
         
-        require(_AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.VOTING, "DAOAgendaManager: status is not voting.");
+        require(_AgendaID < agendas.length && 
+            agendas[_AgendaID].status == LibAgenda.AgendaStatus.VOTING, 
+            "DAOAgendaManager: status is not voting.");
         /*
         require( agendas[_AgendaID].times[2] >= now  && agendas[_AgendaID].times[3] <= now , "voting period has expired." );
         require( validCommitteeForAgenda(  _AgendaID, voter ),"you are not a committee member on this agenda."); 
         require( !userHasVoted(_AgendaID, voter), "voter already voted on this proposal" );
         */
         
-        Agenda storage curagenda = agendas[_AgendaID];
+        LibAgenda.Agenda storage curagenda = agendas[_AgendaID];
         
-        curagenda.voterInfo[voter] = Voter({
+        curagenda.voterInfo[voter] = LibAgenda.Voter({
             hasVoted: true, 
             layer2:_layer,
             vote: _vote, 
@@ -265,9 +261,9 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
         else if(_vote == uint(VoteChoice.YES)) curagenda.counting[1] = curagenda.counting[1].add(1);
         else curagenda.counting[2] = curagenda.counting[2].add(1); 
         
-        if( _majority < curagenda.counting[0] ){  curagenda.result = AgendaResult.DISMISS; }
-        else if(_majority < curagenda.counting[1] ) { curagenda.result = AgendaResult.ACCEPT; }
-        else if(_majority < curagenda.counting[2] ) { curagenda.result = AgendaResult.REJECT; } 
+        if( _majority < curagenda.counting[0] ){  curagenda.result = LibAgenda.AgendaResult.DISMISS; }
+        else if(_majority < curagenda.counting[1] ) { curagenda.result = LibAgenda.AgendaResult.ACCEPT; }
+        else if(_majority < curagenda.counting[2] ) { curagenda.result = LibAgenda.AgendaResult.REJECT; } 
 
         return ( curagenda.counting, uint(curagenda.result) );
           
@@ -279,18 +275,17 @@ contract DAOAgendaManager is OwnableAdmin, DAOAgendaManagerRole {
     {   
         require(_AgendaID < agendas.length, "DAOAgendaManager: _AgendaID is invalid.");
         /*
-        require( _AgendaID < agendas.length && agendas[_AgendaID].status == AgendaStatus.IN_PROGRESS ,"agenda has expired." );   
+        require( _AgendaID < agendas.length && agendas[_AgendaID].status == LibAgenda.AgendaStatus.IN_PROGRESS ,"agenda has expired." );   
         require( getAgendaExpirationTimeSeconds(_AgendaID) < now && agendas[_AgendaID].target != address(0), "for this agenda, the voting time is not expired" );
-        require( agendas[_AgendaID].result == AgendaResult.ACCEPT , "for this agenda, not accept" );
+        require( agendas[_AgendaID].result == LibAgenda.AgendaResult.ACCEPT , "for this agenda, not accept" );
         require( !agendas[_AgendaID].executed , "for this agenda, already executed" );
         */
-        Agenda storage curagenda = agendas[_AgendaID];
+        LibAgenda.Agenda storage curagenda = agendas[_AgendaID];
         curagenda.executed = true;
         curagenda.times[4] = now; 
-        curagenda.status = AgendaStatus.EXEC;
+        curagenda.status = LibAgenda.AgendaStatus.EXEC;
         numExecAgendas = numExecAgendas.add(1);
         
         return ( true, uint(curagenda.status), uint(curagenda.result), curagenda.executed, curagenda.target, curagenda.functionBytecode , curagenda.times );
     }   
-     
 }

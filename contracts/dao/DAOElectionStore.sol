@@ -90,15 +90,6 @@ contract DAOElectionStore is OwnableAdmin{
         }
     }   
 
-    function getTON() public view returns (address) { return ton;}
-    function getDaoCommittee() public view returns (address) { return daoCommittee;}
-    function getLayer2Registry() public view returns (address) { return layer2Registry;}
-    
-    //function getDepositManager() public view returns (address) { return depositManager;}
-    function getSeigManager() public view returns (address) { return seigManager;}
-    function getCommitteeL2Factory() public view returns (address) { return committeeL2Factory;}
-    function getNumLayer2s() public view returns (uint256 ){ return numLayer2s; }
-    
     function detailedCommitteeInfo(uint256 _index) public view returns (address layer2, address operator, string memory name, uint since) {
         require(_index < numLayer2s, "DAOElectionStore: invalid _index");
         return (committeeInfos[_index].committeeContract, committeeInfos[_index].committee, committeeInfos[_index].name, committeeInfos[_index].since);

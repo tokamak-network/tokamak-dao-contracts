@@ -6,11 +6,12 @@ import "./StorageStateCommittee.sol";
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";  
- 
 import { CommitteeL2I } from "../interfaces/CommitteeL2I.sol";  
+import { LibAgenda } from "../lib/Agenda.sol"; 
 
 contract DAOCommittee is StorageStateCommittee , Ownabled { 
     using SafeMath for uint256; 
+    using LibAgenda for *;
      
     //////////////////////////////
     // Events
@@ -51,17 +52,17 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         election = DAOElectionStore(_election); 
     }  
     function setCommitteeL2Factory()  public onlyOwner validElection { 
-        address factory = election.getCommitteeL2Factory();
+        address factory = election.committeeL2Factory();
         require(factory != address(0), "DAOCommittee: factory is zero");
         committeeL2Factory = CommitteeL2FactoryI(factory); 
     } 
     function setLayer2Registry()  public onlyOwner validElection { 
-        address registry = election.getLayer2Registry();
+        address registry = election.layer2Registry();
         require(registry != address(0), "DAOCommittee: registry is zero");
         layer2Registry = Layer2RegistryI(registry);
     } 
     function setSeigManager()  public onlyOwner validElection { 
-        address manager = election.getSeigManager();
+        address manager = election.seigManager();
         require(manager != address(0), "DAOCommittee: SeigManager is zero");
         seigManager = SeigManagerI(manager); 
     }  
@@ -116,12 +117,12 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require(_target != address(store) && _target != address(agendaManager) &&
             _target != address(activityfeeManager) && _target != address(election), "DAOCommittee: target can not be storages");
          
-        require(_noticePeriodMin >= agendaManager.getMinimunNoticePeriodMin(), "DAOCommittee: The notice period is short"); 
+        require(_noticePeriodMin >= agendaManager.minimunNoticePeriodMin(), "DAOCommittee: The notice period is short"); 
         address tonaddress = store.getTON();
         require(tonaddress != address(0), "DAOCommittee: ton address is zero");
         
         // pay to create agenda, burn ton. 
-        uint256 createAgendaFees = agendaManager.getCreateAgendaFees(); 
+        uint256 createAgendaFees = agendaManager.createAgendaFees();
             
         if( createAgendaFees > 0 ){  
             require(IERC20(store.getTON()).balanceOf(msg.sender) >= createAgendaFees, "DAOCommittee: not enough ton balance");
@@ -141,9 +142,8 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     } 
     
     function electCommiitteeForAgenda(uint256 _AgendaID) public validStore validAgendaManager  {
-        
         require(_AgendaID < agendaManager.totalAgendas(), "DAOCommittee: Not a valid Agenda Id");
-        (address[2] memory _address, uint[8] memory datas,  , , bool executed, bytes memory functionBytecode, ,  ) = agendaManager.detailedAgenda(_AgendaID);
+        (address[2] memory _address, uint[8] memory datas, , , bool executed, bytes memory functionBytecode, , ) = agendaManager.detailedAgenda(_AgendaID);
          
         address _target = _address[1];
         require(_target!=address(0) && !executed, "DAOCommittee: check target - fail or already executed");
@@ -157,7 +157,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
         require(datas[4] < now, "DAOCommittee: noticeEndTime is not ended");
         require(datas[5] == 0 && datas[6] == 0 && datas[7] == 0, "DAOCommittee: It is not committee election period.");
          
-         (bool result ,uint status, uint[5] memory times ) = agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees());
+        (bool result ,uint status, uint[5] memory times ) = agendaManager.electCommiitteeForAgenda(_AgendaID, store.getCommittees());
  
         require(result, "DAOCommittee: electCommiitteeForAgenda fails");
         emit AgendaElectCommittee(msg.sender, _AgendaID, status, times);
@@ -225,7 +225,7 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     }   
      
     function getMajority() public view validAgendaManager returns (uint256 majority) {
-        (uint256 ratioNum, uint256 ratioDeno ) = agendaManager.getQuorumRatio();
+        (uint256 ratioNum, uint256 ratioDeno ) = agendaManager.quorum();
         require(ratioNum > 0 && ratioDeno > 0  && ratioDeno > ratioNum, "DAOCommittee: Not a valid quorum");
         uint256 totalcommittees = store.totalCommittees();
          
@@ -238,7 +238,6 @@ contract DAOCommittee is StorageStateCommittee , Ownabled {
     function getTON() public view returns (address) {
         return store.getTON();
     }
-     
 
      //=== election 
     /*   function applyCommitteeElectByOperator() public validElection validSeigManager returns (uint) {
