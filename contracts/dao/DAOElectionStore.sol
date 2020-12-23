@@ -11,7 +11,7 @@ contract DAOElectionStore is OwnableAdmin {
 
     struct CommitteeInfo {
         address committeeContract;
-        address committee;
+        address candidate;
         string name;
         uint since;
     }
@@ -24,10 +24,10 @@ contract DAOElectionStore is OwnableAdmin {
     
     address public ton;
     uint256 public numCandidates;
-    CommitteeInfo[] public committeeInfos;
+    CommitteeInfo[] public candidateInfos;
 
-    mapping(address => uint256) public layer2Id;
-    mapping(address => uint256) public layer2IdByLayer;
+    mapping(address => uint256) public candidateIds;
+    mapping(address => uint256) public candidateIdsByContract;
     mapping(address => bool) public layer2Valid;
     
     constructor(address _ton) {
@@ -61,57 +61,58 @@ contract DAOElectionStore is OwnableAdmin {
         committeeL2Factory = _committeeL2Factory;
     }
     
-    function isExistCommitteeContract(address _operator) public view returns (bool exist, uint256 _layerId) {
-       if (layer2Id[_operator] > 0)
-           return (true, layer2Id[_operator]);
+    function isExistCommitteeContract(address candidate) public view returns (bool exist, uint256 candidateIndex) {
+       if (candidateIds[candidate] > 0)
+           return (true, candidateIds[candidate]);
        else
            return (false, 0);
     }
     
-    function existLayerByLayer(address _layer) public view returns (bool exist, uint256 _layerId) {
-       if (layer2IdByLayer[_layer] > 0)
-           return (true, layer2IdByLayer[_layer]);
+    function existCandidateByContract(address committeeContract) public view returns (bool exist, uint256 candidateIndex) {
+       if (candidateIdsByContract[committeeContract] > 0)
+           return (true, candidateIdsByContract[committeeContract]);
        else
            return (false, 0);
     }
     
-    function registerCommitteeContract(address committeeContract, address _operator, string memory _name) onlyOwner public returns (uint256) {
-        require(committeeContract!=address(0) && _operator != address(0), "DAOElectionStore: layer or operator is zero address");
-        if (committeeInfos.length == 0)
-            committeeInfos.push(CommitteeInfo(address(0), address(0), "", block.timestamp));
+    function registerCommitteeContract(address committeeContract, address candidate, string memory _name) onlyOwner public returns (uint256) {
+        require(committeeContract != address(0) && candidate != address(0), "DAOElectionStore: layer or operator is zero address");
+        if (candidateInfos.length == 0)
+            candidateInfos.push(CommitteeInfo(address(0), address(0), "", block.timestamp));
        
-        if (layer2Id[_operator] != 0) {
+        if (candidateIds[candidate] != 0) {
             return 0;
         } else {
-            CommitteeInfo memory la = CommitteeInfo(committeeContract, _operator, _name, block.timestamp);
-            uint256 layerIndex = committeeInfos.length;
-            committeeInfos.push(la);
-            layer2Id[_operator] = layerIndex;
-            layer2IdByLayer[committeeContract] = layerIndex;
-            numCandidates = committeeInfos.length;
+            CommitteeInfo memory la = CommitteeInfo(committeeContract, candidate, _name, block.timestamp);
+            uint256 candidateIndex = candidateInfos.length;
+            candidateInfos.push(la);
+            candidateIds[candidate] = candidateIndex;
+            candidateIdsByContract[committeeContract] = candidateIndex;
+            numCandidates = candidateInfos.length;
            
-            return layerIndex;
+            return candidateIndex;
         }
     }
 
-    function detailedCommitteeInfo(uint256 index) public view returns (address layer2, address operator, string memory name, uint since) {
+    function detailedCandidateInfo(uint256 index) public view returns (address committeeContract, address candidate, string memory name, uint since) {
         require(index < numCandidates, "DAOElectionStore: invalid index");
-        return (committeeInfos[index].committeeContract, committeeInfos[index].committee, committeeInfos[index].name, committeeInfos[index].since);
+        CommitteeInfo storage candidateInfo = candidateInfos[index];
+        return (candidateInfo.committeeContract, candidateInfo.candidate, candidateInfo.name, candidateInfo.since);
     }
     
-    function detailedLayer2sByOperator(address _operator) public view returns (address layer2, address operator, string memory name, uint since) {
-        uint256 index = layer2Id[_operator];
-        return detailedCommitteeInfo(index);
+    function detailedCommitteeInfoByCandidate(address candidate) public view returns (address committeeContract, address operator, string memory name, uint since) {
+        uint256 index = candidateIds[candidate];
+        return detailedCandidateInfo(index);
     }
 
-    function detailedLayer2sByLayer(address _layer) public view returns (address layer2, address operator, string memory name, uint since) {
-        uint256 index = layer2IdByLayer[_layer];
-        return detailedCommitteeInfo(index);
+    function detailedCandidateInfoByContract(address _committeeContract) public view returns (address committeeContract, address operator, string memory name, uint since) {
+        uint256 index = candidateIdsByContract[_committeeContract];
+        return detailedCandidateInfo(index);
     }
      
-    function committeeContractByCommittee(address committee) public view returns (address) {
-        uint256 index = layer2Id[committee];
+    function committeeContractByCandidate(address candidate) public view returns (address) {
+        uint256 index = candidateIds[candidate];
         require(index < numCandidates, "DAOElectionStore: invalid index");
-        return committeeInfos[index].committeeContract;
+        return candidateInfos[index].committeeContract;
     }
 }

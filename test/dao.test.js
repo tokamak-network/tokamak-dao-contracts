@@ -363,7 +363,7 @@ describe('Test 1', function () {
     await committeeProxy.createCommitteeCandidate(candidate, {from: candidate});
 
     // stake
-    const res = await election.detailedLayer2sByOperator(candidate);
+    const res = await election.detailedCommitteeInfoByCandidate(candidate);
     /*const data = marshalString(
       [depositManager.address, res[0]]
         .map(unmarshalString)

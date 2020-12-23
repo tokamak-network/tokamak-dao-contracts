@@ -22,10 +22,10 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
     event AgendaElectCommittee(address indexed from, uint256 indexed id, uint status, uint[5] times);
     
     //
-    event CommitteeLayer2Created(address indexed from, uint256 indexed layerId, address layer, string name);
-    event CommitteeLayer2UpdateSeigniorage(address indexed from, uint256 indexed layerId, address layer);
-    event ApplyCommitteeSuccess(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode, uint256 memberIndex);
-    event ApplyCommitteeFail(address indexed from, uint256 indexed layerId, address operator, uint256 totalbalance, uint256 applyResultCode, uint256 memberIndex);
+    event CommitteeContractCreated(address indexed from, uint256 indexed candidateIndex, address committeeContract, string name);
+    event CommitteeUpdateSeigniorage(address indexed from, uint256 indexed candidateIndex, address committeeContract);
+    event ApplyCommitteeSuccess(address indexed from, uint256 indexed candidateIndex, address operator, uint256 totalbalance, uint256 applyResultCode, uint256 memberIndex);
+    event ApplyCommitteeFail(address indexed from, uint256 indexed candidateIndex, address operator, uint256 totalbalance, uint256 applyResultCode, uint256 memberIndex);
    
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
      
@@ -80,7 +80,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
     //--dao election
     function applyCommittee(
         uint256 _indexSlot,
-        address _layer2,
+        address _committeeContract,
         address _operator,
         string memory _name,
         uint256 totalbalance
@@ -91,7 +91,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
             uint256 _memberindex
         )
     {
-        require(_layer2 != address(0) && _operator != address(0), "DAOCommittee: operator can not zero address");
+        require(_committeeContract != address(0) && _operator != address(0), "DAOCommittee: operator can not zero address");
         
         //address elect = store.getDaoElection();
         //if (elect != msg.sender) {
@@ -106,7 +106,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
             return (uint(ApplyResult.SLOT_INVALID), 0);
         }
         
-        _memberindex = store.addMember(_layer2, _operator, _name);
+        _memberindex = store.addMember(_committeeContract, _operator, _name);
         
         if (_memberindex < 1) {
             return (uint(ApplyResult.ADDMEMBER_FAIL), 0);
@@ -218,7 +218,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         
         //(bool _iscommittee, uint256 _committeeIndex) = store.isCommittee(msg.sender);
         //_committeeIndex
-        (uint256 _committeeId, address _layer2, , , , ) = store.detailedMember(msg.sender);
+        (uint256 _committeeId, address _committeeContract, , , , ) = store.detailedMember(msg.sender);
         
         require(_committeeId > 0, "DAOCommittee: you are not a committee member.");
         (bool exist, uint status) = agendaManager.getAgendaStatus(_AgendaID);
@@ -227,7 +227,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         require(agendaManager.getAgendaVotingStartTimeSeconds(_AgendaID) <= block.timestamp && block.timestamp <= agendaManager.getAgendaVotingEndTimeSeconds(_AgendaID), "DAOCommittee: for this agenda, the voting time expired");
         require(agendaManager.validCommitteeForAgenda(_AgendaID, msg.sender), "DAOCommittee: you are not a committee member on this agenda.");
         
-        (uint256[3] memory counting, uint result) = agendaManager.castVote(_AgendaID, msg.sender, _layer2, _vote, _comment, _majority);
+        (uint256[3] memory counting, uint result) = agendaManager.castVote(_AgendaID, msg.sender, _committeeContract, _vote, _comment, _majority);
         store.castVote(msg.sender);
         
         emit AgendaVoteCasted(msg.sender, _AgendaID, _vote, _comment, counting, result);
@@ -274,21 +274,21 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
 
      //=== election
     /*function applyCommitteeElectByOperator() public validElection validSeigManager returns (uint) {
-        (bool exist, uint256 _layerIndex) = election.isExistCommitteeContract(msg.sender);
-        require(exist, "not exist layer");
-        return applyCommitteeElect(_layerIndex);
+        (bool exist, uint256 _candidateIndex) = election.isExistCommitteeContract(msg.sender);
+        require(exist, "not exist candidate");
+        return applyCommitteeElect(_candidateIndex);
     }*/
     
     function applyCommitteeElect(uint256 _indexSlot) public validElection validSeigManager returns (uint) {
-        (bool exist, uint256 _layer2Index) = election.isExistCommitteeContract(msg.sender);
+        (bool exist, uint256 _candidateIndex) = election.isExistCommitteeContract(msg.sender);
         require(exist, "DAOCommittee: you are not operator");
          
-        (address layer2, address operator, string memory name, ) = election.detailedCommitteeInfo(_layer2Index);
+        (address committeeContract, address operator, string memory name, ) = election.detailedCandidateInfo(_candidateIndex);
         require(operator == msg.sender, "DAOCommittee: your are not operator");
         
-        uint256 totalbalance = totalSupplyLayer2s(layer2);
+        uint256 totalbalance = totalSupplyLayer2s(committeeContract);
          
-        (uint applyResultCode, uint256 _memberindex) = applyCommittee(_indexSlot, layer2, operator, name, totalbalance);
+        (uint applyResultCode, uint256 _memberindex) = applyCommittee(_indexSlot, committeeContract, operator, name, totalbalance);
          
         if (applyResultCode == uint(ApplyResult.SUCCESS)) {
             emit ApplyCommitteeSuccess(msg.sender, _indexSlot, operator, totalbalance, applyResultCode, _memberindex);
@@ -322,34 +322,34 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         require(layer2Registry.registerAndDeployCoinage(committeeContract, address(seigManager)), "DAOCommittee: failed to registerAndDeployCoinage");
           
         // register.store
-        uint256 layerIndex = election.registerCommitteeContract(committeeContract, msg.sender, name);
-        require(layerIndex > 0, "DAOCommittee: createCommitteeCandidate: error 1");
+        uint256 candidateIndex = election.registerCommitteeContract(committeeContract, msg.sender, name);
+        require(candidateIndex > 0, "DAOCommittee: createCommitteeCandidate: error 1");
     
-        emit CommitteeLayer2Created(msg.sender, layerIndex, committeeContract, name);
+        emit CommitteeContractCreated(msg.sender, candidateIndex, committeeContract, name);
     
-        return (layerIndex, committeeContract, msg.sender);
+        return (candidateIndex, committeeContract, msg.sender);
     }
     
-    function updateSeigniorage(address _layer) public validElection returns (bool) {
-        (bool exist, uint256 layerId) = election.existLayerByLayer(_layer);
-        require(exist, "DAOCommittee: not exist layer address");
-        CommitteeL2I(_layer).updateSeigniorage();
+    function updateSeigniorage(address committeeContract) public validElection returns (bool) {
+        (bool exist, uint256 candidateIndex) = election.existCandidateByContract(committeeContract);
+        require(exist, "DAOCommittee: not exist candidate address");
+        CommitteeL2I(committeeContract).updateSeigniorage();
 
-        emit CommitteeLayer2UpdateSeigniorage(msg.sender, layerId, _layer);
+        emit CommitteeUpdateSeigniorage(msg.sender, candidateIndex, committeeContract);
     }
       
     //function numLayer2s() public view returns (uint256 ) { return election.getNumLayer2s(); }
     
-    function totalSupplyLayer2s(address _layer) public view validSeigManager returns (uint256 totalsupply) {
-        address coinagelayer = seigManager.coinages(_layer);
-        require(coinagelayer != address(0), "DAOCommittee: coinagelayer is zero");
-        return IERC20(coinagelayer).totalSupply();
+    function totalSupplyLayer2s(address committeeContract) public view validSeigManager returns (uint256 totalsupply) {
+        address coinage = seigManager.coinages(committeeContract);
+        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        return IERC20(coinage).totalSupply();
     }
 
     /*
-    function balanceOfLayer2s(address _layer) public view validSeigManager returns (uint256 amount) {
-        address coinagelayer = seigManager.coinages(_layer);
-        require(coinagelayer != address(0), "coinagelayer is zero");
-        return IERC20(coinagelayer).balanceOf(msg.sender);
+    function balanceOfLayer2s(address committeeContract, address account) public view validSeigManager returns (uint256 amount) {
+        address coinage = seigManager.coinages(committeeContract);
+        require(coinage != address(0), "coinage is zero");
+        return IERC20(coinage).balanceOf(account);
     }*/
 }
