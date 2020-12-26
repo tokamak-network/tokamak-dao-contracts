@@ -5,37 +5,37 @@ pragma abicoder v2;
 library LibAgenda {
     //using LibAgenda for Agenda;
 
-    enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
-    enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
+    enum AgendaStatus { NONE, NOTICE, VOTING, WAITING_EXEC, EXECUTED, ENDED, PENDING, RISK }
+    enum AgendaResult { PENDING, ACCEPT, REJECT, DISMISS }
 
     //votor : based operator 
     struct Voter {
+        bool isVoter;
         bool hasVoted;
-        address layer2;
         uint vote;
-        string comment;
     }
 
-    // times 0:creationDate 1:noticeEndTime  2:votingStartTime 3:votingEndTime  4:execTime
     // counting abstainVotes yesVotes noVotes
     struct Agenda {
-        address creator;
+        uint256 createdTimestamp;
+        uint256 noticeEndTimestamp;
+        uint256 votingStartedTimestamp;
+        uint256 votingEndTimestamp;
+        uint256 executedTimestamp;
+        //uint256[3] counting;
+        uint256 countingYes;
+        uint256 countingNo;
+        uint256 countingAbstain;
+        uint256 reward;
         AgendaStatus status;
         AgendaResult result;
-        uint group;
-        bool executed;
-        uint[5] times; 
-        uint256[3] counting;
-        uint256 fees;
         address target;
-        bytes functionBytecode;
-        string description;
         address[] voters;  
-        //mapping(address => Voter) voterInfo;
-        address[] committees;
+        bytes functionBytecode;
+        bool executed;
     }
 
-    function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {
+    /*function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {
         return agendas[index];
-    }
+    }*/
 }

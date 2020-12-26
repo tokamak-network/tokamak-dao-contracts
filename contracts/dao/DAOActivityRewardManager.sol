@@ -4,9 +4,9 @@ pragma solidity ^0.7.6;
 import "../shared/OwnableAdmin.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../roles/DAOActivityFeeManagerRole.sol";
+//import "../roles/DAOActivityFeeManagerRole.sol";
 
-contract DAOActivityFeeManager is OwnableAdmin, DAOActivityFeeManagerRole {
+contract DAOActivityRewardManager is OwnableAdmin/*, DAOActivityFeeManagerRole*/ {
     using SafeMath for uint256;
     address public ton;
     address public daoVault;
@@ -38,7 +38,7 @@ contract DAOActivityFeeManager is OwnableAdmin, DAOActivityFeeManagerRole {
         daoVault = _daoVault;
     }
      
-    function getTON() public view returns (address) { return ton; }
+    //function getTON() public view returns (address) { return ton; }
      
     function getDaoVault() public view returns (address) { return daoVault; }
     

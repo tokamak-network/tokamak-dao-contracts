@@ -10,15 +10,19 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownabled {
 
     event Upgraded(address indexed implementation);
      
-    constructor(DAOCommitteeStore _storage) {
-        store = _storage;
+    constructor(
+        address _ton
+    )
+    {
+        ton = _ton;
+        maxMember = 3;
     }
 
     function setProxyPause(bool _pause) onlyOwner public {
         pauseProxy = _pause;
     }
 
-    function setProxyStore(address payable _storeAddress) onlyOwner public {
+    /*function setProxyStore(address payable _storeAddress) onlyOwner public {
         require(_storeAddress != address(0), "DAOCommitteeProxy: store address is zero");
         store = DAOCommitteeStore(_storeAddress);
     }
@@ -41,23 +45,23 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownabled {
         election = DAOElectionStore(_addr);
     }
 
-    function setProxyCommitteeL2Factory(address _addr) onlyOwner validElection public {
+    function setProxyCommitteeL2Factory(address _addr) onlyOwner public {
         require(_addr != address(0), "DAOCommitteeProxy: factory address is zero");
         committeeL2Factory = CommitteeL2FactoryI(_addr);
         election.setCommitteeL2Factory(_addr);
     }
 
-    function setProxyLayer2Registry(address _addr) onlyOwner validElection public {
+    function setProxyLayer2Registry(address _addr) onlyOwner public {
         require(_addr != address(0), "DAOCommitteeProxy: registry address is zero");
         layer2Registry = Layer2RegistryI(_addr);
         election.setLayer2Registry(_addr);
     }
 
-    function setProxySeigManager(address _addr) onlyOwner validElection public {
+    function setProxySeigManager(address _addr) onlyOwner public {
         require(_addr != address(0), "DAOCommitteeProxy: SeigManager address is zero");
         seigManager = SeigManagerI(_addr);
         election.setSeigManager(_addr);
-    }
+    }*/
     //--
 
     function upgradeTo(address impl) public onlyOwner {

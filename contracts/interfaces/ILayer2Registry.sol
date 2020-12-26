@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-interface Layer2RegistryI {
+interface ILayer2Registry {
     function layer2s(address layer2) external view returns (bool);
 
     function register(address layer2) external returns (bool);

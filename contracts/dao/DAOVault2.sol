@@ -2,8 +2,6 @@
 pragma solidity ^0.7.6;
 
 import "../shared/Ownabled.sol";
-import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
-import { IDAOElection } from "../interfaces/IDAOElection.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 
@@ -12,19 +10,27 @@ contract DAOVault2 is Ownabled {
     
     address public ton;
     address public daoCommittee;
-    address public daoActivityFeeManager;
+    address public daoActivityRewardManager;
     
     //////////////////////////////
     // Modifiers
     //////////////////////////////
     
     modifier onlyDAOCommittee() {
-        require(ton != address(0) && daoCommittee != address(0) && msg.sender == daoCommittee, "DAOVault2: not daoCommittee");
+        require(
+            daoCommittee != address(0) &&
+            msg.sender == daoCommittee,
+            "DAOVault2: not daoCommittee"
+        );
         _;
     }
     
-    modifier onlyDAOActivityFeeManager() {
-        require(ton != address(0) && daoActivityFeeManager != address(0) && msg.sender == daoActivityFeeManager, "DAOVault2: not daoActivityFeeManager");
+    modifier onlyDAOActivityRewardManager() {
+        require(
+            daoActivityRewardManager != address(0) &&
+            msg.sender == daoActivityRewardManager,
+            "DAOVault2: not daoActivityRewardManager"
+        );
         _;
     }
     
@@ -40,22 +46,22 @@ contract DAOVault2 is Ownabled {
         ton = _ton;
     }
 
-    /*
     function setTON(address _ton) external onlyOwner {
         ton = _ton;
-    }*/
+    }
+
     function setDaoCommittee(address _addr) public onlyOwner {
         daoCommittee = _addr;
     }
      
     function setDAOActivityFeeManager(address _addr) public onlyOwner {
-        daoActivityFeeManager = _addr;
+        daoActivityRewardManager = _addr;
     }
 
     function approveTonDao(uint256 amount) public onlyOwner {
         require(ton != address(0), "DAOVault2: ton address is zero");
         approveTon(daoCommittee, amount);
-        approveTon(daoActivityFeeManager, amount);
+        approveTon(daoActivityRewardManager, amount);
     }
     
     function approveTonDaoCommittee(uint256 amount) public onlyOwner {
@@ -65,7 +71,7 @@ contract DAOVault2 is Ownabled {
     
     function approveTonDAOActivityFeeManager(uint256 amount) public onlyOwner {
         require(ton != address(0), "DAOVault2: ton address is zero");
-        approveTon(daoActivityFeeManager, amount);
+        approveTon(daoActivityRewardManager, amount);
     }
     
     function approveTon(address to, uint256 amount) public onlyOwner {
@@ -80,7 +86,7 @@ contract DAOVault2 is Ownabled {
         return amount;
     }
     
-    function claimActivityFeeManager(address user, uint256 amount) external onlyDAOActivityFeeManager returns (bool) {
+    function claimActivityFeeManager(address user, uint256 amount) external onlyDAOActivityRewardManager returns (bool) {
         if (IERC20(ton).balanceOf(address(this)) > amount) {
             bool res = IERC20(ton).transfer(user,amount);
             emit TransferActivityFeeManager(user, amount, res);

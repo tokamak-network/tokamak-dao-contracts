@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-interface CommitteeL2I {
+interface ICandidate {
     function setSeigManager(address _seigMan) external;
-    function setLayer2Registry(address _layer2Registry) external;
+    //function setLayer2Registry(address _layer2Registry) external;
     function updateSeigniorage() external returns (bool);
-    function registerAndDeployCoinage() external returns (bool);
+    //function registerAndDeployCoinage() external returns (bool);
     function isCommitteeLayer2() external view returns (bool);
-    function operatorAndOwner() external view returns (address, address);
+    function candidateAndOwner() external view returns (address, address);
 }

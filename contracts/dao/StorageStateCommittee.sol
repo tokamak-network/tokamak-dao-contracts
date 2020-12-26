@@ -1,93 +1,59 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "./DAOCommitteeStore.sol";
 import "./DAOAgendaManager.sol";
-import "./DAOActivityFeeManager.sol";
+import "./DAOActivityRewardManager.sol";
 
-import "./DAOElectionStore.sol";
-import { CommitteeL2FactoryI } from "../interfaces/CommitteeL2FactoryI.sol";
-import { Layer2RegistryI } from "../interfaces/Layer2RegistryI.sol";
-import { SeigManagerI } from "../interfaces/SeigManagerI.sol";
+import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
+import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
+import { ISeigManager } from "../interfaces/ISeigManager.sol";
+import { IDAOActivityRewardManager } from "../interfaces/IDAOActivityRewardManager.sol";
+import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 
 contract StorageStateCommittee {
-    DAOCommitteeStore  public store;
-    DAOAgendaManager public agendaManager;
-    DAOActivityFeeManager public activityfeeManager;
-    
-    DAOElectionStore public election;
-    CommitteeL2FactoryI public committeeL2Factory;
-    Layer2RegistryI public layer2Registry;
-    SeigManagerI public seigManager;
-    /*
-    struct Ratio {
-        uint256 numerator;
-        uint256 denominator;
-    }
-    
-    struct ActivityFee {
-        uint256 total;
-        uint256 remain;
-        uint256 claim;
-    }
-    */
-    /*
-    struct Agenda {
-        address creator;
-        AgendaStatus status;
-        AgendaResult result;
-        AgendaGroup group;
-        bool executed;
-        uint[3] times;
-        uint256[3] counting;
-        address target;
-        bytes functionBytecode;
-        string description;
-        address[] voters;
-        mapping(address => Voter) voterInfo;
-    }
-    
-    struct Voter {
-        bool hasVoted;
-        uint vote;
-        bool claim;
-    }
-    
-    struct Member {
-        address member;
-        string name;
-        uint memberSince;
-        uint256 castingcount;
-    }
-    */
-    enum VoteChoice { ABSTAIN, YES, NO }
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
-    enum AgendaGroup { DAOVault, TON, PowerTON, SeigManager, Others }
-    
-    modifier validStore() {
-        require(address(store) != address(0), "StorageStateCommittee: store address is zero");
-        _;
+
+    struct CandidateInfo {
+        address candidateContract;
+        uint memberJoinedTime;
+        uint indexMembers;
     }
     
+    address public ton;
+    address public daoVault;
+    IDAOAgendaManager public agendaManager;
+    IDAOActivityRewardManager public activityRewardManager;
+    ICandidateFactory public candidateFactory;
+    ILayer2Registry public layer2Registry;
+    ISeigManager public seigManager;
+
+    address[] public candidates;
+    address[] public members;
+    uint256 public maxMember;
+
+    // candidate EOA => candidate information
+    mapping(address => CandidateInfo) public candidateInfos;
+
+    event ApplyMemberSuccess(
+        address indexed from,
+        address member,
+        uint256 totalbalance,
+        uint256 memberIndex
+    );
+
     modifier validAgendaManager() {
         require(address(agendaManager) != address(0), "StorageStateCommittee: AgendaManager is zero");
         _;
     }
     
-    modifier validActivityfeeManager() {
-        require(address(activityfeeManager) != address(0), "StorageStateCommittee: ActivityFeeManager is zero");
-        _;
-    }
-
-    //==
-    modifier validElection() {
-        require(address(election) != address(0), "StorageStateCommittee: unvalid election");
+    modifier validActivityRewardManager() {
+        require(address(activityRewardManager) != address(0), "StorageStateCommittee: ActivityRewardManager is zero");
         _;
     }
 
     modifier validCommitteeL2Factory() {
-        require(address(committeeL2Factory) != address(0), "StorageStateCommittee: unvalid CommitteeL2Factory");
+        require(address(candidateFactory) != address(0), "StorageStateCommittee: unvalid CommitteeL2Factory");
         _;
     }
 
@@ -101,12 +67,13 @@ contract StorageStateCommittee {
         _;
     }
 
-    //function getProxyStore() public view returns(address) { return address(store); }
-    //function getProxyAgendamanager() public view returns(address) { return address(agendaManager); }
-    //function getProxyActivityFeeManager() public view returns(address) { return address(activityfeeManager); }
+    modifier onlyMember(address _candidate) {
+        require(isMember(_candidate), "StorageStateCommittee: not a member");
+        _;
+    }
+    
+    function isMember(address _candidate) public view returns (bool) {
+        return candidateInfos[_candidate].memberJoinedTime > 0;
+    }
 
-    //function getProxyElection() public view returns (address) { return address(election); }
-    //function getProxySeigManager() public view returns (address) { return address(seigManager); }
-    //function getProxyLayer2Registry() public view returns (address) { return address(layer2Registry); }
-    //function getProxyCommitteeL2Factory() public view returns (address) { return address(committeeL2Factory); }
 }

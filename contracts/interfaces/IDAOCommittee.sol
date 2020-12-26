@@ -39,5 +39,5 @@ interface IDAOCommittee {
       
     function checkRisk(address _target, bytes calldata _functionBytecode) external pure returns (bool);
     function getMajority() external view returns (uint256 majority);
-    function getTON() external view returns (address);
+    //function getTON() external view returns (address);
 }

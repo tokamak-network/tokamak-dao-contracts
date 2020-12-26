@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-interface SeigManagerI {
+interface ISeigManager {
     function registry() external view returns (address);
     function depositManager() external view returns (address);
     function ton() external view returns (address);
