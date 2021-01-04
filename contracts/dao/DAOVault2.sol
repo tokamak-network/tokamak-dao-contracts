@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "../shared/Ownabled.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 
-contract DAOVault2 is Ownabled {
+contract DAOVault2 is Ownable {
     using SafeMath for uint256;
     
     address public ton;

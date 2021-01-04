@@ -1,21 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "../shared/Ownabled.sol";
 import "./StorageStateCommittee.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
-contract DAOCommitteeProxy is StorageStateCommittee, Ownabled {
+contract DAOCommitteeProxy is StorageStateCommittee, Ownable {
     address public _implementation;
     bool public pauseProxy;
 
     event Upgraded(address indexed implementation);
      
     constructor(
-        address _ton
+        address _ton,
+        address _impl,
+        address _seigManager,
+        address _layer2Registry,
+        address _agendaManager,
+        address _candidateFactory,
+        address _activityRewardManager,
+        address _daoVault
     )
     {
         ton = _ton;
-        maxMember = 3;
+        _implementation = _impl;
+        seigManager = ISeigManager(_seigManager);
+        layer2Registry = ILayer2Registry(_layer2Registry);
+        agendaManager = IDAOAgendaManager(_agendaManager);
+        candidateFactory = ICandidateFactory(_candidateFactory);
+        activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
+        daoVault = _daoVault;
+        //maxMember = 3;
     }
 
     function setProxyPause(bool _pause) onlyOwner public {

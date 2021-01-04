@@ -2,7 +2,7 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import "../shared/Ownabled.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "./StorageStateCommittee.sol";
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
@@ -11,7 +11,7 @@ import { ICandidate } from "../interfaces/ICandidate.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
 
-contract DAOCommittee is StorageStateCommittee, Ownabled {
+contract DAOCommittee is StorageStateCommittee, Ownable {
     using SafeMath for uint256;
     using LibAgenda for *;
      
@@ -160,29 +160,35 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         public
         returns (bool)
     {
-        address prevMember = members[_memberIndex];
+        CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
         require(
-            totalSupplyOnCandidate(msg.sender) > totalSupplyOnCandidate(prevMember),
-            "not enough amount"
-        );
-        require(
-            _memberIndex >= 0 && _memberIndex < members.length,
+            _memberIndex < maxMember,
             "DAOCommitteeStore: index is not available"
         );
         require(
-            candidateInfos[msg.sender].candidateContract != address(0),
+            candidateInfo.candidateContract != address(0),
             "DAOCommitteeStore: The address is not a candidate"
         );
+        require(
+            candidateInfo.memberJoinedTime == 0,
+            "DAOCommitteeStore: already member"
+        );
         
-        CandidateInfo storage newCandidate = candidateInfos[msg.sender];
-        newCandidate.memberJoinedTime = block.timestamp;
-        newCandidate.indexMembers = _memberIndex;
+        address prevMember = members[_memberIndex];
+
+        candidateInfo.memberJoinedTime = block.timestamp;
+        candidateInfo.indexMembers = _memberIndex;
 
         members[_memberIndex] = msg.sender;
 
         if (prevMember == address(0)) {
             return true;
         }
+
+        require(
+            totalSupplyOnCandidate(msg.sender) > totalSupplyOnCandidate(prevMember),
+            "not enough amount"
+        );
 
         CandidateInfo storage prevCandidate = candidateInfos[prevMember];
         prevCandidate.memberJoinedTime = 0;
@@ -262,7 +268,8 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
    
     function createAgenda(
         address _target,
-        uint _noticePeriodSeconds,
+        uint256 _noticePeriodSeconds,
+        uint256 _votingPeriodSeconds,
         bytes calldata _functionBytecode
     )
         public
@@ -277,6 +284,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         uint256 agendaID = agendaManager.newAgenda(
             _target,
             _noticePeriodSeconds,
+            _votingPeriodSeconds,
             reward,
             _functionBytecode
         );
@@ -285,7 +293,7 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
             msg.sender,
             agendaID,
             _target,
-            agendaManager.agendas(agendaID).noticeEndTimestamp
+            agendaManager.getAgendaNoticeEndTimeSeconds(agendaID)
         );
 
         return agendaID;
@@ -416,8 +424,8 @@ contract DAOCommittee is StorageStateCommittee, Ownabled {
         return candidateInfos[_candidate].candidateContract != address(0);
     }
 
-    function candidateContract(address _candidate) public view returns (address) {
+    /*function candidateContract(address _candidate) public view returns (address) {
         return candidateInfos[_candidate].candidateContract;
-    }
+    }*/
 
 }

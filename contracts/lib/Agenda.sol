@@ -19,20 +19,23 @@ library LibAgenda {
     struct Agenda {
         uint256 createdTimestamp;
         uint256 noticeEndTimestamp;
+        uint256 votingPeriodInSeconds;
         uint256 votingStartedTimestamp;
         uint256 votingEndTimestamp;
         uint256 executedTimestamp;
-        //uint256[3] counting;
         uint256 countingYes;
         uint256 countingNo;
         uint256 countingAbstain;
         uint256 reward;
         AgendaStatus status;
         AgendaResult result;
-        address target;
-        address[] voters;  
-        bytes functionBytecode;
+        address[] voters;
         bool executed;
+    }
+
+    struct AgendaExecutionInfo {
+        address target;
+        bytes functionBytecode;
     }
 
     /*function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {

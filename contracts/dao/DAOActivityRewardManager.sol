@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "../shared/OwnableAdmin.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 //import "../roles/DAOActivityFeeManagerRole.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
-contract DAOActivityRewardManager is OwnableAdmin/*, DAOActivityFeeManagerRole*/ {
+contract DAOActivityRewardManager is Ownable/*, DAOActivityFeeManagerRole*/ {
     using SafeMath for uint256;
     address public ton;
     address public daoVault;
@@ -24,16 +24,17 @@ contract DAOActivityRewardManager is OwnableAdmin/*, DAOActivityFeeManagerRole*/
         uint256 claim;
     }
      
-    constructor(address _ton) public {
+    constructor(address _ton, address _daoVault) public {
         activityfeePerVoting = 0;
         ton = _ton;
+        daoVault = _daoVault;
     }
             
-    function setActivityfeePerVoting(uint256 _activityfeePerVoting) onlyAdminOrOwner public {
+    function setActivityfeePerVoting(uint256 _activityfeePerVoting) onlyOwner public {
         activityfeePerVoting = _activityfeePerVoting;
     }
      
-    function setDaoVault(address _daoVault) onlyAdminOrOwner public {
+    function setDaoVault(address _daoVault) onlyOwner public {
         require(_daoVault != address(0), "DAOActivityFeeManager: Vault is zero");
         daoVault = _daoVault;
     }

@@ -76,4 +76,7 @@ contract StorageStateCommittee {
         return candidateInfos[_candidate].memberJoinedTime > 0;
     }
 
+    function candidateContract(address _candidate) public view returns (address) {
+        return candidateInfos[_candidate].candidateContract;
+    }
 }

@@ -47,7 +47,7 @@ contract Candidate is Ownabled, ICandidate {
         return (candidate, owner);
     }
 
-    //function operator() public view returns (address) { return operator; }
+    function operator() public view returns (address) { return candidate; }
     function isLayer2() public view returns (bool) { return true; }
     function currentFork() public view returns (uint) { return 1; }
     function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }

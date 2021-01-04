@@ -17,7 +17,8 @@ interface IDAOAgendaManager  {
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) external;
     function newAgenda(
         address _target,
-        uint _noticePeriodSeconds,
+        uint256 _noticePeriodSeconds,
+        uint256 _votingPeriodSeconds,
         uint256 _reward,
         bytes calldata _functionBytecode
     )
