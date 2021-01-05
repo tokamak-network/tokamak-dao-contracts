@@ -69,8 +69,8 @@ const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
 const AGENDA_INDEX_REWARD = 9;
 const AGENDA_INDEX_STATUS = 10;
 const AGENDA_INDEX_RESULT = 11;
-const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 13;
+//const AGENDA_INDEX_VOTERS = 12;
+const AGENDA_INDEX_EXECUTED = 12;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -80,6 +80,14 @@ const AGENDA_STATUS_EXECUTED = 4;
 const AGENDA_STATUS_ENDED = 5;
 const AGENDA_STATUS_PENDING = 6;
 const AGENDA_STATUS_RISK = 7;
+
+const VOTE_ABSTAIN = 0;
+const VOTE_YES = 1;
+const VOTE_NO = 2;
+
+const VOTER_INFO_ISVOTER = 0;
+const VOTER_INFO_HAS_VOTED = 1;
+const VOTER_INFO_VOTE = 2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -532,41 +540,100 @@ describe('Test 1', function () {
   describe('Agenda behavior', function () {
     describe('Create', function () {
       const newMinimumNoticePeriod = 100;
-      let agendaID;
-      it('create new agenda', async function () {
-        const minimumNoticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-        const minimumVotingPeriod = await agendaManager.minimunVotingPeriodSeconds();
-        const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
-        const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
-        const param = selector.concat(data);
-        await committeeProxy.createAgenda(
-          agendaManager.address,
-          minimumNoticePeriod,
-          minimumVotingPeriod,
-          param,
-          {from: user1}
-        );
 
-        agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
-        const executionInfo = await agendaManager.executionInfos(agendaID);
-        executionInfo[0].should.be.equal(agendaManager.address);
-        executionInfo[1].should.be.equal(param);
-      });
+      describe('Vote', function () {
+        votesList = [
+          [0, 0, 0],
+          [0, 0, 1],
+          [0, 0, 2],
+          [0, 1, 1],
+          [0, 1, 2],
+          [0, 2, 2],
+          [1, 1, 1],
+          [1, 1, 2],
+          [1, 2, 2],
+          [2, 2, 2]
+        ]
+        let agendaID;
 
-      it('agenda information', async function () {
-        const agenda = await agendaManager.agendas(agendaID);
-      });
+        async function castVote(_agendaID, voter, vote) {
+          const agenda1 = await agendaManager.agendas(_agendaID);
+          const beforeCountingYes = agenda1[AGENDA_INDEX_COUNTING_YES];
+          const beforeCountingNo = agenda1[AGENDA_INDEX_COUNTING_NO];
+          const beforeCountingAbstain = agenda1[AGENDA_INDEX_COUNTING_ABSTAIN];
 
-      it('start voting', async function () {
-        const agenda = await agendaManager.agendas(agendaID);
-        const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
-        time.increaseTo(noticeEndTimestamp);
-        await agendaManager.startVoting(agendaID);
-        const agendaAfter = await agendaManager.agendas(agendaID);
-        agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_VOTING));
-      });
+          const voterInfo1 = await agendaManager.voterInfos(_agendaID, voter);
+          voterInfo1[VOTER_INFO_ISVOTER].should.be.equal(true);
+          voterInfo1[VOTER_INFO_HAS_VOTED].should.be.equal(false);
 
-      it('check voters', async function () {
+          await committeeProxy.castVote(_agendaID, vote, "test comment", {from: voter});
+
+          const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
+          voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
+          voterInfo2[VOTER_INFO_HAS_VOTED].should.be.equal(true);
+          voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(vote));
+
+          const agenda2 = await agendaManager.agendas(_agendaID);
+          agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(vote === VOTE_YES ? toBN(1) : toBN(0)));
+          agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(vote === VOTE_NO ? toBN(1) : toBN(0)));
+          agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+        }
+
+        for (let i = 0; i < votesList.length; i++) {
+          describe(`Agenda ${i}`, async function () {
+            it('create new agenda', async function () {
+              const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
+              const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+              const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
+              const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
+              const param = selector.concat(data);
+              await committeeProxy.createAgenda(
+                agendaManager.address,
+                noticePeriod,
+                votingPeriod,
+                param,
+                {from: user1}
+              );
+
+              agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+              const executionInfo = await agendaManager.executionInfos(agendaID);
+              executionInfo[0].should.be.equal(agendaManager.address);
+              executionInfo[1].should.be.equal(param);
+            });
+
+            it('start voting', async function () {
+              const agenda = await agendaManager.agendas(agendaID);
+              const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+              time.increaseTo(noticeEndTimestamp);
+              await agendaManager.startVoting(agendaID);
+              const agendaAfter = await agendaManager.agendas(agendaID);
+              agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_VOTING));
+            });
+
+            it('check voters', async function () {
+              const voters = await agendaManager.getVoters(agendaID);
+              voters[0].should.be.equal(candidate1);
+              voters[1].should.be.equal(candidate2);
+              voters[2].should.be.equal(candidate3);
+
+              for (let j = 0; j < voters.length; j++) {
+                const voterInfo = await agendaManager.voterInfos(agendaID, voters[j]);
+                voterInfo[0].should.be.equal(true);
+              }
+            });
+
+            describe('Vote', function () {
+              it(`cast vote - ${votesList[i]}`, async function () {
+                for (let j = 0; j < 3; j++) {
+                  await castVote(agendaID, candidates[j], votesList[i][j]);
+                }
+              });
+            });
+
+            it("check vote result", async function () {
+            });
+          });
+        }
       });
     });
   });

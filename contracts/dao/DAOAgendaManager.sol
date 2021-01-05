@@ -285,7 +285,7 @@ contract DAOAgendaManager is Ownable {
     {
         require(_vote < uint(VoteChoice.MAX), "DAOCommittee: invalid vote");
         require(isVoter(_agendaID, _voter), "DAOCommittee: not a voter");
-        require(!hasVoted(_agendaID, _voter), "DAOCommittee: not a voter");
+        require(!hasVoted(_agendaID, _voter), "DAOCommittee: already voted");
 
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         require(
@@ -314,7 +314,7 @@ contract DAOAgendaManager is Ownable {
             agenda.countingAbstain = agenda.countingAbstain.add(1);
         else if (_vote == uint(VoteChoice.YES))
             agenda.countingYes = agenda.countingYes.add(1);
-        else
+        else if (_vote == uint(VoteChoice.NO))
             agenda.countingNo = agenda.countingNo.add(1);
         
         return true;
@@ -438,5 +438,9 @@ contract DAOAgendaManager is Ownable {
 
     function numAgendas() public view returns (uint256) {
         return agendas.length;
+    }
+
+    function getVoters(uint256 _agendaID) public view returns (address[] memory) {
+        return agendas[_agendaID].voters;
     }
 }
