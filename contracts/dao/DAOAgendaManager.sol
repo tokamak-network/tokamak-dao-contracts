@@ -36,12 +36,15 @@ contract DAOAgendaManager is Ownable {
     
     Ratio public quorum;
     
-    event StepNext(
+    event AgendaStatusChanged(
         uint256 indexed agendaID,
         uint256 prevStatus,
-        uint256 prevResult,
-        uint256 nextStatus,
-        uint256 nextResult
+        uint256 newStatus
+    );
+
+    event AgendaResultChanged(
+        uint256 indexed agendaID,
+        uint256 result
     );
 
     modifier validAgenda(uint256 _agendaID) {
@@ -83,6 +86,8 @@ contract DAOAgendaManager is Ownable {
 
     function setStatus(uint256 _agendaID, uint _status) public onlyOwner {
         require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
+
+        emit AgendaStatusChanged(_agendaID, uint(agendas[_agendaID].status), _status);
         agendas[_agendaID].status = getStatus(_status);
     }
 
@@ -267,6 +272,8 @@ contract DAOAgendaManager is Ownable {
             agenda.voters.push(voter);
             voterInfos[_agendaID][voter].isVoter = true;
         }
+
+        emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
     }
     
     function isVoter(uint256 _agendaID, address _user) public view returns (bool) {
@@ -329,10 +336,10 @@ contract DAOAgendaManager is Ownable {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         agenda.executed = true;
         agenda.executedTimestamp = block.timestamp;
-        agenda.status = LibAgenda.AgendaStatus.EXECUTED;
-        //numExecAgendas = numExecAgendas.add(1);
 
-        //emit StepNext();
+        emit AgendaStatusChanged(_agendaID, uint(agenda.status), uint(LibAgenda.AgendaStatus.EXECUTED));
+
+        agenda.status = LibAgenda.AgendaStatus.EXECUTED;
     }
 
     /*function agendaStepNext(uint256 _agendaID) public onlyOwner {
@@ -381,6 +388,8 @@ contract DAOAgendaManager is Ownable {
     {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         agenda.result = _result;
+
+        emit AgendaResultChanged(_agendaID, uint(_result));
     }
      
     function getExecutionInfo(uint256 _agendaID)

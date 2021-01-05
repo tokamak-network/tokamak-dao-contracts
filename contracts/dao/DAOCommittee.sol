@@ -42,39 +42,21 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         bytes functionBytecode
     );
 
-    event AgendaElectCommittee(
-        address indexed from,
-        uint256 indexed id,
-        uint status,
-        uint[5] times
-    );
-    
-    event CommitteeContractCreated(
+    event CandidateContractCreated(
         address indexed candidate,
         address candidateContract,
         string memo
     );
 
-    event CommitteeUpdateSeigniorage(
-        address indexed from
+    event ChangedMember(
+        uint256 indexed slotIndex,
+        address indexed prevMember,
+        address indexed newMember
     );
 
-    event ApplyCommitteeSuccess(
-        address indexed from,
-        uint256 indexed candidateIndex,
-        address operator,
-        uint256 totalbalance,
-        uint256 applyResultCode,
-        uint256 memberIndex
-    );
-
-    event ApplyCommitteeFail(
-        address indexed from,
-        uint256 indexed candidateIndex,
-        address operator,
-        uint256 totalbalance,
-        uint256 applyResultCode,
-        uint256 memberIndex
+    event ChangedSlotMaximum(
+        uint256 indexed prevSlotMax,
+        uint256 indexed slotMax
     );
 
     //////////////////////////////////////////////////////////////////////
@@ -153,7 +135,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             indexMembers: 0
         });
        
-        emit CommitteeContractCreated(msg.sender, candidateContract, _memo);
+        emit CandidateContractCreated(msg.sender, candidateContract, _memo);
     }
 
     function changeMember(uint256 _memberIndex)
@@ -194,6 +176,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         prevCandidate.memberJoinedTime = 0;
         prevCandidate.indexMembers = 0;
 
+        emit ChangedMember(_memberIndex, prevMember, msg.sender);
+
         return true;
     }
     
@@ -201,6 +185,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.memberJoinedTime = 0;
+
+        emit ChangedMember(candidateInfo.indexMembers, msg.sender, address(0));
+
         candidateInfo.indexMembers = 0;
     }
 
@@ -220,6 +207,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         members.pop();
         maxMember = maxMember.sub(1);
+
+        emit ChangedMember(_reducingMemberIndex, reducingMember, address(0));
+        emit ChangedSlotMaximum(maxMember.add(1), maxMember);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -360,7 +350,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         require(candidateContract != address(0), "DAOCommittee: not a candidate");
         ICandidate(candidateContract).updateSeigniorage();
 
-        emit CommitteeUpdateSeigniorage(msg.sender);
+        //emit CommitteeUpdateSeigniorage(msg.sender);
     }
 
     function updateSeigniorages(address[] calldata _candidates) public returns (bool) {
