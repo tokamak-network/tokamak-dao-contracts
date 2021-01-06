@@ -5,7 +5,7 @@ pragma abicoder v2;
 library LibAgenda {
     //using LibAgenda for Agenda;
 
-    enum AgendaStatus { NONE, NOTICE, VOTING, WAITING_EXEC, EXECUTED, ENDED, PENDING, RISK }
+    enum AgendaStatus { NONE, NOTICE, VOTING, WAITING_EXEC, EXECUTED, ENDED }
     enum AgendaResult { PENDING, ACCEPT, REJECT, DISMISS }
 
     //votor : based operator 

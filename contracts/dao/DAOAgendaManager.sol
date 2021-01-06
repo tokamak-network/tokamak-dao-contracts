@@ -71,10 +71,6 @@ contract DAOAgendaManager is Ownable {
             return LibAgenda.AgendaStatus.EXECUTED;
         else if (_status == uint(LibAgenda.AgendaStatus.ENDED))
             return LibAgenda.AgendaStatus.ENDED;
-        else if (_status == uint(LibAgenda.AgendaStatus.PENDING))
-            return LibAgenda.AgendaStatus.PENDING;
-        else if (_status == uint(LibAgenda.AgendaStatus.RISK))
-            return LibAgenda.AgendaStatus.RISK;
         else
             return LibAgenda.AgendaStatus.NONE;
     }
@@ -296,8 +292,9 @@ contract DAOAgendaManager is Ownable {
 
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         require(
-            _agendaID < agendas.length && agenda.status == LibAgenda.AgendaStatus.VOTING,
-            "DAOAgendaManager: status is not voting.");
+            agenda.status == LibAgenda.AgendaStatus.VOTING,
+            "DAOAgendaManager: status is not voting."
+        );
         require(
             isVoter(_agendaID, _voter),
             "you are not a committee member on this agenda."
@@ -340,6 +337,15 @@ contract DAOAgendaManager is Ownable {
         emit AgendaStatusChanged(_agendaID, uint(agenda.status), uint(LibAgenda.AgendaStatus.EXECUTED));
 
         agenda.status = LibAgenda.AgendaStatus.EXECUTED;
+    }
+
+    function checkAndEndVoting(uint256 _agendaID) internal {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        require(
+            agenda.status == LibAgenda.AgendaStatus.VOTING,
+            "DAOAgendaManager: status is not voting."
+        );
     }
 
     /*function agendaStepNext(uint256 _agendaID) public onlyOwner {
