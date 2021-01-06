@@ -17,7 +17,7 @@ chai.use(require('chai-bn')(BN)).should();
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
-const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
+//const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
 const DAOCommitteeProxy = contract.fromArtifact('DAOCommitteeProxy');
@@ -263,11 +263,11 @@ describe('Test 1', function () {
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
 
     //===================================================
-    activityRewardManager = await DAOActivityRewardManager.new(this.ton.address, daoVault2.address);
-    if(debugLog)  console.log('activityRewardManager :', activityRewardManager.address) ;
+    //activityRewardManager = await DAOActivityRewardManager.new(this.ton.address, daoVault2.address);
+    //if(debugLog)  console.log('activityRewardManager :', activityRewardManager.address) ;
 
     //===================================================
-    agendaManager = await DAOAgendaManager.new(this.ton.address, activityRewardManager.address);
+    agendaManager = await DAOAgendaManager.new(this.ton.address/*, activityRewardManager.address*/);
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();
@@ -284,7 +284,7 @@ describe('Test 1', function () {
       registry.address,
       agendaManager.address,
       candidateFactory.address,
-      activityRewardManager.address,
+      //activityRewardManager.address,
       daoVault2.address
     );
     if(debugLog)  console.log('dAOCommitteeProxy :', dAOCommitteeProxy.address) ;
@@ -304,8 +304,6 @@ describe('Test 1', function () {
     //if(debugLog)  console.log('committeeProxy.setDaoVault end :') ;
 
     //
-    await daoVault2.setDaoCommittee(this.dAOCommitteeProxy.address);
-
     if(debugLog){
       console.log('dAOCommittee :', committee.address) ;
       console.log('dAOCommitteeProxy :', this.dAOCommitteeProxy.address) ;
@@ -335,9 +333,9 @@ describe('Test 1', function () {
 
     await registry.transferOwnership(committeeProxy.address);
     await daoVault2.setDaoCommittee(committeeProxy.address);
-    await daoVault2.setDAOActivityFeeManager(activityRewardManager.address);
+    //await daoVault2.setDAOActivityFeeManager(activityRewardManager.address);
     await daoVault2.transferOwnership(committeeProxy.address);
-    await activityRewardManager.transferOwnership(committeeProxy.address);
+    //await activityRewardManager.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     await committee.transferOwnership(committeeProxy.address);

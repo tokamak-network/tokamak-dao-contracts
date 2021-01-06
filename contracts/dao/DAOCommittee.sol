@@ -72,10 +72,10 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         daoVault = _daoVault;
     }
 
-    function setActivityRewardManager(address _activityRewardManager) public onlyOwner {
+    /*function setActivityRewardManager(address _activityRewardManager) public onlyOwner {
         require(_activityRewardManager != address(0), "zero address");
         activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
-    }
+    }*/
 
     function setLayer2Registry(address _layer2Registry) public onlyOwner {
         require(_layer2Registry != address(0), "zero address");
@@ -264,18 +264,18 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     )
         public
         validAgendaManager
-        validActivityRewardManager
+        //validActivityRewardManager
         returns (uint256)
     {
         // TODO: pay ton
         // pay to create agenda, burn ton.
          
-        uint256 reward = activityRewardManager.calculateActivityFees();
+        //uint256 reward = activityRewardManager.calculateActivityFees();
         uint256 agendaID = agendaManager.newAgenda(
             _target,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
-            reward,
+            0,
             _functionBytecode
         );
           

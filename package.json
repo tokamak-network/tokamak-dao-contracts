@@ -35,7 +35,8 @@
   "scripts": {
     "compile": "truffle compile",
     "compile:plasma": "bash scripts/build-plasma-evm-contracts.sh",
-    "deploy:dev": "DEV=true truffle migrate --network development --reset",
+    "deploy:dev": "DEPLOY_PLASMA_EVM=true DEPLOY_VAULT=true DEPLOY_AGENDA_MANAGER=true DEPLOY_CANDIDATE_FACTORY=true DEPLOY_COMMITTEE=true DEPLOY_COMMITTEE_PROXY=true SET_PLASMA_EVM=true SET_DAO=true truffle migrate --network development --reset",
+    "deploy:rinkeby": "DEPLOY_PLASMA_EVM=true DEPLOY_VAULT=true DEPLOY_AGENDA_MANAGER=true DEPLOY_CANDIDATE_FACTORY=true DEPLOY_COMMITTEE=true DEPLOY_COMMITTEE_PROXY=true SET_PLASMA_EVM=true SET_DAO=true truffle migrate --network rinkeby --reset",
     "test": "scripts/test.sh"
   },
   "repository": {

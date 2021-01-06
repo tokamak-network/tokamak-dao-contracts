@@ -52,7 +52,7 @@ contract DAOAgendaManager is Ownable {
         _;
     }
     
-    constructor(address _ton, address _activityRewardManager) {
+    constructor(address _ton/*, address _activityRewardManager*/) {
         minimunNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
         minimunVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
         

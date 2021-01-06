@@ -17,7 +17,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownable {
         address _layer2Registry,
         address _agendaManager,
         address _candidateFactory,
-        address _activityRewardManager,
+        //address _activityRewardManager,
         address _daoVault
     )
     {
@@ -27,7 +27,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownable {
         layer2Registry = ILayer2Registry(_layer2Registry);
         agendaManager = IDAOAgendaManager(_agendaManager);
         candidateFactory = ICandidateFactory(_candidateFactory);
-        activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
+        //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
         daoVault = _daoVault;
         //maxMember = 3;
     }
