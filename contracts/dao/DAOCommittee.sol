@@ -22,13 +22,15 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     //////////////////////////////
 
     event AgendaCreated(
+        uint256 indexed timestamp,
         address indexed from,
         uint256 indexed id,
-        address indexed target,
+        address target,
         uint256 noticeEndTimestamp
     );
 
     event AgendaVoteCasted(
+        uint256 indexed timestamp,
         address indexed from,
         uint256 indexed id,
         uint voting,
@@ -36,6 +38,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     );
 
     event AgendaExecuted(
+        uint256 indexed timestamp,
         address indexed from,
         uint256 indexed id,
         address target,
@@ -282,6 +285,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         );
           
         emit AgendaCreated(
+            block.timestamp,
             msg.sender,
             agendaID,
             _target,
@@ -324,7 +328,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
         }
         
-        emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
+        emit AgendaVoteCasted(block.timestamp, msg.sender, _agendaID, _vote, _comment);
     }
 
     function executeAgenda(uint256 _agendaID) public validAgendaManager {
@@ -340,7 +344,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
          
         agendaManager.setExecutedAgenda(_agendaID);
 
-        emit AgendaExecuted(msg.sender, _agendaID, target, functionBytecode);
+        emit AgendaExecuted(block.timestamp, msg.sender, _agendaID, target, functionBytecode);
     }
      
     function updateSeigniorage(address _candidate) public returns (bool) {
