@@ -399,6 +399,17 @@ describe('Test 1', function () {
     const coinage = await AutoRefactorCoinage.at(coinageAddress);
     const stakedAmount = await coinage.balanceOf(candidate);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
+
+    const candidatesLength = await committeeProxy.candidatesLength();
+    let foundCandidate = false;
+    for (let i = 0; i < candidatesLength; i++) {
+      const address = await committeeProxy.candidates(i);
+      if (address === candidate) {
+        foundCandidate = true;
+        break;
+      }
+    }
+    foundCandidate.should.be.equal(true);
   }
 
   before(async function () { 

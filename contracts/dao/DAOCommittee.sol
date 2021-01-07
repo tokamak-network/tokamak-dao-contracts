@@ -134,6 +134,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             memberJoinedTime: 0,
             indexMembers: 0
         });
+
+        candidates.push(msg.sender);
        
         emit CandidateContractCreated(msg.sender, candidateContract, _memo);
     }
