@@ -320,6 +320,8 @@ contract DAOAgendaManager is Ownable {
             agenda.countingYes = agenda.countingYes.add(1);
         else if (_vote == uint(VoteChoice.NO))
             agenda.countingNo = agenda.countingNo.add(1);
+        else
+            revert();
         
         return true;
     }
@@ -395,7 +397,17 @@ contract DAOAgendaManager is Ownable {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         agenda.result = _result;
 
-        emit AgendaResultChanged(_agendaID, uint(_result));
+        emit AgendaResultChanged(_agendaID, uint256(_result));
+    }
+     
+    function setStatus(uint256 _agendaID, LibAgenda.AgendaStatus _status)
+        public
+        onlyOwner
+    {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(_status));
+        agenda.status = _status;
     }
      
     function getExecutionInfo(uint256 _agendaID)

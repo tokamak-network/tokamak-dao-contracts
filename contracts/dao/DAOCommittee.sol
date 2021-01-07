@@ -308,22 +308,18 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         (uint256 yes, uint256 no, uint256 abstain) = agendaManager.getVotingCount(_agendaID);
 
-        // TODO: combine no and abstain
-        bool changedResult = false;
-        if (requiredVotes < abstain) {
-            agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
-            changedResult = true;
-        } else if (requiredVotes < yes) {
+        if (requiredVotes < yes) {
+            // yes
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.ACCEPT);
-            changedResult = true;
+            agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.WAITING_EXEC);
         } else if (requiredVotes < no) {
+            // no
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.REJECT);
-            changedResult = true;
-        }
-
-        if (changedResult) {
-            // TODO:
-            //agendaManager.agendaStepNext(_agendaID);
+            agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
+        } else if (requiredVotes < abstain.add(no) ) {
+            // dismiss
+            agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
+            agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
         }
         
         emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);

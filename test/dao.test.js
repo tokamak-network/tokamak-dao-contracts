@@ -85,6 +85,11 @@ const VOTE_ABSTAIN = 0;
 const VOTE_YES = 1;
 const VOTE_NO = 2;
 
+const AGENDA_RESULT_ACCEPTED = 1;
+const AGENDA_RESULT_REJECTED = 2;
+const AGENDA_RESULT_DISMISSED = 3;
+
+
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
 const VOTER_INFO_VOTE = 2;
@@ -537,20 +542,37 @@ describe('Test 1', function () {
 
   describe('Agenda behavior', function () {
     describe('Create', function () {
-      const newMinimumNoticePeriod = 100;
-
       describe('Vote', function () {
-        votesList = [
-          [0, 0, 0],
-          [0, 0, 1],
-          [0, 0, 2],
-          [0, 1, 1],
-          [0, 1, 2],
-          [0, 2, 2],
-          [1, 1, 1],
-          [1, 1, 2],
-          [1, 2, 2],
-          [2, 2, 2]
+        const votesList = [
+          {
+            "votes": [VOTE_ABSTAIN, VOTE_ABSTAIN],
+            "expected_result": AGENDA_RESULT_DISMISSED,
+            "expected_status": AGENDA_STATUS_ENDED
+          }, {
+            "votes": [VOTE_ABSTAIN, VOTE_YES, VOTE_YES],
+            "expected_result": AGENDA_RESULT_ACCEPTED,
+            "expected_status": AGENDA_STATUS_WAITING_EXEC
+          }, {
+            "votes": [VOTE_ABSTAIN, VOTE_YES, VOTE_NO],
+            "expected_result": AGENDA_RESULT_DISMISSED,
+            "expected_status": AGENDA_STATUS_ENDED
+          }, {
+            "votes": [VOTE_ABSTAIN, VOTE_NO],
+            "expected_result": AGENDA_RESULT_DISMISSED,
+            "expected_status": AGENDA_STATUS_ENDED
+          }, {
+            "votes": [VOTE_YES, VOTE_YES],
+            "expected_result": AGENDA_RESULT_ACCEPTED,
+            "expected_status": AGENDA_STATUS_WAITING_EXEC
+          }, {
+            "votes": [VOTE_YES, VOTE_NO, VOTE_NO],
+            "expected_result": AGENDA_RESULT_REJECTED,
+            "expected_status": AGENDA_STATUS_ENDED
+          }, {
+            "votes": [VOTE_NO, VOTE_NO],
+            "expected_result": AGENDA_RESULT_REJECTED,
+            "expected_status": AGENDA_STATUS_ENDED
+          }
         ]
         let agendaID;
 
@@ -583,6 +605,7 @@ describe('Test 1', function () {
               const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
               const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
               const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
+              const newMinimumNoticePeriod = i * 100;
               const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
               const param = selector.concat(data);
               await committeeProxy.createAgenda(
@@ -620,15 +643,30 @@ describe('Test 1', function () {
               }
             });
 
-            describe('Vote', function () {
-              it(`cast vote - ${votesList[i]}`, async function () {
-                for (let j = 0; j < 3; j++) {
-                  await castVote(agendaID, candidates[j], votesList[i][j]);
+            describe(`Vote - ${votesList[i].votes}`, function () {
+              it(`cast vote`, async function () {
+                for (let j = 0; j < votesList[i].votes.length; j++) {
+                  await castVote(agendaID, candidates[j], votesList[i].votes[j]);
                 }
               });
-            });
 
-            it("check vote result", async function () {
+              it("check vote result/status", async function () {
+                const agenda = await agendaManager.agendas(agendaID);
+                agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(votesList[i].expected_result));
+                agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(votesList[i].expected_status));
+              });
+
+              it("execute", async function () {
+                const agenda = await agendaManager.agendas(agendaID);
+
+                if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_WAITING_EXEC) {
+                  const beforeValue = await agendaManager.minimunNoticePeriodSeconds();
+                  await committeeProxy.executeAgenda(agendaID);
+                  const afterValue = await agendaManager.minimunNoticePeriodSeconds();
+                  beforeValue.should.be.bignumber.not.equal(afterValue);
+                  afterValue.should.be.bignumber.equal(toBN(agendaID * 100));
+                }
+              });
             });
           });
         }
