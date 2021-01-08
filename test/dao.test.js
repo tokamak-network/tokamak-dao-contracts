@@ -388,6 +388,10 @@ describe('Test 1', function () {
     await committeeProxy.createCandidate(candidate, {from: candidate});
 
     const candidateContractAddress = await committeeProxy.candidateContract(candidate);
+
+    //const testMemo = "candidate memo string";
+    //const data = web3.eth.abi.encodeParameter("string", testMemo);
+
     (await registry.layer2s(candidateContractAddress)).should.be.equal(true);
 
     await deposit(candidateContractAddress, candidate, stakeAmountTON);
@@ -618,19 +622,32 @@ describe('Test 1', function () {
               const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
               const newMinimumNoticePeriod = i * 100;
               const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
-              const param = selector.concat(data);
-              await committeeProxy.createAgenda(
-                agendaManager.address,
-                noticePeriod,
-                votingPeriod,
+              const functionBytecode = selector.concat(data);
+
+              const param = web3.eth.abi.encodeParameters(
+                ["address", "uint256", "uint256", "bytes"],
+                [agendaManager.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+              );
+
+              const beforeBalance = await ton.balanceOf(user1);
+              const agendaFee = await agendaManager.createAgendaFees();
+              agendaFee.should.be.bignumber.gt(toBN("0"));
+
+              // create agenda
+              await ton.approveAndCall(
+                committeeProxy.address,
+                agendaFee,
                 param,
                 {from: user1}
               );
+              const afterBalance = await ton.balanceOf(user1);
+              afterBalance.should.be.bignumber.lt(beforeBalance);
+              beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
 
               agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
               const executionInfo = await agendaManager.executionInfos(agendaID);
               executionInfo[0].should.be.equal(agendaManager.address);
-              executionInfo[1].should.be.equal(param);
+              executionInfo[1].should.be.equal(functionBytecode);
             });
 
             it('start voting', async function () {

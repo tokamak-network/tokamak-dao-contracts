@@ -3,8 +3,9 @@ pragma solidity ^0.7.6;
 
 import "./StorageStateCommittee.sol";
 import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
-contract DAOCommitteeProxy is StorageStateCommittee, Ownable {
+contract DAOCommitteeProxy is StorageStateCommittee, Ownable, ERC165 {
     address public _implementation;
     bool public pauseProxy;
 
@@ -30,6 +31,8 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownable {
         //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
         daoVault = _daoVault;
         //maxMember = 3;
+
+        _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
     }
 
     function setProxyPause(bool _pause) onlyOwner public {

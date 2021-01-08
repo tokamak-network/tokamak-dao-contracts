@@ -69,4 +69,5 @@ interface IDAOAgendaManager  {
     function quorum() external view returns (Ratio memory);
     function hasVoted(uint256 _agendaID, address _user) external view returns (bool);
     function isVoter(uint256 _agendaID, address _user) external view returns (bool);
+    function createAgendaFees() external view returns (uint256);
 }

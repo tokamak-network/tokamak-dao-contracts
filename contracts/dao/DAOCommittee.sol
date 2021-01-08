@@ -17,6 +17,13 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
      
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
 
+    struct AgendaCreatingData {
+        address target;
+        uint256 noticePeriodSeconds;
+        uint256 votingPeriodSeconds;
+        bytes functionBytecode;
+    }
+
     //////////////////////////////
     // Events
     //////////////////////////////
@@ -52,8 +59,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     );
 
     event ChangedMember(
+        uint256 indexed timestamp,
         uint256 indexed slotIndex,
-        address indexed prevMember,
+        address prevMember,
         address indexed newMember
     );
 
@@ -103,6 +111,34 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     //////////////////////////////////////////////////////////////////////
     // Managing members
 
+    function onApprove(
+        address owner,
+        address spender,
+        uint256 tonAmount,
+        bytes calldata data
+    ) external returns (bool) {
+        AgendaCreatingData memory agendaData = _decodeAgendaData(data);
+
+        _createAgenda(
+            owner,
+            agendaData.target,
+            agendaData.noticePeriodSeconds,
+            agendaData.votingPeriodSeconds,
+            agendaData.functionBytecode
+        );
+
+        return true;
+    }
+
+    function _decodeAgendaData(bytes calldata input)
+        internal
+        view
+        returns (AgendaCreatingData memory data)
+    {
+        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
+            abi.decode(input, (address, uint256, uint256, bytes));
+    }
+
     function setMaxMember(uint256 _maxMember) onlyOwner public {
         require(maxMember < _maxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
         maxMember = _maxMember;
@@ -116,6 +152,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         validCommitteeL2Factory
     {
         require(!isExistCandidate(msg.sender), "DAOCommittee: candidate already registerd");
+
+        //uint256 minimumAmount = seigManager.minimumAmount();
+        //require(minimumAmount <= tonAmount, "DAOCommittee: not enough ton");
           
         // Candidate
         address candidateContract = candidateFactory.deploy(msg.sender, _memo, address(seigManager), address(layer2Registry));
@@ -181,7 +220,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         prevCandidate.memberJoinedTime = 0;
         prevCandidate.indexMembers = 0;
 
-        emit ChangedMember(_memberIndex, prevMember, msg.sender);
+        emit ChangedMember(block.timestamp, _memberIndex, prevMember, msg.sender);
 
         return true;
     }
@@ -191,7 +230,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(candidateInfo.indexMembers, msg.sender, address(0));
+        emit ChangedMember(block.timestamp, candidateInfo.indexMembers, msg.sender, address(0));
 
         candidateInfo.indexMembers = 0;
     }
@@ -213,7 +252,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         members.pop();
         maxMember = maxMember.sub(1);
 
-        emit ChangedMember(_reducingMemberIndex, reducingMember, address(0));
+        emit ChangedMember(block.timestamp, _reducingMemberIndex, reducingMember, address(0));
         emit ChangedSlotMaximum(maxMember.add(1), maxMember);
     }
 
@@ -260,22 +299,29 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     {
         agendaManager.setCreateAgendaFees(_fees);
     }
+
+    function payCreatingAgendaFee(address _creator) internal {
+        uint256 fee = agendaManager.createAgendaFees();
+
+        require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommitteeStore: failed to transfer ton from creator");
+        require(IERC20(ton).transfer(address(1), fee), "DAOCommitteeStore: failed to burn");
+    }
    
-    function createAgenda(
+    function _createAgenda(
+        address _creator,
         address _target,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
-        bytes calldata _functionBytecode
+        bytes memory _functionBytecode
     )
-        public
+        internal
         validAgendaManager
         //validActivityRewardManager
         returns (uint256)
     {
-        // TODO: pay ton
         // pay to create agenda, burn ton.
-         
-        //uint256 reward = activityRewardManager.calculateActivityFees();
+        payCreatingAgendaFee(_creator);
+
         uint256 agendaID = agendaManager.newAgenda(
             _target,
             _noticePeriodSeconds,

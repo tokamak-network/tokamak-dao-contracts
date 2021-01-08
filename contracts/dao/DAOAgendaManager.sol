@@ -25,7 +25,7 @@ contract DAOAgendaManager is Ownable {
     //uint256 public numAgendas;
     //uint256 public numExecAgendas;
     
-    uint256 public createAgendaFees; // 아젠다생성비용
+    uint256 public createAgendaFees; // 아젠다생성비용(TON)
     
     uint256 public minimunNoticePeriodSeconds;
     uint256 public minimunVotingPeriodSeconds;
@@ -56,7 +56,7 @@ contract DAOAgendaManager is Ownable {
         minimunNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
         minimunVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
         
-        createAgendaFees = 0;
+        createAgendaFees = 100000000000000000000; // 100 TON
         quorum = Ratio(1, 2);
         ton = _ton;
         //numAgendas = 0;
@@ -230,7 +230,7 @@ contract DAOAgendaManager is Ownable {
         p.result = LibAgenda.AgendaResult.PENDING;
         p.executed = false;
         p.createdTimestamp = block.timestamp;
-        p.noticeEndTimestamp = block.timestamp + 60 * 60 * _noticePeriodSeconds;
+        p.noticeEndTimestamp = block.timestamp + _noticePeriodSeconds;
         p.votingPeriodInSeconds = _votingPeriodSeconds;
         p.votingStartedTimestamp = 0;
         p.votingEndTimestamp = 0;
