@@ -7469,89 +7469,9 @@
     "name": "solc",
     "version": "0.5.12+commit.7709ece9.Emscripten.clang"
   },
-  "networks": {
-    "4": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x46D08BE2dd8C6b8108287BFbcC10CF9E6D6d7948",
-      "transactionHash": "0xd681344423c97a533a061e157ece5792fa9c3d37881173aec8f65ef054e08c08"
-    },
-    "1609886307866": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0xa26c3A0f1f67A8005F67C0Ca795b66886c10d6A9",
-      "transactionHash": "0x579e5f6160072ca97595fb649c5552faef882c001faf61fe39bda1069da59541"
-    },
-    "1609900875874": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x3B91f1D22E54bf0cb1064285058aA430429FbF2E",
-      "transactionHash": "0x723bd118c05ff436c1e68db1cd3780101a9323c03a79db35d372e04e41bcdc28"
-    }
-  },
+  "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-07T01:54:22.646Z",
-  "networkType": "ethereum",
+  "updatedAt": "2021-01-07T04:02:54.417Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

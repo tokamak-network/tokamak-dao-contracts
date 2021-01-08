@@ -748,7 +748,7 @@
         "id": 15646,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 18989,
+        "sourceUnit": 18997,
         "src": "297:99:42",
         "symbolAliases": [
           {
@@ -764,7 +764,7 @@
         "id": 15648,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 18191,
+        "sourceUnit": 18199,
         "src": "397:96:42",
         "symbolAliases": [
           {
@@ -780,7 +780,7 @@
         "id": 15650,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19107,
+        "sourceUnit": 19115,
         "src": "494:102:42",
         "symbolAliases": [
           {
@@ -796,7 +796,7 @@
         "id": 15652,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19701,
+        "sourceUnit": 19709,
         "src": "597:102:42",
         "symbolAliases": [
           {
@@ -812,7 +812,7 @@
         "id": 15654,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19604,
+        "sourceUnit": 19612,
         "src": "700:116:42",
         "symbolAliases": [
           {
@@ -828,7 +828,7 @@
         "id": 15656,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19632,
+        "sourceUnit": 19640,
         "src": "817:116:42",
         "symbolAliases": [
           {
@@ -844,7 +844,7 @@
         "id": 15658,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19546,
+        "sourceUnit": 19554,
         "src": "934:116:42",
         "symbolAliases": [
           {
@@ -879,10 +879,10 @@
               "id": 15661,
               "name": "Context",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18190,
+              "referencedDeclaration": 18198,
               "src": "1653:7:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Context_$18190",
+                "typeIdentifier": "t_contract$_Context_$18198",
                 "typeString": "contract Context"
               }
             },
@@ -897,10 +897,10 @@
               "id": 15663,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19700,
+              "referencedDeclaration": 19708,
               "src": "1662:6:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$19700",
+                "typeIdentifier": "t_contract$_IERC20_$19708",
                 "typeString": "contract IERC20"
               }
             },
@@ -933,10 +933,10 @@
               "id": 15667,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19106,
+              "referencedDeclaration": 19114,
               "src": "1678:7:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$19106",
+                "typeIdentifier": "t_contract$_Ownable_$19114",
                 "typeString": "contract Ownable"
               }
             },
@@ -951,10 +951,10 @@
               "id": 15669,
               "name": "ERC20Detailed",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19603,
+              "referencedDeclaration": 19611,
               "src": "1687:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Detailed_$19603",
+                "typeIdentifier": "t_contract$_ERC20Detailed_$19611",
                 "typeString": "contract ERC20Detailed"
               }
             },
@@ -969,10 +969,10 @@
               "id": 15671,
               "name": "ERC20Mintable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19631,
+              "referencedDeclaration": 19639,
               "src": "1702:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Mintable_$19631",
+                "typeIdentifier": "t_contract$_ERC20Mintable_$19639",
                 "typeString": "contract ERC20Mintable"
               }
             },
@@ -987,10 +987,10 @@
               "id": 15673,
               "name": "ERC20Burnable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19545,
+              "referencedDeclaration": 19553,
               "src": "1717:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Burnable_$19545",
+                "typeIdentifier": "t_contract$_ERC20Burnable_$19553",
                 "typeString": "contract ERC20Burnable"
               }
             },
@@ -1001,14 +1001,14 @@
         ],
         "contractDependencies": [
           6325,
-          18190,
-          18378,
-          19106,
-          19511,
-          19545,
-          19603,
-          19631,
-          19700
+          18198,
+          18386,
+          19114,
+          19519,
+          19553,
+          19611,
+          19639,
+          19708
         ],
         "contractKind": "contract",
         "documentation": "@dev Implementation of coin age token based on ERC20 of openzeppelin-solidity\n * AutoRefactorCoinage stores `_totalSupply` and `_balances` as RAY BASED value,\n`_allowances` as RAY FACTORED value.\n * This takes public function (including _approve) parameters as RAY FACTORED value\nand internal function (including approve) parameters as RAY BASED value, and emits event in RAY FACTORED value.\n * `RAY BASED` = `RAY FACTORED`  / factor\n *  factor increases exponentially for each block mined.",
@@ -1016,15 +1016,15 @@
         "id": 16213,
         "linearizedBaseContracts": [
           16213,
-          19545,
-          19631,
-          18378,
-          19511,
-          19603,
-          19106,
+          19553,
+          19639,
+          18386,
+          19519,
+          19611,
+          19114,
           6325,
-          19700,
-          18190
+          19708,
+          18198
         ],
         "name": "AutoRefactorCoinage",
         "nodeType": "ContractDefinition",
@@ -1036,10 +1036,10 @@
               "id": 15675,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18988,
+              "referencedDeclaration": 18996,
               "src": "1741:8:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$18988",
+                "typeIdentifier": "t_contract$_SafeMath_$18996",
                 "typeString": "library SafeMath"
               }
             },
@@ -1630,10 +1630,10 @@
                   "name": "ERC20Detailed",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 19603,
+                  "referencedDeclaration": 19611,
                   "src": "2301:13:42",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$19603_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$19611_$",
                     "typeString": "type(contract ERC20Detailed)"
                   }
                 },
@@ -1868,7 +1868,7 @@
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18905,
+                              "referencedDeclaration": 18913,
                               "src": "2630:10:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -2263,7 +2263,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "2808:68:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -2340,7 +2340,7 @@
             "scope": 16213,
             "src": "2742:160:42",
             "stateMutability": "view",
-            "superFunction": 19138,
+            "superFunction": 19146,
             "visibility": "public"
           },
           {
@@ -2573,7 +2573,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "3078:46:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -2678,7 +2678,7 @@
             "scope": 16213,
             "src": "2955:184:42",
             "stateMutability": "view",
-            "superFunction": 19150,
+            "superFunction": 19158,
             "visibility": "public"
           },
           {
@@ -2813,10 +2813,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21879,
-                        21880
+                        21887,
+                        21888
                       ],
-                      "referencedDeclaration": 21880,
+                      "referencedDeclaration": 21888,
                       "src": "3460:7:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3083,7 +3083,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "3659:18:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -3512,7 +3512,7 @@
                       "name": "Transfer",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 19691,
+                      "referencedDeclaration": 19699,
                       "src": "3839:8:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$__$",
@@ -3615,7 +3615,7 @@
             "scope": 16213,
             "src": "3397:502:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19395,
+            "superFunction": 19403,
             "visibility": "internal"
           },
           {
@@ -3750,10 +3750,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21879,
-                        21880
+                        21887,
+                        21888
                       ],
-                      "referencedDeclaration": 21880,
+                      "referencedDeclaration": 21888,
                       "src": "4269:7:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4020,7 +4020,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18844,
+                      "referencedDeclaration": 18852,
                       "src": "4470:18:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -4449,7 +4449,7 @@
                       "name": "Transfer",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 19691,
+                      "referencedDeclaration": 19699,
                       "src": "4650:8:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$__$",
@@ -4552,7 +4552,7 @@
             "scope": 16213,
             "src": "4206:504:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19439,
+            "superFunction": 19447,
             "visibility": "internal"
           },
           {
@@ -4712,7 +4712,7 @@
             "scope": 16213,
             "src": "4714:94:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19510,
+            "superFunction": 19518,
             "visibility": "internal"
           },
           {
@@ -4980,7 +4980,7 @@
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18905,
+                              "referencedDeclaration": 18913,
                               "src": "5112:5:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5825,7 +5825,7 @@
                               "lValueRequested": false,
                               "memberName": "add",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18828,
+                              "referencedDeclaration": 18836,
                               "src": "5746:9:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -5972,7 +5972,7 @@
                           "lValueRequested": false,
                           "memberName": "div",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 18921,
+                          "referencedDeclaration": 18929,
                           "src": "5705:5:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -6202,7 +6202,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 19039,
+                  "referencedDeclaration": 19047,
                   "src": "5559:9:42",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6504,7 +6504,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "6027:17:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -7008,7 +7008,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18844,
+                      "referencedDeclaration": 18852,
                       "src": "6365:17:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -7311,10 +7311,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6643:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -7444,7 +7444,7 @@
             "scope": 16213,
             "src": "6562:94:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19169,
+            "superFunction": 19177,
             "visibility": "public"
           },
           {
@@ -7583,7 +7583,7 @@
             "scope": 16213,
             "src": "6660:100:42",
             "stateMutability": "view",
-            "superFunction": 19185,
+            "superFunction": 19193,
             "visibility": "public"
           },
           {
@@ -7602,10 +7602,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6842:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -7735,7 +7735,7 @@
             "scope": 16213,
             "src": "6764:91:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19204,
+            "superFunction": 19212,
             "visibility": "public"
           },
           {
@@ -7754,10 +7754,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6960:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -7914,7 +7914,7 @@
             "scope": 16213,
             "src": "6859:114:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19240,
+            "superFunction": 19248,
             "visibility": "public"
           }
         ],
@@ -7967,7 +7967,7 @@
         "id": 15646,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 18989,
+        "sourceUnit": 18997,
         "src": "297:99:42",
         "symbolAliases": [
           {
@@ -7983,7 +7983,7 @@
         "id": 15648,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 18191,
+        "sourceUnit": 18199,
         "src": "397:96:42",
         "symbolAliases": [
           {
@@ -7999,7 +7999,7 @@
         "id": 15650,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19107,
+        "sourceUnit": 19115,
         "src": "494:102:42",
         "symbolAliases": [
           {
@@ -8015,7 +8015,7 @@
         "id": 15652,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19701,
+        "sourceUnit": 19709,
         "src": "597:102:42",
         "symbolAliases": [
           {
@@ -8031,7 +8031,7 @@
         "id": 15654,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19604,
+        "sourceUnit": 19612,
         "src": "700:116:42",
         "symbolAliases": [
           {
@@ -8047,7 +8047,7 @@
         "id": 15656,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19632,
+        "sourceUnit": 19640,
         "src": "817:116:42",
         "symbolAliases": [
           {
@@ -8063,7 +8063,7 @@
         "id": 15658,
         "nodeType": "ImportDirective",
         "scope": 16214,
-        "sourceUnit": 19546,
+        "sourceUnit": 19554,
         "src": "934:116:42",
         "symbolAliases": [
           {
@@ -8098,10 +8098,10 @@
               "id": 15661,
               "name": "Context",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18190,
+              "referencedDeclaration": 18198,
               "src": "1653:7:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Context_$18190",
+                "typeIdentifier": "t_contract$_Context_$18198",
                 "typeString": "contract Context"
               }
             },
@@ -8116,10 +8116,10 @@
               "id": 15663,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19700,
+              "referencedDeclaration": 19708,
               "src": "1662:6:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$19700",
+                "typeIdentifier": "t_contract$_IERC20_$19708",
                 "typeString": "contract IERC20"
               }
             },
@@ -8152,10 +8152,10 @@
               "id": 15667,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19106,
+              "referencedDeclaration": 19114,
               "src": "1678:7:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$19106",
+                "typeIdentifier": "t_contract$_Ownable_$19114",
                 "typeString": "contract Ownable"
               }
             },
@@ -8170,10 +8170,10 @@
               "id": 15669,
               "name": "ERC20Detailed",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19603,
+              "referencedDeclaration": 19611,
               "src": "1687:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Detailed_$19603",
+                "typeIdentifier": "t_contract$_ERC20Detailed_$19611",
                 "typeString": "contract ERC20Detailed"
               }
             },
@@ -8188,10 +8188,10 @@
               "id": 15671,
               "name": "ERC20Mintable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19631,
+              "referencedDeclaration": 19639,
               "src": "1702:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Mintable_$19631",
+                "typeIdentifier": "t_contract$_ERC20Mintable_$19639",
                 "typeString": "contract ERC20Mintable"
               }
             },
@@ -8206,10 +8206,10 @@
               "id": 15673,
               "name": "ERC20Burnable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19545,
+              "referencedDeclaration": 19553,
               "src": "1717:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Burnable_$19545",
+                "typeIdentifier": "t_contract$_ERC20Burnable_$19553",
                 "typeString": "contract ERC20Burnable"
               }
             },
@@ -8220,14 +8220,14 @@
         ],
         "contractDependencies": [
           6325,
-          18190,
-          18378,
-          19106,
-          19511,
-          19545,
-          19603,
-          19631,
-          19700
+          18198,
+          18386,
+          19114,
+          19519,
+          19553,
+          19611,
+          19639,
+          19708
         ],
         "contractKind": "contract",
         "documentation": "@dev Implementation of coin age token based on ERC20 of openzeppelin-solidity\n * AutoRefactorCoinage stores `_totalSupply` and `_balances` as RAY BASED value,\n`_allowances` as RAY FACTORED value.\n * This takes public function (including _approve) parameters as RAY FACTORED value\nand internal function (including approve) parameters as RAY BASED value, and emits event in RAY FACTORED value.\n * `RAY BASED` = `RAY FACTORED`  / factor\n *  factor increases exponentially for each block mined.",
@@ -8235,15 +8235,15 @@
         "id": 16213,
         "linearizedBaseContracts": [
           16213,
-          19545,
-          19631,
-          18378,
-          19511,
-          19603,
-          19106,
+          19553,
+          19639,
+          18386,
+          19519,
+          19611,
+          19114,
           6325,
-          19700,
-          18190
+          19708,
+          18198
         ],
         "name": "AutoRefactorCoinage",
         "nodeType": "ContractDefinition",
@@ -8255,10 +8255,10 @@
               "id": 15675,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18988,
+              "referencedDeclaration": 18996,
               "src": "1741:8:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$18988",
+                "typeIdentifier": "t_contract$_SafeMath_$18996",
                 "typeString": "library SafeMath"
               }
             },
@@ -8849,10 +8849,10 @@
                   "name": "ERC20Detailed",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 19603,
+                  "referencedDeclaration": 19611,
                   "src": "2301:13:42",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$19603_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$19611_$",
                     "typeString": "type(contract ERC20Detailed)"
                   }
                 },
@@ -9087,7 +9087,7 @@
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18905,
+                              "referencedDeclaration": 18913,
                               "src": "2630:10:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9482,7 +9482,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "2808:68:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9559,7 +9559,7 @@
             "scope": 16213,
             "src": "2742:160:42",
             "stateMutability": "view",
-            "superFunction": 19138,
+            "superFunction": 19146,
             "visibility": "public"
           },
           {
@@ -9792,7 +9792,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "3078:46:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -9897,7 +9897,7 @@
             "scope": 16213,
             "src": "2955:184:42",
             "stateMutability": "view",
-            "superFunction": 19150,
+            "superFunction": 19158,
             "visibility": "public"
           },
           {
@@ -10032,10 +10032,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21879,
-                        21880
+                        21887,
+                        21888
                       ],
-                      "referencedDeclaration": 21880,
+                      "referencedDeclaration": 21888,
                       "src": "3460:7:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -10302,7 +10302,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "3659:18:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -10731,7 +10731,7 @@
                       "name": "Transfer",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 19691,
+                      "referencedDeclaration": 19699,
                       "src": "3839:8:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$__$",
@@ -10834,7 +10834,7 @@
             "scope": 16213,
             "src": "3397:502:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19395,
+            "superFunction": 19403,
             "visibility": "internal"
           },
           {
@@ -10969,10 +10969,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21879,
-                        21880
+                        21887,
+                        21888
                       ],
-                      "referencedDeclaration": 21880,
+                      "referencedDeclaration": 21888,
                       "src": "4269:7:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -11239,7 +11239,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18844,
+                      "referencedDeclaration": 18852,
                       "src": "4470:18:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -11668,7 +11668,7 @@
                       "name": "Transfer",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 19691,
+                      "referencedDeclaration": 19699,
                       "src": "4650:8:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$__$",
@@ -11771,7 +11771,7 @@
             "scope": 16213,
             "src": "4206:504:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19439,
+            "superFunction": 19447,
             "visibility": "internal"
           },
           {
@@ -11931,7 +11931,7 @@
             "scope": 16213,
             "src": "4714:94:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19510,
+            "superFunction": 19518,
             "visibility": "internal"
           },
           {
@@ -12199,7 +12199,7 @@
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18905,
+                              "referencedDeclaration": 18913,
                               "src": "5112:5:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -13044,7 +13044,7 @@
                               "lValueRequested": false,
                               "memberName": "add",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 18828,
+                              "referencedDeclaration": 18836,
                               "src": "5746:9:42",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -13191,7 +13191,7 @@
                           "lValueRequested": false,
                           "memberName": "div",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 18921,
+                          "referencedDeclaration": 18929,
                           "src": "5705:5:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -13421,7 +13421,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 19039,
+                  "referencedDeclaration": 19047,
                   "src": "5559:9:42",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -13723,7 +13723,7 @@
                       "lValueRequested": false,
                       "memberName": "add",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18828,
+                      "referencedDeclaration": 18836,
                       "src": "6027:17:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -14227,7 +14227,7 @@
                       "lValueRequested": false,
                       "memberName": "sub",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18844,
+                      "referencedDeclaration": 18852,
                       "src": "6365:17:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$bound_to$_t_uint256_$",
@@ -14530,10 +14530,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6643:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -14663,7 +14663,7 @@
             "scope": 16213,
             "src": "6562:94:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19169,
+            "superFunction": 19177,
             "visibility": "public"
           },
           {
@@ -14802,7 +14802,7 @@
             "scope": 16213,
             "src": "6660:100:42",
             "stateMutability": "view",
-            "superFunction": 19185,
+            "superFunction": 19193,
             "visibility": "public"
           },
           {
@@ -14821,10 +14821,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6842:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -14954,7 +14954,7 @@
             "scope": 16213,
             "src": "6764:91:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19204,
+            "superFunction": 19212,
             "visibility": "public"
           },
           {
@@ -14973,10 +14973,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        21881,
-                        21882
+                        21889,
+                        21890
                       ],
-                      "referencedDeclaration": 21881,
+                      "referencedDeclaration": 21889,
                       "src": "6960:6:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$__$returns$__$",
@@ -15133,7 +15133,7 @@
             "scope": 16213,
             "src": "6859:114:42",
             "stateMutability": "nonpayable",
-            "superFunction": 19240,
+            "superFunction": 19248,
             "visibility": "public"
           }
         ],
@@ -15149,7 +15149,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-03T15:44:42.287Z",
+  "updatedAt": "2021-01-07T04:02:54.447Z",
   "devdoc": {
     "details": "Implementation of coin age token based on ERC20 of openzeppelin-solidity * AutoRefactorCoinage stores `_totalSupply` and `_balances` as RAY BASED value, `_allowances` as RAY FACTORED value. * This takes public function (including _approve) parameters as RAY FACTORED value and internal function (including approve) parameters as RAY BASED value, and emits event in RAY FACTORED value. * `RAY BASED` = `RAY FACTORED`  / factor *  factor increases exponentially for each block mined.",
     "methods": {
