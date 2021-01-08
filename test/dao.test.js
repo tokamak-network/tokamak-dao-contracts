@@ -336,6 +336,15 @@ describe('Test 1', function () {
     await committeeProxy.setCandidateFactory(candidateFactory.address);*/
     await committeeProxy.setMaxMember(3);
 
+
+    ////////////////////////////////////////////////////////////////////////
+    // test setting
+    await committeeProxy.setActivityRewardPerSecond(toBN("1"));
+    await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
+
+    ////////////////////////////////////////////////////////////////////////
+
     await registry.transferOwnership(committeeProxy.address);
     await daoVault2.setDaoCommittee(committeeProxy.address);
     //await daoVault2.setDAOActivityFeeManager(activityRewardManager.address);
@@ -620,7 +629,7 @@ describe('Test 1', function () {
               const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
               const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
               const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
-              const newMinimumNoticePeriod = i * 100;
+              const newMinimumNoticePeriod = i * 10;
               const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
               const functionBytecode = selector.concat(data);
 
@@ -692,7 +701,7 @@ describe('Test 1', function () {
                   await committeeProxy.executeAgenda(agendaID);
                   const afterValue = await agendaManager.minimunNoticePeriodSeconds();
                   beforeValue.should.be.bignumber.not.equal(afterValue);
-                  afterValue.should.be.bignumber.equal(toBN(agendaID * 100));
+                  afterValue.should.be.bignumber.equal(toBN(agendaID * 10));
                 }
               });
             });
@@ -703,21 +712,36 @@ describe('Test 1', function () {
   });
 
   describe('Vault', function () {
-    describe('DaoVault', function () {
-      it('claim', async function () {
-        let amount = await wton.balanceOf(daoVault.address);
-        amount.should.be.bignumber.gt(toBN('0'));
-        beforeBalance = await wton.balanceOf(daoVault2.address);
-        const owner = await daoVault.owner();
-        currentTime = await time.latest();
-        await daoVault.claim(daoVault2.address);
-        //await daoVault.claim(deployer, {from: owner});
-        afterBalance = await ton.balanceOf(daoVault2.address);
+    it('claim from DAOVault', async function () {
+      let amount = await wton.balanceOf(daoVault.address);
+      console.log(`cliamable amount: ${amount}`);
+      amount.should.be.bignumber.gt(toBN('0'));
+      beforeBalance = await wton.balanceOf(daoVault2.address);
+      const owner = await daoVault.owner();
+      currentTime = await time.latest();
+      await daoVault.claim(daoVault2.address);
+      //await daoVault.claim(deployer, {from: owner});
+      afterBalance = await ton.balanceOf(daoVault2.address);
 
-        afterBalance.sub(beforeBalance).should.be.bignumber.gte(TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-        amount = await wton.balanceOf(daoVault.address);
-        amount.should.be.bignumber.equal(toBN('0'));
-      });
+      afterBalance.sub(beforeBalance).should.be.bignumber.gte(TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+      amount = await wton.balanceOf(daoVault.address);
+      amount.should.be.bignumber.equal(toBN('0'));
+    });
+
+    it('Claim activity reward', async function () {
+      for (let i = 0; i < candidates.length; i++) {
+        const candidate = candidates[i];
+        console.log(`candidate: ${candidate}`);
+        const beforeBalance = await ton.balanceOf(candidate);
+
+        const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+        claimableAmount.should.be.bignumber.gt(toBN("0"));
+
+        await committeeProxy.claimActivityReward({from: candidate});
+
+        const afterBalance = await ton.balanceOf(candidate);
+        afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
+      }
     });
 
     /*describe('DaoVault2', function () {

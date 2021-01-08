@@ -29,8 +29,9 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownable, ERC165 {
         agendaManager = IDAOAgendaManager(_agendaManager);
         candidateFactory = ICandidateFactory(_candidateFactory);
         //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
-        daoVault = _daoVault;
+        daoVault = IDAOVault2(_daoVault);
         //maxMember = 3;
+        activityRewardPerSecond = 1e18;
 
         _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
     }

@@ -70,6 +70,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         uint256 indexed slotMax
     );
 
+    event ClaimedActivityReward(
+        address indexed candidate,
+        uint256 indexed amount
+    );
+
     //////////////////////////////////////////////////////////////////////
     // setters
 
@@ -80,7 +85,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
      
     function setDaoVault(address _daoVault) public onlyOwner {
         require(_daoVault != address(0), "zero address");
-        daoVault = _daoVault;
+        daoVault = IDAOVault2(_daoVault);
     }
 
     /*function setActivityRewardManager(address _activityRewardManager) public onlyOwner {
@@ -106,6 +111,10 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     function setTon(address _ton) public onlyOwner {
         require(_ton != address(0), "zero address");
         ton = _ton;
+    }
+
+    function setActivityRewardPerSecond(uint256 _value) public onlyOwner {
+        activityRewardPerSecond = _value;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -174,7 +183,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         candidateInfos[msg.sender] = CandidateInfo({
             candidateContract: candidateContract,
             memberJoinedTime: 0,
-            indexMembers: 0
+            indexMembers: 0,
+            rewardPeriod: 0
         });
 
         candidates.push(msg.sender);
@@ -208,6 +218,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         members[_memberIndex] = msg.sender;
 
         if (prevMember == address(0)) {
+            emit ChangedMember(block.timestamp, _memberIndex, prevMember, msg.sender);
             return true;
         }
 
@@ -217,8 +228,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         );
 
         CandidateInfo storage prevCandidate = candidateInfos[prevMember];
-        prevCandidate.memberJoinedTime = 0;
         prevCandidate.indexMembers = 0;
+        prevCandidate.rewardPeriod = prevCandidate.rewardPeriod.add(block.timestamp.sub(prevCandidate.memberJoinedTime));
+        prevCandidate.memberJoinedTime = 0;
 
         emit ChangedMember(block.timestamp, _memberIndex, prevMember, msg.sender);
 
@@ -228,6 +240,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     function retireMember() onlyMember(msg.sender) public returns (bool) {
         CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
         members[candidateInfo.indexMembers] = address(0);
+        candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
 
         emit ChangedMember(block.timestamp, candidateInfo.indexMembers, msg.sender, address(0));
@@ -246,8 +259,9 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             tailCandidate.indexMembers = _reducingMemberIndex;
             members[_reducingMemberIndex] = tailmember;
         }
-        reducingCandidate.memberJoinedTime = 0;
         reducingCandidate.indexMembers = 0;
+        reducingCandidate.rewardPeriod = reducingCandidate.rewardPeriod.add(block.timestamp.sub(reducingCandidate.memberJoinedTime));
+        reducingCandidate.memberJoinedTime = 0;
 
         members.pop();
         maxMember = maxMember.sub(1);
@@ -407,6 +421,17 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         }
     }
 
+    function claimActivityReward() public {
+        CandidateInfo storage info = candidateInfos[msg.sender];
+        uint256 amount = getClaimableActivityReward(msg.sender);
+
+        require(amount > 0, "DAOCommittee: you don't have claimable ton");
+
+        daoVault.claim(msg.sender, amount);
+
+        emit ClaimedActivityReward(msg.sender, amount);
+    }
+
     function fillMemberSlot() internal {
         for (uint256 i = members.length; i < maxMember; i++) {
             members.push(address(0));
@@ -466,4 +491,14 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         return candidateInfos[_candidate].candidateContract;
     }*/
 
+    function getClaimableActivityReward(address _candidate) public view returns (uint256) {
+        CandidateInfo storage info = candidateInfos[_candidate];
+        uint256 period = info.rewardPeriod;
+
+        if (info.memberJoinedTime > 0) {
+            period = period.add(block.timestamp.sub(info.memberJoinedTime));
+        }
+
+        return period.mul(activityRewardPerSecond);
+    }
 }

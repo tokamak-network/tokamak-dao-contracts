@@ -18,7 +18,6 @@ contract DAOVault2 is Ownable {
     
     modifier onlyDAOCommittee() {
         require(
-            daoCommittee != address(0) &&
             msg.sender == daoCommittee,
             "DAOVault2: not daoCommittee"
         );
@@ -38,7 +37,7 @@ contract DAOVault2 is Ownable {
     // Events
     //////////////////////////////
     
-    event TransferCommittee(address from, uint256 amount);
+    event Claimed(address to, uint256 amount);
     event TransferActivityFeeManager(address from, uint256 amount, bool result);
     event TransferErc20(address token, address from, uint256 amount);
 
@@ -79,11 +78,10 @@ contract DAOVault2 is Ownable {
         IERC20(ton).approve(to , amount);
     }
     
-    function claimCommittee(address committee, uint256 amount) external onlyDAOCommittee returns (uint256) {
+    function claim(address to, uint256 amount) external onlyDAOCommittee {
         require(IERC20(ton).balanceOf(address(this)) >= amount, "DAOVault2: not enough balance");
-        require(IERC20(ton).transfer(committee,amount), "DAOVault2: failed to transfer");
-        emit TransferCommittee(committee, amount);
-        return amount;
+        require(IERC20(ton).transfer(to, amount), "DAOVault2: failed to transfer");
+        emit Claimed(to, amount);
     }
     
     function claimActivityFeeManager(address user, uint256 amount) external onlyDAOActivityRewardManager returns (bool) {

@@ -9,6 +9,7 @@ import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
 //import { IDAOActivityRewardManager } from "../interfaces/IDAOActivityRewardManager.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
+import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
 
 contract StorageStateCommittee {
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
@@ -18,10 +19,11 @@ contract StorageStateCommittee {
         address candidateContract;
         uint memberJoinedTime;
         uint indexMembers;
+        uint256 rewardPeriod;
     }
     
     address public ton;
-    address public daoVault;
+    IDAOVault2 public daoVault;
     IDAOAgendaManager public agendaManager;
     //IDAOActivityRewardManager public activityRewardManager;
     ICandidateFactory public candidateFactory;
@@ -34,6 +36,8 @@ contract StorageStateCommittee {
 
     // candidate EOA => candidate information
     mapping(address => CandidateInfo) public candidateInfos;
+
+    uint256 public activityRewardPerSecond;
 
     event ApplyMemberSuccess(
         address indexed from,
