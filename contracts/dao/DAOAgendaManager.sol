@@ -54,7 +54,7 @@ contract DAOAgendaManager is Ownable {
         minimunVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
         
         createAgendaFees = 100000000000000000000; // 100 TON
-        quorum = Ratio(1, 2);
+        quorum = Ratio(2, 3);
         ton = _ton;
         //numAgendas = 0;
     }

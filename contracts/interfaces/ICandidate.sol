@@ -8,4 +8,5 @@ interface ICandidate {
     //function registerAndDeployCoinage() external returns (bool);
     function isCommitteeLayer2() external view returns (bool);
     function candidateAndOwner() external view returns (address, address);
+    function isCandidateContract() external view returns (bool);
 }

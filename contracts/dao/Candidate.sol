@@ -9,8 +9,9 @@ import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMa
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
+import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
-contract Candidate is Ownabled, ICandidate {
+contract Candidate is Ownabled, ICandidate, ERC165 {
     using SafeMath for uint256;
     address public candidate;
     address public seigManager;
@@ -19,6 +20,8 @@ contract Candidate is Ownabled, ICandidate {
     constructor(address _candidate, string memory _memo) {
         candidate = _candidate;
         memo = _memo;
+
+        _registerInterface(ICandidate(address(this)).isCandidateContract.selector);
     }
     
     function setSeigManager(address _seigMan) public onlyOwner override {
@@ -38,11 +41,15 @@ contract Candidate is Ownabled, ICandidate {
         return (candidate, owner);
     }
 
+    function isCandidateContract() public override view returns (bool) {
+        return true;
+    }
+
     function operator() public view returns (address) { return candidate; }
     function isLayer2() public view returns (bool) { return true; }
     function currentFork() public view returns (uint) { return 1; }
     function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }
-    function changeCandidate(address _candidate) public {
+    /*function changeCandidate(address _candidate) public {
         candidate = _candidate;
-    }
+    }*/
 }
