@@ -22,9 +22,6 @@ contract DAOAgendaManager is Ownable {
     address public activityRewardManager;
     IDAOCommittee public committee;
     
-    //uint256 public numAgendas;
-    //uint256 public numExecAgendas;
-    
     uint256 public createAgendaFees; // 아젠다생성비용(TON)
     
     uint256 public minimunNoticePeriodSeconds;
@@ -141,61 +138,6 @@ contract DAOAgendaManager is Ownable {
         require(agenda.result == LibAgenda.AgendaResult.ACCEPT, "DAOAgendaManager: for this agenda, not accept");
         require(agenda.executed == false, "DAOAgendaManager: already executed agenda");*/
     }
-    
-    /*function detailedAgenda(uint256 _agendaID)
-        public
-        view
-        returns (
-            address[2] memory creator,
-            uint[8] memory datas,
-            uint256[3] memory counting,
-            uint256 fees,
-            bool executed,
-            bytes memory functionBytecode,
-            address[] memory voters
-        )
-    {
-        require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
-        LibAgenda.Agenda storage agenda = agendas[_agendaID];
-        uint[8] memory args1 = [
-            uint(agenda.status),
-            uint(agenda.result),
-            //uint(agenda.group),
-            agenda.createdTimestamp,
-            agenda.noticeEndTimestamp,
-            agenda.votingStartedTimestamp,
-            agenda.votingEndTimestamp,
-            agenda.executedTimestamp
-        ];
-        
-        return (
-            [agenda.creator, agenda.target],
-            args1,
-            agenda.counting,
-            agenda.fees,
-            agenda.executed,
-            agenda.functionBytecode,
-            agenda.voters
-        );
-    }*/
-
-    /*function detailedAgendaVoteInfo(uint256 _agendaID, address voter)
-        public
-        view
-        returns (
-            bool hasVoted,
-            uint256 vote,
-            string memory comment
-        )
-    {
-        require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
-
-        if (voterInfos[_agendaID][voter].hasVoted) {
-            return (voterInfos[_agendaID][voter].hasVoted, voterInfos[_agendaID][voter].vote, voterInfos[_agendaID][voter].comment);
-        } else {
-            return (false, 0, '');
-        }
-    }*/
     
     function getAgendaStatus(uint256 _agendaID) public view returns (uint status) {
         require(_agendaID < agendas.length, "DAOAgendaManager: invalid agend id");
@@ -349,46 +291,6 @@ contract DAOAgendaManager is Ownable {
             "DAOAgendaManager: status is not voting."
         );
     }
-
-    /*function agendaStepNext(uint256 _agendaID) public onlyOwner {
-        LibAgenda.Agenda storage agenda = agendas[_agendaID];
-        uint256 prevStatus = agenda.status;
-        uint256 prevResult = agenda.result;
-
-        if (agenda.status == LibAgenda.AgendaStatus.NOTICE) {
-        } else if (agenda.status == LibAgenda.AgendaStatus.VOTING) {
-            // The agenda is on voting process
-            if (agenda.result == LibAgenda.AgendaResult.ACCEPT) {
-                // The agenda is accepted
-                agenda.status = LibAgenda.AgendaStatus.WAITING_EXEC;
-            } else if (
-                agenda.result == LibAgenda.AgendaResult.REJECT ||
-                agenda.result == LibAgenda.AgendaResult.DISMISS
-            ) {
-                // The agenda is rejected
-                agenda.status = LibAgenda.AgendaStatus.ENDED;
-            } else if (
-                agenda.result == LibAgenda.AgendaResult.PENDING &&
-                agenda.votingEndTimestamp < block.timestamp
-            ) {
-                // The agenda is dismissed
-                agenda.status = LibAgenda.AgendaStatus.ENDED;
-                agenda.result = LibAgenda.AgendaResult.DISMISS;
-            }
-        } else if (agenda.status == LibAgenda.AgendaStatus.WAITING_EXEC) {
-        } else if (agenda.status == LibAgenda.AgendaStatus.VOTING) {
-        } else if (agenda.status == LibAgenda.AgendaStatus.VOTING) {
-        } else if (agenda.status == LibAgenda.AgendaStatus.VOTING) {
-        }
-
-        emit AgendaStepNext(
-            _agendaID,
-            prevStatus,
-            prevResult,
-            agenda.status,
-            agenda.result
-        );
-    }*/
 
     function setResult(uint256 _agendaID, LibAgenda.AgendaResult _result)
         public

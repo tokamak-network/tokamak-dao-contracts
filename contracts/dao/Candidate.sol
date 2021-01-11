@@ -14,7 +14,6 @@ contract Candidate is Ownabled, ICandidate {
     using SafeMath for uint256;
     address public candidate;
     address public seigManager;
-    //address public layer2Registry;
     string public memo;
     
     constructor(address _candidate, string memory _memo) {
@@ -26,19 +25,11 @@ contract Candidate is Ownabled, ICandidate {
         seigManager =_seigMan;
     }
 
-    /*function setLayer2Registry(address _layer2Registry) public onlyOwner override {
-        layer2Registry = _layer2Registry;
-    }*/
-
     function updateSeigniorage() public override returns (bool) {
         require(seigManager != address(0), "Candidate: SeigManager is zero");
         return ISeigManager(seigManager).updateSeigniorage();
     }
     
-    /*function registerAndDeployCoinage() public override returns (bool) {
-        return Layer2RegistryI(layer2Registry).registerAndDeployCoinage(address(this), seigManager);
-    }*/
-
     function isCommitteeLayer2() public override view returns (bool) {
         return true;
     }

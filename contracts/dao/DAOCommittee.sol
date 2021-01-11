@@ -88,11 +88,6 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         daoVault = IDAOVault2(_daoVault);
     }
 
-    /*function setActivityRewardManager(address _activityRewardManager) public onlyOwner {
-        require(_activityRewardManager != address(0), "zero address");
-        activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
-    }*/
-
     function setLayer2Registry(address _layer2Registry) public onlyOwner {
         require(_layer2Registry != address(0), "zero address");
         layer2Registry = ILayer2Registry(_layer2Registry);
@@ -117,42 +112,14 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         activityRewardPerSecond = _value;
     }
 
-    //////////////////////////////////////////////////////////////////////
-    // Managing members
-
-    function onApprove(
-        address owner,
-        address spender,
-        uint256 tonAmount,
-        bytes calldata data
-    ) external returns (bool) {
-        AgendaCreatingData memory agendaData = _decodeAgendaData(data);
-
-        _createAgenda(
-            owner,
-            agendaData.target,
-            agendaData.noticePeriodSeconds,
-            agendaData.votingPeriodSeconds,
-            agendaData.functionBytecode
-        );
-
-        return true;
-    }
-
-    function _decodeAgendaData(bytes calldata input)
-        internal
-        view
-        returns (AgendaCreatingData memory data)
-    {
-        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
-            abi.decode(input, (address, uint256, uint256, bytes));
-    }
-
     function setMaxMember(uint256 _maxMember) onlyOwner public {
         require(maxMember < _maxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
         maxMember = _maxMember;
         fillMemberSlot();
     }
+
+    //////////////////////////////////////////////////////////////////////
+    // Managing members
 
     function createCandidate(string memory _memo)
         public
@@ -273,24 +240,23 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     //////////////////////////////////////////////////////////////////////
     // Managing agenda
 
-    function setMinimunNoticePeriodSeconds(
-        uint256 _minimunNoticePeriod
-    )
-        public
-        onlyOwner
-        validAgendaManager
-    {
-        agendaManager.setMinimunNoticePeriodSeconds(_minimunNoticePeriod);
-    }
+    function onApprove(
+        address owner,
+        address spender,
+        uint256 tonAmount,
+        bytes calldata data
+    ) external returns (bool) {
+        AgendaCreatingData memory agendaData = _decodeAgendaData(data);
 
-    function setMinimunVotingPeriodSeconds(
-        uint256 _minimunVotingPeriod
-    )
-        public
-        onlyOwner
-        validAgendaManager
-    {
-        agendaManager.setMinimunVotingPeriodSeconds(_minimunVotingPeriod);
+        _createAgenda(
+            owner,
+            agendaData.target,
+            agendaData.noticePeriodSeconds,
+            agendaData.votingPeriodSeconds,
+            agendaData.functionBytecode
+        );
+
+        return true;
     }
 
     function setQuorum(
@@ -314,47 +280,26 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         agendaManager.setCreateAgendaFees(_fees);
     }
 
-    function payCreatingAgendaFee(address _creator) internal {
-        uint256 fee = agendaManager.createAgendaFees();
-
-        require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommitteeStore: failed to transfer ton from creator");
-        require(IERC20(ton).transfer(address(1), fee), "DAOCommitteeStore: failed to burn");
-    }
-   
-    function _createAgenda(
-        address _creator,
-        address _target,
-        uint256 _noticePeriodSeconds,
-        uint256 _votingPeriodSeconds,
-        bytes memory _functionBytecode
+    function setMinimunNoticePeriodSeconds(
+        uint256 _minimunNoticePeriod
     )
-        internal
+        public
+        onlyOwner
         validAgendaManager
-        //validActivityRewardManager
-        returns (uint256)
     {
-        // pay to create agenda, burn ton.
-        payCreatingAgendaFee(_creator);
-
-        uint256 agendaID = agendaManager.newAgenda(
-            _target,
-            _noticePeriodSeconds,
-            _votingPeriodSeconds,
-            0,
-            _functionBytecode
-        );
-          
-        emit AgendaCreated(
-            block.timestamp,
-            msg.sender,
-            agendaID,
-            _target,
-            agendaManager.getAgendaNoticeEndTimeSeconds(agendaID)
-        );
-
-        return agendaID;
+        agendaManager.setMinimunNoticePeriodSeconds(_minimunNoticePeriod);
     }
-    
+
+    function setMinimunVotingPeriodSeconds(
+        uint256 _minimunVotingPeriod
+    )
+        public
+        onlyOwner
+        validAgendaManager
+    {
+        agendaManager.setMinimunVotingPeriodSeconds(_minimunVotingPeriod);
+    }
+
     function castVote(
         uint256 _agendaID,
         uint _vote,
@@ -427,7 +372,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         require(amount > 0, "DAOCommittee: you don't have claimable ton");
 
-        daoVault.claim(msg.sender, amount);
+        daoVault.claimTON(msg.sender, amount);
 
         emit ClaimedActivityReward(msg.sender, amount);
     }
@@ -438,6 +383,55 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         }
     }
 
+    function _decodeAgendaData(bytes calldata input)
+        internal
+        view
+        returns (AgendaCreatingData memory data)
+    {
+        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
+            abi.decode(input, (address, uint256, uint256, bytes));
+    }
+
+    function payCreatingAgendaFee(address _creator) internal {
+        uint256 fee = agendaManager.createAgendaFees();
+
+        require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommitteeStore: failed to transfer ton from creator");
+        require(IERC20(ton).transfer(address(1), fee), "DAOCommitteeStore: failed to burn");
+    }
+   
+    function _createAgenda(
+        address _creator,
+        address _target,
+        uint256 _noticePeriodSeconds,
+        uint256 _votingPeriodSeconds,
+        bytes memory _functionBytecode
+    )
+        internal
+        validAgendaManager
+        returns (uint256)
+    {
+        // pay to create agenda, burn ton.
+        payCreatingAgendaFee(_creator);
+
+        uint256 agendaID = agendaManager.newAgenda(
+            _target,
+            _noticePeriodSeconds,
+            _votingPeriodSeconds,
+            0,
+            _functionBytecode
+        );
+          
+        emit AgendaCreated(
+            block.timestamp,
+            _creator,
+            agendaID,
+            _target,
+            agendaManager.getAgendaNoticeEndTimeSeconds(agendaID)
+        );
+
+        return agendaID;
+    }
+    
     function requiredVotesToPass()
         public
         view

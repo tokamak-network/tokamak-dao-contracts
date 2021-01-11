@@ -4,100 +4,65 @@ pragma solidity ^0.7.6;
 import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
+import { SafeERC20 } from "../../node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 contract DAOVault2 is Ownable {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
     
-    address public ton;
-    address public daoCommittee;
-    address public daoActivityRewardManager;
-    
-    //////////////////////////////
-    // Modifiers
-    //////////////////////////////
-    
-    modifier onlyDAOCommittee() {
-        require(
-            msg.sender == daoCommittee,
-            "DAOVault2: not daoCommittee"
-        );
-        _;
-    }
-    
-    modifier onlyDAOActivityRewardManager() {
-        require(
-            daoActivityRewardManager != address(0) &&
-            msg.sender == daoActivityRewardManager,
-            "DAOVault2: not daoActivityRewardManager"
-        );
-        _;
-    }
+    IERC20 public ton;
+    IERC20 public wton;
     
     //////////////////////////////
     // Events
     //////////////////////////////
     
-    event Claimed(address to, uint256 amount);
-    event TransferActivityFeeManager(address from, uint256 amount, bool result);
-    event TransferErc20(address token, address from, uint256 amount);
+    event Claimed(address indexed token, address indexed to, uint256 indexed amount);
+    event Approved(address indexed token, address indexed to, uint256 indexed amount);
 
-    constructor(address _ton) public {
-        ton = _ton;
+    constructor(address _ton, address _wton) public {
+        ton = IERC20(_ton);
+        wton = IERC20(_wton);
     }
 
     function setTON(address _ton) external onlyOwner {
-        ton = _ton;
+        ton = IERC20(_ton);
     }
 
-    function setDaoCommittee(address _addr) public onlyOwner {
-        daoCommittee = _addr;
-    }
-     
-    function setDAOActivityFeeManager(address _addr) public onlyOwner {
-        daoActivityRewardManager = _addr;
+    function setWTON(address _wton) external onlyOwner {
+        wton = IERC20(_wton);
     }
 
-    function approveTonDao(uint256 amount) public onlyOwner {
-        require(ton != address(0), "DAOVault2: ton address is zero");
-        approveTon(daoCommittee, amount);
-        approveTon(daoActivityRewardManager, amount);
+    function approveTON(address _to, uint256 _amount) public onlyOwner {
+        ton.safeApprove(_to, _amount);
+        emit Approved(address(ton), _to, _amount);
     }
-    
-    function approveTonDaoCommittee(uint256 amount) public onlyOwner {
-        require(ton != address(0), "DAOVault2: ton address is zero");
-        approveTon(daoCommittee, amount);
+
+    function approveWTON(address _to, uint256 _amount) public onlyOwner {
+        wton.safeApprove(_to, _amount);
+        emit Approved(address(wton), _to, _amount);
     }
-    
-    function approveTonDAOActivityFeeManager(uint256 amount) public onlyOwner {
-        require(ton != address(0), "DAOVault2: ton address is zero");
-        approveTon(daoActivityRewardManager, amount);
+
+    function approveERC20(address _token, address _to, uint256 _amount) public onlyOwner {
+        IERC20(_token).safeApprove(_to, _amount);
+        emit Approved(address(_token), _to, _amount);
     }
-    
-    function approveTon(address to, uint256 amount) public onlyOwner {
-        require(ton != address(0), "DAOVault2: ton address is zero");
-        IERC20(ton).approve(to , amount);
+
+    function claimTON(address _to, uint256 _amount) public onlyOwner {
+        require(ton.balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
+        ton.safeTransfer(_to, _amount);
+        emit Claimed(address(ton), _to, _amount);
     }
-    
-    function claim(address to, uint256 amount) external onlyDAOCommittee {
-        require(IERC20(ton).balanceOf(address(this)) >= amount, "DAOVault2: not enough balance");
-        require(IERC20(ton).transfer(to, amount), "DAOVault2: failed to transfer");
-        emit Claimed(to, amount);
+
+    function claimWTON(address _to, uint256 _amount) public onlyOwner {
+        require(wton.balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
+        wton.safeTransfer(_to, _amount);
+        emit Claimed(address(wton), _to, _amount);
     }
-    
-    function claimActivityFeeManager(address user, uint256 amount) external onlyDAOActivityRewardManager returns (bool) {
-        if (IERC20(ton).balanceOf(address(this)) > amount) {
-            bool res = IERC20(ton).transfer(user,amount);
-            emit TransferActivityFeeManager(user, amount, res);
-            return res;
-        } else {
-            emit TransferActivityFeeManager(user, amount, false);
-            return false;
-        }
-    }
-    
-    function transfer(address erc20token, address to, uint256 amount) external onlyOwner {
-        require(erc20token != address(0) && amount > 0, "DAOVault2: invalid parameter");
-        require(IERC20(erc20token).transfer(to,amount), "DAOVault2: failed to transfer");
-        emit TransferErc20(erc20token, to, amount);
+
+    function claimERC20(address _token, address _to, uint256 _amount) public onlyOwner {
+        require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
+        IERC20(_token).safeTransfer(_to, _amount);
+        emit Claimed(address(wton), _to, _amount);
     }
 }

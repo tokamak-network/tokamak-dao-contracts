@@ -14,6 +14,9 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
+//const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
+//const deployPlasmaEvmContracts = require('./utils/deploy.js');
+
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -96,19 +99,21 @@ const VOTER_INFO_VOTE = 2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
-const TON_INITIAL_SUPPLY = _TON('50000000');
-const TON_INITIAL_HOLDERS = _TON('1000000');
-const TON_VAULT_AMOUNT = _WTON('10000000');
 
 const WITHDRAWAL_DELAY = 10;
 const SEIG_PER_BLOCK = _WTON('3.92');
 const ROUND_DURATION = time.duration.minutes(5);
+
+const TON_INITIAL_SUPPLY = _TON('50000000');
+const TON_INITIAL_HOLDERS = _TON('1000000');
+const TON_VAULT_AMOUNT = _WTON('10000000');
 
 const POWERTON_SEIG_RATE = _WTON('0.1');
 const DAO_SEIG_RATE = _WTON('0.5');
 const PSEIG_RATE = _WTON('0.4');
 
 const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
@@ -131,8 +136,31 @@ let powerton;
 describe('Test 1', function () {
   before(async function () {
     this.timeout(1000000);
+
+    /*[
+      ton,
+      wton,
+      registry,
+      depositManager,
+      coinageFactory,
+      daoVault,
+      seigManager,
+      powerton
+    ] = await deployPlasmaEvmContracts(owner);*/
+
+    /*[
+      daoVault2,
+      agendaManager,
+      candidateFactory,
+      committee,
+      committeeProxy
+    ] = await deployDaoContracts(owner);*/
+
     await initializePlasmaEvmContracts(); 
     await initializeDaoContracts();
+
+    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
   });
 
   function recordGasUsed(_tx, _label) { 
@@ -259,20 +287,13 @@ describe('Test 1', function () {
 
   async function initializeDaoContracts() {
     debugLog =false;
-    this.ton = ton;
-    if(debugLog) console.log('ton :', this.ton.address) ;
+    if(debugLog) console.log('ton :', ton.address) ;
 
     //===================================================
-    this.dAOVault = await DAOVault2.new(this.ton.address);
-    daoVault2 = this.dAOVault ;
+    daoVault2 = await DAOVault2.new(ton.address, wton.address);
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
-
     //===================================================
-    //activityRewardManager = await DAOActivityRewardManager.new(this.ton.address, daoVault2.address);
-    //if(debugLog)  console.log('activityRewardManager :', activityRewardManager.address) ;
-
-    //===================================================
-    agendaManager = await DAOAgendaManager.new(this.ton.address/*, activityRewardManager.address*/);
+    agendaManager = await DAOAgendaManager.new(ton.address);
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();
@@ -282,60 +303,28 @@ describe('Test 1', function () {
     committee = await DAOCommittee.new();
     if(debugLog)  console.log('dAOCommittee :', committee.address) ;
 
-    this.dAOCommitteeProxy = await DAOCommitteeProxy.new(
+    daoCommitteeProxy = await DAOCommitteeProxy.new(
       ton.address,
       committee.address,
       seigManager.address,
       registry.address,
       agendaManager.address,
       candidateFactory.address,
-      //activityRewardManager.address,
       daoVault2.address
     );
-    if(debugLog)  console.log('dAOCommitteeProxy :', dAOCommitteeProxy.address) ;
+    if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
    
-    //await this.dAOCommitteeProxy.upgradeTo(committee.address);
-    //await this.dAOCommitteeProxy.setProxyAgendaManager(committee.address);
-    //await this.dAOCommitteeProxy.setProxyAactivityfeeManager(committee.address);
-    //if(debugLog)  console.log('dAOCommitteeProxy  set end :' ) ;
+    let impl = await daoCommitteeProxy.implementation() ;
 
-    let impl = await this.dAOCommitteeProxy.implementation() ;
-
-    committeeProxy = await DAOCommittee.at(this.dAOCommitteeProxy.address);
+    committeeProxy = await DAOCommittee.at(daoCommitteeProxy.address);
     if(debugLog)  console.log('committeeProxy :', committeeProxy.address ) ;
      
-    // later ..
-    //await committeeProxy.setDaoVault(daoVault2.address);
-    //if(debugLog)  console.log('committeeProxy.setDaoVault end :') ;
-
-    //
     if(debugLog){
       console.log('dAOCommittee :', committee.address) ;
-      console.log('dAOCommitteeProxy :', this.dAOCommitteeProxy.address) ;
-      console.log('dAOCommitteeProxy implementation :', impl) ;
+      console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
+      console.log('daoCommitteeProxy implementation :', impl) ;
     }
-
-    //===================================================
-    //this.dAOElection = await DAOElection.new();
-    //this.dAOElectionProxy = await DAOElectionProxy.new(this.dAOElectionStore.address);
-    //await this.dAOElectionStore.transferOwnership(committeeProxy.address);
-    //await this.dAOElectionProxy.upgradeTo(this.dAOElection.address);
-    //await this.dAOElectionProxy.setProxyPause(false);
-    //electionProxy = this.dAOElectionProxy;
-
-    //let implelection = await this.dAOElectionProxy.implementation() ;
-    //election = await DAOElection.at(this.dAOElectionProxy.address);
-
-    //candidateFactory.transferOwnership(election.address);
-    //=================================================== 
-
-    /*await committeeProxy.setSeigManager(seigManager.address);
-    await committeeProxy.setLayer2Registry(registry.address);
-    await committeeProxy.setAgendaManager(agendaManager.address);
-    await committeeProxy.setActivityRewardManager(activityRewardManager.address);
-    await committeeProxy.setCandidateFactory(candidateFactory.address);*/
     await committeeProxy.setMaxMember(3);
-
 
     ////////////////////////////////////////////////////////////////////////
     // test setting
@@ -346,14 +335,10 @@ describe('Test 1', function () {
     ////////////////////////////////////////////////////////////////////////
 
     await registry.transferOwnership(committeeProxy.address);
-    await daoVault2.setDaoCommittee(committeeProxy.address);
-    //await daoVault2.setDAOActivityFeeManager(activityRewardManager.address);
     await daoVault2.transferOwnership(committeeProxy.address);
-    //await activityRewardManager.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     await committee.transferOwnership(committeeProxy.address);
-    //await this.dAOCommitteeStore.transferOwnership(this.dAOCommitteeProxy.address);
 
     console.log('\n\n');
   } 
@@ -714,16 +699,13 @@ describe('Test 1', function () {
   describe('Vault', function () {
     it('claim from DAOVault', async function () {
       let amount = await wton.balanceOf(daoVault.address);
-      console.log(`cliamable amount: ${amount}`);
       amount.should.be.bignumber.gt(toBN('0'));
       beforeBalance = await wton.balanceOf(daoVault2.address);
       const owner = await daoVault.owner();
       currentTime = await time.latest();
       await daoVault.claim(daoVault2.address);
-      //await daoVault.claim(deployer, {from: owner});
       afterBalance = await ton.balanceOf(daoVault2.address);
 
-      afterBalance.sub(beforeBalance).should.be.bignumber.gte(TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
       amount = await wton.balanceOf(daoVault.address);
       amount.should.be.bignumber.equal(toBN('0'));
     });
@@ -731,7 +713,6 @@ describe('Test 1', function () {
     it('Claim activity reward', async function () {
       for (let i = 0; i < candidates.length; i++) {
         const candidate = candidates[i];
-        console.log(`candidate: ${candidate}`);
         const beforeBalance = await ton.balanceOf(candidate);
 
         const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
@@ -743,152 +724,5 @@ describe('Test 1', function () {
         afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
       }
     });
-
-    /*describe('DaoVault2', function () {
-      beforeEach(async function () { 
-        await daoVault2.approveTonDao(0);
-      });
-
-      it('approveTonDao', async function () {
-        const testAmount = 10000;
-        await daoVault2.approveTonDao(testAmount);
-        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN(testAmount));
-        expect(await ton.allowance(daoVault2.address, activityRewardManager.address)).to.bignumber.equal(toBN(testAmount));
-      });
-
-      it('approveTonDaoCommittee', async function () {
-        const testAmount = 10000;
-
-        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
-        expect(await ton.allowance(daoVault2.address, activityRewardManager.address)).to.bignumber.equal(toBN('0'));
-
-        await daoVault2.approveTonDaoCommittee(testAmount);
-        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN(testAmount));
-        expect(await ton.allowance(daoVault2.address, activityRewardManager.address)).to.bignumber.equal(toBN('0'));
-      });
-
-      it('approveTonDAOActivityFeeManager', async function () {
-        const testAmount = 10000;
-
-        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
-        expect(await ton.allowance(daoVault2.address, activityRewardManager.address)).to.bignumber.equal(toBN('0'));
-
-        await daoVault2.approveTonDAOActivityFeeManager(testAmount);
-        expect(await ton.allowance(daoVault2.address, committeeProxy.address)).to.bignumber.equal(toBN('0'));
-        expect(await ton.allowance(daoVault2.address, activityRewardManager.address)).to.bignumber.equal(toBN(testAmount));
-      });
-
-      it('approveTon', async function () {
-        const testAmount = 10000;
-
-        expect(await ton.allowance(daoVault2.address, user1)).to.bignumber.equal(toBN('0'));
-
-        await daoVault2.approveTon(user1, testAmount);
-        expect(await ton.allowance(daoVault2.address, user1)).to.bignumber.equal(toBN(testAmount));
-      });
-
-      it('claimCommittee', async function () {
-        //const testAmount = 10000;
-
-        //await daoVault2.claimCommittee(user1, testAmount);
-      });
-
-      it('claimActivityFeeManager', async function () {
-      });
-
-      it('transfer', async function () {
-      });
-
-    });*/
-
-    /*describe('DAOElection', function () {
-      it('applyCommitteeByOperator', async function () {
-      });
-
-      it('applyCommittee', async function () {
-      });
-
-      it('createCommitteeLayer2', async function () {
-      });
-
-      it('numLayer2s', async function () {
-      });
-
-      it('totalSupplyLayer2s', async function () {
-      });
-
-      it('balanceOfLayer2s', async function () {
-      });
-
-    });*/
-
-    /*describe('DAOCommittee', function () {
-      it('setDaoElection', async function () {
-      });
-
-      it('setDaoVault', async function () {
-      });
-
-      it('setAgendamanager', async function () {
-      });
-
-      it('setActivityfeemanager', async function () {
-      });
-
-      it('setMaxCommittees', async function () {
-      });
-
-      it('popCommitteeSlot', async function () {
-      });
-
-      it('applyCommittee', async function () {
-      });
-
-      it('retireCommittee', async function () {
-      });
-
-      it('setMinimunNoticePeriodMin', async function () {
-      });
-
-      it('setMinimunVotingPeriodMin', async function () {
-      });
-
-      it('setQuorum', async function () {
-      });
-
-      it('setCreateAgendaFees', async function () {
-      });
-
-      it('createAgenda', async function () {
-      });
-
-      it('electCommiitteeForAgenda', async function () {
-      });
-
-      it('checkRisk', async function () {
-      });
-
-      it('castVote', async function () {
-      });
-
-      it('executeAgenda', async function () {
-      });
-
-      it('detailedAgenda', async function () {
-      });
-
-      it('detailedAgendaVoteInfo', async function () {
-      });
-
-      it('totalAgendas', async function () {
-      });
-
-      it('getMajority', async function () {
-      });
-
-      it('getMajority', async function () {
-      });
-
-    });*/
   });
 });
