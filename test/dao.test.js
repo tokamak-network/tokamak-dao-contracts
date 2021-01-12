@@ -888,6 +888,10 @@ describe('Test 1', function () {
 
         const afterBalance = await ton.balanceOf(candidate);
         afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
+        
+        const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(candidate);
+        claimableAfterAmount.should.be.bignumber.equal(toBN("0")); 
+
       }
     });
   });
