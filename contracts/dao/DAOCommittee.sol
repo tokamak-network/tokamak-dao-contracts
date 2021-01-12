@@ -30,15 +30,14 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     //////////////////////////////
 
     event AgendaCreated(
-        uint256 indexed timestamp,
         address indexed from,
         uint256 indexed id,
         address target,
-        uint256 noticeEndTimestamp
+        uint256 noticePeriodSeconds,
+        uint256 votingPeriodSeconds
     );
 
     event AgendaVoteCasted(
-        uint256 indexed timestamp,
         address indexed from,
         uint256 indexed id,
         uint voting,
@@ -46,27 +45,23 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     );
 
     event AgendaExecuted(
-        uint256 indexed timestamp,
-        address indexed from,
         uint256 indexed id,
-        address target,
-        bytes functionBytecode
+        address target
     );
 
     event CandidateContractCreated(
         address indexed candidate,
-        address candidateContract,
+        address indexed candidateContract,
         string memo
     );
 
     event OperatorRegistered(
         address indexed candidate,
-        address candidateContract,
+        address indexed candidateContract,
         string memo
     );
 
     event ChangedMember(
-        uint256 indexed timestamp,
         uint256 indexed slotIndex,
         address prevMember,
         address indexed newMember
@@ -79,7 +74,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
     event ClaimedActivityReward(
         address indexed candidate,
-        uint256 indexed amount
+        uint256 amount
     );
 
     //////////////////////////////////////////////////////////////////////
@@ -211,7 +206,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         members[_memberIndex] = msg.sender;
 
         if (prevMember == address(0)) {
-            emit ChangedMember(block.timestamp, _memberIndex, prevMember, msg.sender);
+            emit ChangedMember(_memberIndex, prevMember, msg.sender);
             return true;
         }
 
@@ -225,7 +220,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         prevCandidate.rewardPeriod = prevCandidate.rewardPeriod.add(block.timestamp.sub(prevCandidate.memberJoinedTime));
         prevCandidate.memberJoinedTime = 0;
 
-        emit ChangedMember(block.timestamp, _memberIndex, prevMember, msg.sender);
+        emit ChangedMember(_memberIndex, prevMember, msg.sender);
 
         return true;
     }
@@ -236,7 +231,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(block.timestamp, candidateInfo.indexMembers, msg.sender, address(0));
+        emit ChangedMember(candidateInfo.indexMembers, msg.sender, address(0));
 
         candidateInfo.indexMembers = 0;
     }
@@ -259,7 +254,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         members.pop();
         maxMember = maxMember.sub(1);
 
-        emit ChangedMember(block.timestamp, _reducingMemberIndex, reducingMember, address(0));
+        emit ChangedMember(_reducingMemberIndex, reducingMember, address(0));
         emit ChangedSlotMaximum(maxMember.add(1), maxMember);
     }
 
@@ -359,7 +354,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
         }
         
-        emit AgendaVoteCasted(block.timestamp, msg.sender, _agendaID, _vote, _comment);
+        emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
     }
 
     function executeAgenda(uint256 _agendaID) public validAgendaManager {
@@ -375,7 +370,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
          
         agendaManager.setExecutedAgenda(_agendaID);
 
-        emit AgendaExecuted(block.timestamp, msg.sender, _agendaID, target, functionBytecode);
+        emit AgendaExecuted(_agendaID, target);
     }
      
     function updateSeigniorage(address _candidate) public returns (bool) {
@@ -394,8 +389,6 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         );
 
         ICandidate(candidateContract).updateSeigniorage();
-
-        //emit CommitteeUpdateSeigniorage(msg.sender);
     }
 
     function updateSeigniorages(address[] calldata _candidates) public returns (bool) {
@@ -489,11 +482,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         );
           
         emit AgendaCreated(
-            block.timestamp,
             _creator,
             agendaID,
             _target,
-            agendaManager.getAgendaNoticeEndTimeSeconds(agendaID)
+            _noticePeriodSeconds,
+            _votingPeriodSeconds
         );
 
         return agendaID;
