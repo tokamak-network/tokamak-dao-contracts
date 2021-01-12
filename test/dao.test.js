@@ -477,6 +477,14 @@ describe('Test 1', function () {
       afterBalance.sub(beforeBalance).should.be.bignumber.equal(delegateWtonAmount);
     });
 
+    it('anybody can updateSeigniorage', async function () {
+      await committeeProxy.updateSeigniorage(candidate1, {from: user2})
+    });
+    it('anybody can updateSeigniorages', async function () {
+      var candidates = [candidate1,candidate2,candidate3];
+      await committeeProxy.updateSeigniorages(candidates, {from: user2})
+    });
+
     describe('operator as a candidate', async function () {
       it('register on Committee', async function () {
         (await committeeProxy.isExistCandidate(user1)).should.be.equal(false);
