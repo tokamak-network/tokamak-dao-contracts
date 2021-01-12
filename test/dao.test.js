@@ -45,11 +45,10 @@ process.on('exit', function () {
   console.log(o);
 });
 
-const [ candidate1, candidate2, candidate3, user1, user2, user3, user4,user5,user6] = accounts;
+const [ candidate1, candidate2, candidate3, user1, user2, user3, user4,user5,user6,candidate4] = accounts;
 const candidates = [candidate1, candidate2, candidate3];
 const users = [user1, user2, user3, user4, user5, user6];
 const deployer = defaultSender;
-
 
 const _TON = createCurrency('TON');
 const _WTON = createCurrency('WTON');
@@ -416,6 +415,38 @@ describe('Test 1', function () {
     foundCandidate.should.be.equal(true);
   }
 
+  async function addCandidateWithoutDeposit(candidate) {
+    //const minimum = await seigManager.minimumAmount();
+    const minimum = await seigManager.minimumAmount();
+    const beforeTonBalance = await ton.balanceOf(candidate);
+
+    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+    //await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
+    //tmp = await ton.allowance(candidate, committeeProxy.address);
+    //tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
+    await committeeProxy.createCandidate(candidate, {from: candidate});
+
+    const candidateContractAddress = await committeeProxy.candidateContract(candidate);
+
+    //const testMemo = "candidate memo string";
+    //const data = web3.eth.abi.encodeParameter("string", testMemo);
+
+    (await registry.layer2s(candidateContractAddress)).should.be.equal(true);
+ 
+    const candidatesLength = await committeeProxy.candidatesLength();
+ 
+    let foundCandidate = false;
+    for (let i = 0; i < candidatesLength; i++) {
+      const address = await committeeProxy.candidates(i);
+      if (address === candidate) {
+        foundCandidate = true;
+        break;
+      }
+    }
+    foundCandidate.should.be.equal(true);
+  }
+
   async function addOperator(operator) {
     const etherToken = await EtherToken.new(true, ton.address, true);
 
@@ -480,9 +511,19 @@ describe('Test 1', function () {
     it('anybody can updateSeigniorage', async function () {
       await committeeProxy.updateSeigniorage(candidate1, {from: user2})
     });
+
     it('anybody can updateSeigniorages', async function () {
       var candidates = [candidate1,candidate2,candidate3];
       await committeeProxy.updateSeigniorages(candidates, {from: user2})
+    });
+
+    it('can not updateSeigniorage on candidate without operator deposits', async function () {
+      (await committeeProxy.isExistCandidate(candidate4)).should.be.equal(false);
+      await addCandidateWithoutDeposit(candidate4); 
+      (await committeeProxy.isExistCandidate(candidate4)).should.be.equal(true); 
+      await expectRevert.unspecified(
+        committeeProxy.updateSeigniorage(candidate4, {from: user1}) 
+      );
     });
 
     describe('operator as a candidate', async function () {
