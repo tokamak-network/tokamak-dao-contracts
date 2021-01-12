@@ -439,7 +439,7 @@ describe('Test 1', function () {
 
     await layer2.setSeigManager(seigManager.address);
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address);
-    
+    await layer2.changeOperator(operator); 
     return layer2;
   }
 
