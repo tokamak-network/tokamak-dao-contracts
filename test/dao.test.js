@@ -439,6 +439,7 @@ describe('Test 1', function () {
 
     await layer2.setSeigManager(seigManager.address);
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address);
+    await layer2.changeOperator(operator); 
 
     return layer2;
   }
@@ -450,6 +451,7 @@ describe('Test 1', function () {
   });
 
   describe('Candidate', function () {
+
     it('create candidate', async function () {
       (await committeeProxy.isExistCandidate(candidate3)).should.be.equal(false);
       await addCandidate(candidate3);
@@ -484,7 +486,7 @@ describe('Test 1', function () {
         layer2.should.be.not.equal(ZERO_ADDRESS);
 
         await committeeProxy.registerOperator(layer2.address, "memo", {from: user1});
-
+        
         (await committeeProxy.isExistCandidate(user1)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(user1);
         candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
