@@ -760,8 +760,9 @@ describe('Test 1', function () {
             const agendaAfter = await agendaManager.agendas(agendaID);
             agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_VOTING));
             const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
-            agendaAfter[AGENDA_INDEX_VOTING_STARTED_TIMESTAMP].should.be.bignumber.gt(noticeEndTimestamp);
+            agendaAfter[AGENDA_INDEX_VOTING_STARTED_TIMESTAMP].should.be.bignumber.not.lt(noticeEndTimestamp);
             agendaAfter[AGENDA_INDEX_VOTING_END_TIMESTAMP].should.be.bignumber.equal(agendaAfter[AGENDA_INDEX_VOTING_STARTED_TIMESTAMP].add(votingPeriod));
+            
           });
 
           it('check voters', async function () {
@@ -773,6 +774,7 @@ describe('Test 1', function () {
             for (let j = 0; j < voters.length; j++) {
               const voterInfo = await agendaManager.voterInfos(agendaID, voters[j]);
               voterInfo[0].should.be.equal(true);
+              voterInfo[1].should.be.equal(false);
             }
           });
 
@@ -791,6 +793,7 @@ describe('Test 1', function () {
 
             it("execute", async function () {
               const agenda = await agendaManager.agendas(agendaID);
+              agenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.equal(toBN("0"));
 
               if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_WAITING_EXEC) {
                 const beforeValue = await agendaManager.minimunNoticePeriodSeconds();
@@ -798,6 +801,10 @@ describe('Test 1', function () {
                 const afterValue = await agendaManager.minimunNoticePeriodSeconds();
                 beforeValue.should.be.bignumber.not.equal(afterValue);
                 afterValue.should.be.bignumber.equal(toBN(agendaID * 10));
+
+                const afterAgenda = await agendaManager.agendas(agendaID); 
+                afterAgenda[AGENDA_INDEX_EXECUTED].should.be.equal(true);
+                afterAgenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.gt(toBN("0")); 
               }
             });
           });
