@@ -23,6 +23,7 @@ const DAOCommittee = contract.fromArtifact('DAOCommittee');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
 const DAOCommitteeProxy = contract.fromArtifact('DAOCommitteeProxy');
+const Candidate = contract.fromArtifact('Candidate');
 
 // plasma-evm-contracts
 const TON = contract.fromArtifact('TON');
@@ -417,10 +418,10 @@ describe('Test 1', function () {
   }
 
   async function addOperator(operator) {
-    const etherToken = await EtherToken.new(true, ton.address, true);
+    const etherToken = await EtherToken.new(true, ton.address, true, {from: operator});
 
-    const epochHandler = await EpochHandler.new();
-    const submitHandler = await SubmitHandler.new(epochHandler.address);
+    const epochHandler = await EpochHandler.new({from: operator});
+    const submitHandler = await SubmitHandler.new(epochHandler.address, {from: operator});
 
     const dummyStatesRoot = '0xdb431b544b2f5468e3f771d7843d9c5df3b4edcf8bc1c599f18f0b4ea8709bc3';
     const dummyTransactionsRoot = '0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421';
@@ -435,11 +436,11 @@ describe('Test 1', function () {
       dummyStatesRoot,
       dummyTransactionsRoot,
       dummyReceiptsRoot,
+      {from: operator}
     );
 
-    await layer2.setSeigManager(seigManager.address);
-    await registry.registerAndDeployCoinage(layer2.address, seigManager.address);
-    await layer2.changeOperator(operator); 
+    await layer2.setSeigManager(seigManager.address, {from: operator});
+    await registry.registerAndDeployCoinage(layer2.address, seigManager.address, {from: operator});
     return layer2;
   }
 
@@ -455,6 +456,15 @@ describe('Test 1', function () {
       (await committeeProxy.isExistCandidate(candidate3)).should.be.equal(false);
       await addCandidate(candidate3);
       (await committeeProxy.isExistCandidate(candidate3)).should.be.equal(true);
+    });
+
+    it('isCandidateContract', async function () {
+        const isCandidate = await committeeProxy.isCandidate(candidate3);
+        isCandidate.should.be.equal(true);
+
+        const candidateContractAddress = await committeeProxy.candidateContract(candidate3);
+        const candidateContract = await Candidate.at(candidateContractAddress);
+        (await candidateContract.isCandidateContract()).should.be.equal(true);
     });
 
     it('can not add candidate again', async function () {
@@ -491,6 +501,17 @@ describe('Test 1', function () {
         candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
       });
 
+      it('isCandidateContract', async function () {
+          const isCandidate = await committeeProxy.isCandidate(user1);
+          isCandidate.should.be.equal(false);
+
+          const candidateContractAddress = await committeeProxy.candidateContract(user1);
+          const candidateContract = await Candidate.at(candidateContractAddress);
+          await expectRevert.unspecified(
+            candidateContract.isCandidateContract()
+          );
+      });
+
       it('can not updateSeigniorage on Committee', async function () {
         await expectRevert(
           committeeProxy.updateSeigniorage(user1, {from: user1}),
@@ -509,6 +530,17 @@ describe('Test 1', function () {
         (await committeeProxy.isExistCandidate(user2)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(user2);
         candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
+      });
+
+      it('isCandidateContract', async function () {
+          const isCandidate = await committeeProxy.isCandidate(user2);
+          isCandidate.should.be.equal(false);
+
+          const candidateContractAddress = await committeeProxy.candidateContract(user2);
+          const candidateContract = await Candidate.at(candidateContractAddress);
+          await expectRevert.unspecified(
+            candidateContract.isCandidateContract()
+          );
       });
 
       it('can not updateSeigniorage on Committee', async function () {

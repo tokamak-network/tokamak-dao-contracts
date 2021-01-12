@@ -498,6 +498,25 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         return agendaID;
     }
+
+    function isCandidate(address _candidate) public view returns (bool) {
+        CandidateInfo storage info = candidateInfos[_candidate];
+
+        if (info.candidateContract == address(0)) {
+            return false;
+        }
+
+        bool supportIsCandidateContract = ERC165Checker.supportsInterface(
+            info.candidateContract,
+            ICandidate(info.candidateContract).isCandidateContract.selector
+        );
+
+        if (supportIsCandidateContract == false) {
+            return false;
+        }
+
+        return ICandidate(info.candidateContract).isCandidateContract();
+    }
     
     function requiredVotesToPass()
         public
@@ -547,10 +566,6 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     function isExistCandidate(address _candidate) public view returns (bool isExist) {
         return candidateInfos[_candidate].candidateContract != address(0);
     }
-
-    /*function candidateContract(address _candidate) public view returns (address) {
-        return candidateInfos[_candidate].candidateContract;
-    }*/
 
     function getClaimableActivityReward(address _candidate) public view returns (uint256) {
         CandidateInfo storage info = candidateInfos[_candidate];
