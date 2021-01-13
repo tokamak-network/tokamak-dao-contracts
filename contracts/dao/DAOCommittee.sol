@@ -153,7 +153,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             candidateContract: candidateContract,
             memberJoinedTime: 0,
             indexMembers: 0,
-            rewardPeriod: 0
+            rewardPeriod: 0,
+            claimedTimestamp: 0
         });
 
         candidates.push(msg.sender);
@@ -404,6 +405,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         require(amount > 0, "DAOCommittee: you don't have claimable ton");
 
         daoVault.claimTON(msg.sender, amount);
+        info.claimedTimestamp = block.timestamp;
+        info.rewardPeriod = 0;
 
         emit ClaimedActivityReward(msg.sender, amount);
     }
@@ -429,7 +432,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
             candidateContract: _contractAddress,
             memberJoinedTime: 0,
             indexMembers: 0,
-            rewardPeriod: 0
+            rewardPeriod: 0,
+            claimedTimestamp: 0
         });
 
         candidates.push(_operator);
@@ -565,7 +569,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         uint256 period = info.rewardPeriod;
 
         if (info.memberJoinedTime > 0) {
-            period = period.add(block.timestamp.sub(info.memberJoinedTime));
+            if (info.memberJoinedTime > info.claimedTimestamp) {
+                period = period.add(block.timestamp.sub(info.memberJoinedTime));
+            } else {
+                period = period.add(block.timestamp.sub(info.claimedTimestamp));
+            }
         }
 
         return period.mul(activityRewardPerSecond);

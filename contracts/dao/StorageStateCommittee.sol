@@ -20,6 +20,7 @@ contract StorageStateCommittee {
         uint memberJoinedTime;
         uint indexMembers;
         uint256 rewardPeriod;
+        uint256 claimedTimestamp;
     }
     
     address public ton;

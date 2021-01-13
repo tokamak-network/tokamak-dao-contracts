@@ -134,7 +134,7 @@ let seigManager;
 let powerton;
 
 describe('DAOVault2', function () {
-  before(async function () {
+  beforeEach(async function () {
     this.timeout(1000000);
 
     await initializePlasmaEvmContracts(); 
@@ -224,7 +224,6 @@ describe('DAOVault2', function () {
     factory = await CoinageFactory.new();
 
     currentTime = await time.latest();
-    console.log(`currentTime1: ${currentTime}`);
     daoVault = await DAOVault.new(wton.address, currentTime);
     seigManager = await SeigManager.new(
       ton.address,
@@ -308,8 +307,8 @@ describe('DAOVault2', function () {
     await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
     await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
 
-    await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-    await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    //await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+    //await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     ////////////////////////////////////////////////////////////////////////
 
@@ -318,8 +317,6 @@ describe('DAOVault2', function () {
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     await committee.transferOwnership(committeeProxy.address);
-
-    console.log('\n\n');
   } 
 
   async function totalBalanceOfCandidate(candidate) {
@@ -330,7 +327,15 @@ describe('DAOVault2', function () {
   }
 
   describe('approve', function () {
+    beforeEach(async function () {
+      this.timeout(1000000);
+
+      await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+      await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    });
+
     it('approveTON', async function () {
+      this.timeout(1000000);
       const balanceBefore = await ton.balanceOf(user1);
 
       const amount = _TON("10").toFixed(TON_UNIT);
@@ -342,6 +347,7 @@ describe('DAOVault2', function () {
     });
 
     it('approveWTON', async function () {
+      this.timeout(1000000);
       const balanceBefore = await wton.balanceOf(user1);
 
       const amount = _WTON("10").toFixed(WTON_UNIT);
@@ -353,6 +359,7 @@ describe('DAOVault2', function () {
     });
 
     it('approveERC20', async function () {
+      this.timeout(1000000);
       const token = ton;
       const balanceBefore = await token.balanceOf(user1);
 
@@ -386,57 +393,176 @@ describe('DAOVault2', function () {
     });
   });
 
-  describe('claim', function () {
-    it('claimTON', async function () {
-      const balanceBefore = await ton.balanceOf(user1);
+  async function testClaimTon(tonAmount, expectedTonAmount, expectedWtonAmount) {
+    const balanceBefore = await ton.balanceOf(user1);
+    const balanceVaultTonBefore = await ton.balanceOf(daoVault2.address);
+    const balanceVaultWtonBefore = await wton.balanceOf(daoVault2.address);
 
-      const amount = _TON("10").toFixed(TON_UNIT);
-      await daoVault2.claimTON(user1, amount);
+    await daoVault2.claimTON(user1, tonAmount);
 
-      const balanceAfter = await ton.balanceOf(user1);
-      balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
+    const balanceAfter = await ton.balanceOf(user1);
+    const balanceVaultTonAfter = await ton.balanceOf(daoVault2.address);
+    const balanceVaultWtonAfter = await wton.balanceOf(daoVault2.address);
+
+    balanceAfter.sub(balanceBefore).should.be.bignumber.equal(tonAmount);
+    balanceVaultTonBefore.sub(balanceVaultTonAfter).should.be.bignumber.equal(expectedTonAmount);
+    balanceVaultWtonBefore.sub(balanceVaultWtonAfter).should.be.bignumber.equal(expectedWtonAmount);
+  }
+
+  async function testClaimWton(wtonAmount, expectedTonAmount, expectedWtonAmount) {
+    const balanceBefore = await wton.balanceOf(user1);
+    const balanceVaultTonBefore = await ton.balanceOf(daoVault2.address);
+    const balanceVaultWtonBefore = await wton.balanceOf(daoVault2.address);
+
+    await daoVault2.claimWTON(user1, wtonAmount);
+
+    const balanceAfter = await wton.balanceOf(user1);
+    const balanceVaultTonAfter = await ton.balanceOf(daoVault2.address);
+    const balanceVaultWtonAfter = await wton.balanceOf(daoVault2.address);
+
+    balanceAfter.sub(balanceBefore).should.be.bignumber.equal(wtonAmount);
+    balanceVaultTonBefore.sub(balanceVaultTonAfter).should.be.bignumber.equal(expectedTonAmount);
+    balanceVaultWtonBefore.sub(balanceVaultWtonAfter).should.be.bignumber.equal(expectedWtonAmount);
+  }
+
+  describe('claim', async function () {
+    const testAmountInTon = _TON("100").toFixed(TON_UNIT);
+    const testAmountInWton = _WTON("100").toFixed(WTON_UNIT);
+    describe('zero TON in vault', function () {
+      beforeEach(async function () {
+        this.timeout(1000000);
+
+        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+      });
+
+      it('claimTON', async function () {
+        this.timeout(1000000);
+        await testClaimTon(testAmountInTon, toBN("0"), testAmountInWton);
+      });
+
+      it('claimWTON', async function () {
+        this.timeout(1000000);
+        await testClaimWton(testAmountInWton, toBN("0"), testAmountInWton);
+      });
     });
 
-    it('claimWTON', async function () {
-      const balanceBefore = await wton.balanceOf(user1);
+    describe('zero WTON in vault', function () {
+      beforeEach(async function () {
+        this.timeout(1000000);
 
-      const amount = _WTON("10").toFixed(WTON_UNIT);
-      await daoVault2.claimWTON(user1, amount);
+        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+      });
 
-      const balanceAfter = await wton.balanceOf(user1);
-      balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
+      it('claimTON', async function () {
+        this.timeout(1000000);
+        await testClaimTon(testAmountInTon, testAmountInTon, toBN("0"));
+      });
+
+      it('claimWTON', async function () {
+        this.timeout(1000000);
+        await testClaimWton(testAmountInWton, testAmountInTon, toBN("0"));
+      });
     });
 
-    it('claimERC20', async function () {
-      const token = ton;
-      const balanceBefore = await token.balanceOf(user1);
+    describe('not enough TON in vault', function () {
+      const tonInVault = _TON("10").toFixed(TON_UNIT);
+      beforeEach(async function () {
+        this.timeout(1000000);
 
-      const amount = _TON("10").toFixed(TON_UNIT);
-      await daoVault2.claimERC20(token.address, user1, amount);
+        await ton.mint(daoVault2.address, tonInVault);
+        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+      });
 
-      const balanceAfter = await token.balanceOf(user1);
-      balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
+      it('claimTON', async function () {
+        this.timeout(1000000);
+        await testClaimTon(testAmountInTon, tonInVault, _WTON("90").toFixed(WTON_UNIT));
+      });
+
+      it('claimWTON', async function () {
+        this.timeout(1000000);
+        await testClaimWton(testAmountInWton, toBN("0"), testAmountInWton);
+      });
     });
 
-    it('can not claimTON from others', async function () {
-      await expectRevert(
-        daoVault2.claimTON(user1, toBN("1"), {from: user1}),
-        "Ownable: caller is not the owner"
-      );
+    describe('not enough WTON in vault', function () {
+      const wtonInVault = _WTON("10").toFixed(WTON_UNIT);
+      beforeEach(async function () {
+        this.timeout(1000000);
+
+        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await wton.mint(daoVault2.address, wtonInVault);
+      });
+
+      it('claimTON', async function () {
+        this.timeout(1000000);
+        await testClaimTon(testAmountInTon, testAmountInTon, toBN("0"));
+      });
+
+      it('claimWTON', async function () {
+        this.timeout(1000000);
+        await testClaimWton(testAmountInWton, _TON("90").toFixed(TON_UNIT), wtonInVault);
+      });
     });
 
-    it('can not claimWTON from others', async function () {
-      await expectRevert(
-        daoVault2.claimWTON(user1, toBN("1"), {from: user1}),
-        "Ownable: caller is not the owner"
-      );
+    describe('enough TON/WTON in vault', function () {
+      beforeEach(async function () {
+        this.timeout(1000000);
+
+        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+      });
+
+      it('claimTON', async function () {
+        this.timeout(1000000);
+        await testClaimTon(testAmountInTon, testAmountInTon, toBN("0"));
+      });
+
+      it('claimWTON', async function () {
+        this.timeout(1000000);
+        await testClaimWton(testAmountInWton, toBN("0"), testAmountInWton);
+      });
     });
 
-    it('can not claimERC20 from others', async function () {
-      await expectRevert(
-        daoVault2.claimERC20(ton.address, user1, toBN("1"), {from: user1}),
-        "Ownable: caller is not the owner"
-      );
+    describe('claim ERC20', function () {
+      beforeEach(async function () {
+        this.timeout(1000000);
+
+        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+      });
+
+      it('claimERC20', async function () {
+        const token = ton;
+        const balanceBefore = await token.balanceOf(user1);
+
+        const amount = _TON("10").toFixed(TON_UNIT);
+        await daoVault2.claimERC20(token.address, user1, amount);
+
+        const balanceAfter = await token.balanceOf(user1);
+        balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
+      });
+    });
+
+    describe('Authority', function () {
+      it('can not claimTON from others', async function () {
+        await expectRevert(
+          daoVault2.claimTON(user1, toBN("1"), {from: user1}),
+          "Ownable: caller is not the owner"
+        );
+      });
+
+      it('can not claimWTON from others', async function () {
+        await expectRevert(
+          daoVault2.claimWTON(user1, toBN("1"), {from: user1}),
+          "Ownable: caller is not the owner"
+        );
+      });
+
+      it('can not claimERC20 from others', async function () {
+        await expectRevert(
+          daoVault2.claimERC20(ton.address, user1, toBN("1"), {from: user1}),
+          "Ownable: caller is not the owner"
+        );
+      });
     });
   });
 });

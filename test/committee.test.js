@@ -147,6 +147,7 @@ describe('DAOCommittee', function () {
 
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+    await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(TON_UNIT));
   });
 
   function recordGasUsed(_tx, _label) { 
@@ -540,6 +541,71 @@ describe('DAOCommittee', function () {
         await committeeProxy.retireMember({from: candidate});
         (await committeeProxy.isExistCandidate(candidate)).should.be.equal(true);
         (await committeeProxy.members(testSlotIndex)).should.be.equal(ZERO_ADDRESS);
+      });
+    });
+  });
+
+  describe('Claim', function () {
+    beforeEach(async function () { 
+      this.timeout(1000000);
+      await addCandidate(candidate1);
+      await addCandidate(candidate2);
+      await addCandidate(candidate3);
+    });
+
+    describe('before being member', function () {
+      it('should have no claimable amount', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount.should.be.bignumber.equal(toBN("0"));
+        }
+      });
+
+      it('can not claim', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          await expectRevert(
+            committeeProxy.claimActivityReward({from: candidate}),
+            "DAOCommittee: you don't have claimable ton"
+          );
+        }
+      });
+    });
+
+    describe('after being member', function () {
+      beforeEach(async function () { 
+        this.timeout(1000000);
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          await committeeProxy.changeMember(i, {from: candidate});
+        }
+
+        await time.increase("10000");
+      });
+
+      it('should have claimable amount', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount.should.be.bignumber.gt(toBN("0"));
+        }
+      });
+
+      it('can claim', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          const balanceBefore = await ton.balanceOf(candidate);
+          const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount.should.be.bignumber.gt(toBN("0"));
+          await committeeProxy.claimActivityReward({from: candidate});
+
+          const balanceAfter = await ton.balanceOf(candidate);
+          balanceAfter.sub(balanceBefore).should.be.bignumber.gte(claimableAmount);
+
+          const claimableAmount2 = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount2.should.be.bignumber.lt(claimableAmount);
+        }
       });
     });
   });
