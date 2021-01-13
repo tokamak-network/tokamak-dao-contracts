@@ -130,6 +130,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         validCommitteeL2Factory
     {
         require(!isExistCandidate(msg.sender), "DAOCommittee: candidate already registerd");
+        require(!isOperatorOfRegistry(msg.sender), "DAOCommittee: candidate already registerd by layer2, you can use registerOperator");
 
         //uint256 minimumAmount = seigManager.minimumAmount();
         //require(minimumAmount <= tonAmount, "DAOCommittee: not enough ton");
@@ -414,7 +415,8 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         validLayer2Registry
         validCommitteeL2Factory
     {
-        require(!isExistCandidate(_operator), "DAOCommittee: candidate already registerd");
+        require(!isExistCandidate(_operator), "DAOCommittee: candidate already registerd"); 
+        require(isOperatorOfRegistry(_operator), "DAOCommittee: operator are not operator by layer2");
 
         require(
             _contractAddress != address(0),
@@ -570,4 +572,23 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         return period.mul(activityRewardPerSecond);
     }
+
+    function isOperatorOfRegistry(address _candidate) 
+        public 
+        validLayer2Registry 
+        view returns (bool) 
+    {
+        uint256 layer2Length = layer2Registry.numLayer2s();
+        bool isoperator = false;
+        for (uint256 i = 0; i < layer2Length; i++) {
+            address layer2 = layer2Registry.layer2ByIndex(i);
+            address operator = ICandidate(layer2).operator();
+            if(_candidate == operator) {
+                isoperator = true;
+                break;
+            }
+        }
+        return isoperator;
+    }
+    
 }

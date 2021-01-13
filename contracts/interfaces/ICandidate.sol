@@ -9,4 +9,5 @@ interface ICandidate {
     function isCommitteeLayer2() external view returns (bool);
     function candidateAndOwner() external view returns (address, address);
     function isCandidateContract() external view returns (bool);
+    function operator() external view returns (address); 
 }
