@@ -8,11 +8,13 @@ const DAOVault2 = artifacts.require('DAOVault2');
 module.exports = async function (deployer, network) {
   if (process.env.DEPLOY_VAULT) {
     const tonAddress = load(network, "TON");
+    const wtonAddress = load(network, "WTON");
 
     let vault2;
     await deployer.deploy(
       DAOVault2,
-      tonAddress
+      tonAddress,
+      wtonAddress
     ).then((_vault2) => {
       vault2 = _vault2
     });

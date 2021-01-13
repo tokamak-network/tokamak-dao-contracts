@@ -1,6 +1,6 @@
 require('dotenv').config();
 const path = require('path');
-const PrivateKeyProvider = require('truffle-privatekey-provider');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 module.exports = {
   contracts_build_directory : path.join(__dirname, "build/contracts"),
@@ -28,23 +28,25 @@ module.exports = {
       network_id: '*', // eslint-disable-line camelcase
     },
     faraday: {
-      provider: () => new PrivateKeyProvider(process.env.FARADAY_PRIVATE_KEY, process.env.FARADAY_PROVIDER_URL),
+      provider: () => new HDWalletProvider([process.env.FARADAY_PRIVATE_KEY], process.env.FARADAY_PROVIDER_URL),
       network_id: 16, // eslint-disable-line camelcase
       production: true,
     },
     rinkeby: {
-      provider: () => new PrivateKeyProvider(process.env.RINKEBY_PRIVATE_KEY, process.env.RINKEBY_PROVIDER_URL),
+      provider: () => new HDWalletProvider([process.env.RINKEBY_PRIVATE_KEY], process.env.RINKEBY_PROVIDER_URL),
       network_id: 4, // eslint-disable-line camelcase
       gasPrice: 5e9,
       skipDryRun: true,
     },
     ropsten: {
-      provider: () => new PrivateKeyProvider(process.env.ROPSTEN_PRIVATE_KEY, process.env.ROPSTEN_PROVIDER_URL),
+      provider: () => new HDWalletProvider([process.env.ROPSTEN_PRIVATE_KEY], process.env.ROPSTEN_PROVIDER_URL),
       network_id: 3, // eslint-disable-line camelcase
+      gasPrice: 100e9,
       production: true,
+      skipDryRun: true,
     },
     mainnet: {
-      provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
+      provider: () => new HDWalletProvider([process.env.MAINNET_PRIVATE_KEY], process.env.MAINNET_PROVIDER_URL),
       network_id: 1, // eslint-disable-line camelcase
       gasPrice: 20e9,
       skipDryRun: true,

@@ -35591,12 +35591,12 @@
         }
       },
       "links": {},
-      "address": "0xa923ad9b00d13C1f71Af7786154A8aF597ea1ba1",
-      "transactionHash": "0x615148f2ca561daa4f45d564b3c16630f01800a9d289c41c8ea6fa3ac26087d6"
+      "address": "0xFBfAdADE413CCF9a82C25bd57f8eAdaA66b992a7",
+      "transactionHash": "0xa715dc678a50c697997334e66fabff912fb49062de9f9bac7575a2b03d1e1fec"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-08T01:11:07.044Z",
+  "updatedAt": "2021-01-13T07:19:24.316Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "DepositManager manages WTON deposit and withdrawal from operator and WTON holders.",
