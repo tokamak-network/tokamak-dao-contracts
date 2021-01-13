@@ -373,6 +373,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
         emit AgendaExecuted(_agendaID, target);
     }
+
+    function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) public onlyOwner {
+        agendaManager.setResult(_agendaID, LibAgenda.AgendaResult(_result));
+        agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus(_status));
+    }
      
     function updateSeigniorage(address _candidate) public returns (bool) {
         address candidateContract = candidateInfos[_candidate].candidateContract;

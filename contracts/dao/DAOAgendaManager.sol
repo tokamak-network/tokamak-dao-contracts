@@ -189,7 +189,7 @@ contract DAOAgendaManager is Ownable {
         //agendaID = numAgendas.sub(1);
     }
 
-    function startVoting(uint256 _agendaID) public {
+    /*function startVoting(uint256 _agendaID) public {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         require(
             agenda.status == LibAgenda.AgendaStatus.NOTICE,
@@ -212,8 +212,8 @@ contract DAOAgendaManager is Ownable {
         }
 
         emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
-    }
-    
+    }*/
+
     function isVoter(uint256 _agendaID, address _user) public view returns (bool) {
         require(_user != address(0), "DAOAgendaManager: user address is zero");
         return voterInfos[_agendaID][_user].isVoter;
@@ -229,25 +229,23 @@ contract DAOAgendaManager is Ownable {
         returns (bool)
     {
         require(_vote < uint(VoteChoice.MAX), "DAOCommittee: invalid vote");
+
+        require(
+            isVotableStatus(_agendaID),
+            "DAOAgendaManager: invalid status"
+        );
+
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        if (agenda.status == LibAgenda.AgendaStatus.NOTICE) {
+            _startVoting(_agendaID);
+        }
+
         require(isVoter(_agendaID, _voter), "DAOCommittee: not a voter");
         require(!hasVoted(_agendaID, _voter), "DAOCommittee: already voted");
 
-        LibAgenda.Agenda storage agenda = agendas[_agendaID];
         require(
-            agenda.status == LibAgenda.AgendaStatus.VOTING,
-            "DAOAgendaManager: status is not voting."
-        );
-        require(
-            isVoter(_agendaID, _voter),
-            "you are not a committee member on this agenda."
-        );
-        require(
-            !hasVoted(_agendaID, _voter),
-            "voter already voted on this proposal"
-        );
-        require(
-            agendas[_agendaID].votingStartedTimestamp <= block.timestamp &&
-            block.timestamp <= agendas[_agendaID].votingEndTimestamp,
+            block.timestamp <= agenda.votingEndTimestamp,
             "DAOAgendaManager: for this agenda, the voting time expired"
         );
         
@@ -283,6 +281,23 @@ contract DAOAgendaManager is Ownable {
         agenda.status = LibAgenda.AgendaStatus.EXECUTED;
     }
 
+    function _startVoting(uint256 _agendaID) internal {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        agenda.votingStartedTimestamp = block.timestamp;
+        agenda.votingEndTimestamp = block.timestamp.add(agenda.votingPeriodInSeconds);
+        agenda.status = LibAgenda.AgendaStatus.VOTING;
+
+        uint256 memberCount = committee.maxMember();
+        for (uint256 i = 0; i < memberCount; i++) {
+            address voter = committee.members(i);
+            agenda.voters.push(voter);
+            voterInfos[_agendaID][voter].isVoter = true;
+        }
+
+        emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
+    }
+    
     function checkAndEndVoting(uint256 _agendaID) internal {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
 
@@ -325,6 +340,14 @@ contract DAOAgendaManager is Ownable {
             agenda.target,
             agenda.functionBytecode
         );
+    }
+
+    function isVotableStatus(uint256 _agendaID) public view returns (bool) {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+        return agenda.status == LibAgenda.AgendaStatus.VOTING ||
+            (agenda.status == LibAgenda.AgendaStatus.NOTICE &&
+                agenda.noticeEndTimestamp <= block.timestamp);
+
     }
 
     function getVotingCount(uint256 _agendaID)

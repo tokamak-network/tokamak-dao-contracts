@@ -742,15 +742,25 @@ describe('Test 1', function () {
       ]
       let agendaID;
 
+      async function isVoter(_agendaID, voter) {
+        const agenda = await agendaManager.agendas(_agendaID);
+
+        if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
+          return (await committeeProxy.isMember(voter));
+        else
+          return (await agendaManager.isVoter(_agendaID, voter));
+      }
+
       async function castVote(_agendaID, voter, vote) {
         const agenda1 = await agendaManager.agendas(_agendaID);
         const beforeCountingYes = agenda1[AGENDA_INDEX_COUNTING_YES];
         const beforeCountingNo = agenda1[AGENDA_INDEX_COUNTING_NO];
         const beforeCountingAbstain = agenda1[AGENDA_INDEX_COUNTING_ABSTAIN];
 
-        const voterInfo1 = await agendaManager.voterInfos(_agendaID, voter);
-        voterInfo1[VOTER_INFO_ISVOTER].should.be.equal(true);
-        voterInfo1[VOTER_INFO_HAS_VOTED].should.be.equal(false);
+        //const voterInfo1 = await agendaManager.voterInfos(_agendaID, voter);
+        //voterInfo1[VOTER_INFO_ISVOTER].should.be.equal(true);
+        //voterInfo1[VOTER_INFO_HAS_VOTED].should.be.equal(false);
+        (await isVoter(_agendaID, voter)).should.be.equal(true);
 
         await committeeProxy.castVote(_agendaID, vote, "test comment", {from: voter});
 
@@ -801,20 +811,14 @@ describe('Test 1', function () {
             executionInfo[1].should.be.equal(functionBytecode);
           });
 
-          it('start voting', async function () {
+          it('increase block time and check votable', async function () {
             const agenda = await agendaManager.agendas(agendaID);  
             const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
-            time.increaseTo(noticeEndTimestamp);
-            await agendaManager.startVoting(agendaID);
-            const agendaAfter = await agendaManager.agendas(agendaID);
-            agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_VOTING));
-            const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
-            agendaAfter[AGENDA_INDEX_VOTING_STARTED_TIMESTAMP].should.be.bignumber.not.lt(noticeEndTimestamp);
-            agendaAfter[AGENDA_INDEX_VOTING_END_TIMESTAMP].should.be.bignumber.equal(agendaAfter[AGENDA_INDEX_VOTING_STARTED_TIMESTAMP].add(votingPeriod));
-            
+            await time.increaseTo(noticeEndTimestamp);
+            (await agendaManager.isVotableStatus(agendaID)).should.be.equal(true);
           });
 
-          it('check voters', async function () {
+          /*it('check voters', async function () {
             const voters = await agendaManager.getVoters(agendaID);
             voters[0].should.be.equal(candidate1);
             voters[1].should.be.equal(candidate2);
@@ -825,7 +829,7 @@ describe('Test 1', function () {
               voterInfo[0].should.be.equal(true);
               voterInfo[1].should.be.equal(false);
             }
-          });
+          });*/
 
           describe(`Vote - ${votesList[i].votes}`, function () {
             it(`cast vote`, async function () {
