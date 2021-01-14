@@ -11814,94 +11814,6 @@
   "networks": {
     "4": {
       "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0x54e08871fd6291b3325c6d12f7a90666d58cac16035caf6969e6c57b14b5844c": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "bool",
-              "name": "result",
-              "type": "bool"
-            }
-          ],
-          "name": "TransferActivityFeeManager",
-          "type": "event"
-        },
-        "0xd589dbe7f38312ab18d5605a2757796a92ef0e0f82ea955f158cb4464fdd760a": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferCommittee",
-          "type": "event"
-        },
-        "0x885659fe89289ab9fe52ee4e1395c6853ca1eb6746529e4a00f980f1eec07bd9": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferErc20",
-          "type": "event"
-        },
         "0x80da462ebfbe41cfc9bc015e7a9a3c7a2a73dbccede72d8ceb583606c27f8f90": {
           "anonymous": false,
           "inputs": [
@@ -11951,14 +11863,7 @@
           ],
           "name": "Claimed",
           "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x01ac06FaF2B1B45b7a4eF77961Fcb893CbC4EcCA",
-      "transactionHash": "0x811c82c44ecaa5410ab3298bab723e4d3d3d46405209d683417ac143c738eaf4"
-    },
-    "1609886307866": {
-      "events": {
+        },
         "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
           "anonymous": false,
           "inputs": [
@@ -11977,179 +11882,15 @@
           ],
           "name": "OwnershipTransferred",
           "type": "event"
-        },
-        "0x54e08871fd6291b3325c6d12f7a90666d58cac16035caf6969e6c57b14b5844c": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "bool",
-              "name": "result",
-              "type": "bool"
-            }
-          ],
-          "name": "TransferActivityFeeManager",
-          "type": "event"
-        },
-        "0xd589dbe7f38312ab18d5605a2757796a92ef0e0f82ea955f158cb4464fdd760a": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferCommittee",
-          "type": "event"
-        },
-        "0x885659fe89289ab9fe52ee4e1395c6853ca1eb6746529e4a00f980f1eec07bd9": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferErc20",
-          "type": "event"
         }
       },
       "links": {},
-      "address": "0x0986Df246270507856d583c51353Ddf3f92E3446",
-      "transactionHash": "0x6eeae26d8fc7c18d591a3f80cb989aa83a970ebddecdf2298a90aac31816923c"
-    },
-    "1609900875874": {
-      "events": {
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0x54e08871fd6291b3325c6d12f7a90666d58cac16035caf6969e6c57b14b5844c": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "bool",
-              "name": "result",
-              "type": "bool"
-            }
-          ],
-          "name": "TransferActivityFeeManager",
-          "type": "event"
-        },
-        "0xd589dbe7f38312ab18d5605a2757796a92ef0e0f82ea955f158cb4464fdd760a": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferCommittee",
-          "type": "event"
-        },
-        "0x885659fe89289ab9fe52ee4e1395c6853ca1eb6746529e4a00f980f1eec07bd9": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "token",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "TransferErc20",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x0B1270fc6863Ac6250D5f8c55276e043255BdDc6",
-      "transactionHash": "0x407a4d9519e715be03640f8c4e36493c6c03488fead4f13b7bd5f5ed91b20973"
+      "address": "0x8e90c958B542ea5c0374e8197C575AbD1d121223",
+      "transactionHash": "0x90574c329434ff3cf9423acdceccd4f20cc55273e27384af37e53f24c9fd2d84"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-13T07:27:53.018Z",
+  "updatedAt": "2021-01-14T02:57:05.802Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

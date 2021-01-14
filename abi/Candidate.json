@@ -236,8 +236,8 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "624:1433:1:-:0;;;804:199;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;804:199:1;;;;;;;;;;-1:-1:-1;804:199:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;804:199:1;;-1:-1:-1;;305:5:22;:18;;-1:-1:-1;;;;;;305:18:22;313:10;305:18;;;-1:-1:-1;768:40:25;-1:-1:-1;;;768:18:25;:40::i;:::-;867:9:1;:22;;-1:-1:-1;;;;;;867:22:1;-1:-1:-1;;;;;867:22:1;;;;;899:12;;;;:4;;:12;;;;;:::i;:::-;-1:-1:-1;922:74:1;-1:-1:-1;;;922:18:1;:74::i;:::-;804:199;;624:1433;;1499:198:25;-1:-1:-1;;;;;;1582:25:25;;;;;1574:66;;;;;-1:-1:-1;;;1574:66:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;;1650:33:25;;;;;-1:-1:-1;1650:33:25;;;;;;;;:40;;-1:-1:-1;;1650:40:25;;;;;;1499:198::o;624:1433:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;624:1433:1;;;-1:-1:-1;624:1433:1;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "624:1433:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;965:140:25;;;;;;;;;;;;;;;;-1:-1:-1;965:140:25;-1:-1:-1;;;;;;965:140:25;;:::i;:::-;;;;;;;;;;;;;;;;;;1879:76:1;;;;;;;;;;;;;;;;-1:-1:-1;1879:76:1;;:::i;:::-;;;;;;;;;;;;;;;;1811:63;;;:::i;1667:71::-;;;:::i;:::-;;;;-1:-1:-1;;;;;1667:71:1;;;;;;;;;;;;;;775:18;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;713:24;;;:::i;743:26::-;;;:::i;1125:207::-;;;:::i;1013:106::-;;;;;;;;;;;;;;;;-1:-1:-1;1013:106:1;-1:-1:-1;;;;;1013:106:1;;:::i;:::-;;1566:95;;;:::i;254:20:22:-;;;:::i;1441:119:1:-;;;:::i;:::-;;;;-1:-1:-1;;;;;1441:119:1;;;;;;;;;;;;;;;;;;;;;;;;419:147:22;;;;;;;;;;;;;;;;-1:-1:-1;419:147:22;-1:-1:-1;;;;;419:147:22;;:::i;965:140:25:-;-1:-1:-1;;;;;;1065:33:25;1042:4;1065:33;;;-1:-1:-1;1065:33:25;;;;;;;;;965:140::o;1879:76:1:-;-1:-1:-1;1951:1:1;;1879:76::o;1811:63::-;1870:1;1811:63;:::o;1667:71::-;1726:9;;-1:-1:-1;;;;;1726:9:1;;1667:71::o;775:18::-;;;;;;;;;;;;;;;-1:-1:-1;;775:18:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;713:24::-;;;-1:-1:-1;;;;;713:24:1;;:::o;743:26::-;;;-1:-1:-1;;;;;743:26:1;;:::o;1125:207::-;1203:11;;1179:4;;-1:-1:-1;;;;;1203:11:1;1195:68;;;;;-1:-1:-1;;;1195:68:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;1293:11;;1280:45;;;-1:-1:-1;;;1280:45:1;;;;-1:-1:-1;;;;;1293:11:1;;;;1280:43;;:45;;;;;;;;;;;;;;;1293:11;;1280:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1280:45:1;;-1:-1:-1;1125:207:1;:::o;1013:106::-;389:5:22;;-1:-1:-1;;;;;389:5:22;375:10;:19;367:28;;;;;;1091:11:1::1;:21:::0;;-1:-1:-1;;;;;;1091:21:1::1;-1:-1:-1::0;;;;;1091:21:1;;;::::1;::::0;;;::::1;::::0;;1013:106::o;254:20:22:-;;;-1:-1:-1;;;;;254:20:22;;:::o;1441:119:1:-;1536:9;;1500:7;1547:5;-1:-1:-1;;;;;1536:9:1;;;;1547:5;;;1441:119::o;419:147:22:-;389:5;;-1:-1:-1;;;;;389:5:22;375:10;:19;367:28;;;;;;-1:-1:-1;;;;;495:22:22;::::1;::::0;491:69:::1;;533:5;:16:::0;;-1:-1:-1;;;;;;533:16:22::1;-1:-1:-1::0;;;;;533:16:22;::::1;;::::0;;491:69:::1;419:147:::0;:::o",
+  "sourceMap": "624:1433:1:-:0;;;804:199;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;804:199:1;;;;;;;;;;-1:-1:-1;804:199:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;804:199:1;;-1:-1:-1;;305:5:23;:18;;-1:-1:-1;;;;;;305:18:23;313:10;305:18;;;-1:-1:-1;768:40:26;-1:-1:-1;;;768:18:26;:40::i;:::-;867:9:1;:22;;-1:-1:-1;;;;;;867:22:1;-1:-1:-1;;;;;867:22:1;;;;;899:12;;;;:4;;:12;;;;;:::i;:::-;-1:-1:-1;922:74:1;-1:-1:-1;;;922:18:1;:74::i;:::-;804:199;;624:1433;;1499:198:26;-1:-1:-1;;;;;;1582:25:26;;;;;1574:66;;;;;-1:-1:-1;;;1574:66:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;;1650:33:26;;;;;-1:-1:-1;1650:33:26;;;;;;;;:40;;-1:-1:-1;;1650:40:26;;;;;;1499:198::o;624:1433:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;624:1433:1;;;-1:-1:-1;624:1433:1;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "624:1433:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;965:140:26;;;;;;;;;;;;;;;;-1:-1:-1;965:140:26;-1:-1:-1;;;;;;965:140:26;;:::i;:::-;;;;;;;;;;;;;;;;;;1879:76:1;;;;;;;;;;;;;;;;-1:-1:-1;1879:76:1;;:::i;:::-;;;;;;;;;;;;;;;;1811:63;;;:::i;1667:71::-;;;:::i;:::-;;;;-1:-1:-1;;;;;1667:71:1;;;;;;;;;;;;;;775:18;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;713:24;;;:::i;743:26::-;;;:::i;1125:207::-;;;:::i;1013:106::-;;;;;;;;;;;;;;;;-1:-1:-1;1013:106:1;-1:-1:-1;;;;;1013:106:1;;:::i;:::-;;1566:95;;;:::i;254:20:23:-;;;:::i;1441:119:1:-;;;:::i;:::-;;;;-1:-1:-1;;;;;1441:119:1;;;;;;;;;;;;;;;;;;;;;;;;419:147:23;;;;;;;;;;;;;;;;-1:-1:-1;419:147:23;-1:-1:-1;;;;;419:147:23;;:::i;965:140:26:-;-1:-1:-1;;;;;;1065:33:26;1042:4;1065:33;;;-1:-1:-1;1065:33:26;;;;;;;;;965:140::o;1879:76:1:-;-1:-1:-1;1951:1:1;;1879:76::o;1811:63::-;1870:1;1811:63;:::o;1667:71::-;1726:9;;-1:-1:-1;;;;;1726:9:1;;1667:71::o;775:18::-;;;;;;;;;;;;;;;-1:-1:-1;;775:18:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;713:24::-;;;-1:-1:-1;;;;;713:24:1;;:::o;743:26::-;;;-1:-1:-1;;;;;743:26:1;;:::o;1125:207::-;1203:11;;1179:4;;-1:-1:-1;;;;;1203:11:1;1195:68;;;;;-1:-1:-1;;;1195:68:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;1293:11;;1280:45;;;-1:-1:-1;;;1280:45:1;;;;-1:-1:-1;;;;;1293:11:1;;;;1280:43;;:45;;;;;;;;;;;;;;;1293:11;;1280:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1280:45:1;;-1:-1:-1;1125:207:1;:::o;1013:106::-;389:5:23;;-1:-1:-1;;;;;389:5:23;375:10;:19;367:28;;;;;;1091:11:1::1;:21:::0;;-1:-1:-1;;;;;;1091:21:1::1;-1:-1:-1::0;;;;;1091:21:1;;;::::1;::::0;;;::::1;::::0;;1013:106::o;254:20:23:-;;;-1:-1:-1;;;;;254:20:23;;:::o;1441:119:1:-;1536:9;;1500:7;1547:5;-1:-1:-1;;;;;1536:9:1;;;;1547:5;;;1441:119::o;419:147:23:-;389:5;;-1:-1:-1;;;;;389:5:23;375:10;:19;367:28;;;;;;-1:-1:-1;;;;;495:22:23;::::1;::::0;491:69:::1;;533:5;:16:::0;;-1:-1:-1;;;;;;533:16:23::1;-1:-1:-1::0;;;;;533:16:23;::::1;;::::0;;491:69:::1;419:147:::0;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.7.6;\n\nimport \"../shared/Ownabled.sol\";\n\nimport { IDAOCommittee } from \"../interfaces/IDAOCommittee.sol\";\nimport { IERC20 } from  \"../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport { SafeMath } from \"../../node_modules/@openzeppelin/contracts/math/SafeMath.sol\";\nimport { ISeigManager } from \"../interfaces/ISeigManager.sol\";\nimport { ICandidate } from \"../interfaces/ICandidate.sol\";\nimport { ILayer2Registry } from \"../interfaces/ILayer2Registry.sol\";\nimport { ERC165 } from \"../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol\";\n\ncontract Candidate is Ownabled, ICandidate, ERC165 {\n    using SafeMath for uint256;\n    address public candidate;\n    address public seigManager;\n    string public memo;\n    \n    constructor(address _candidate, string memory _memo) {\n        candidate = _candidate;\n        memo = _memo;\n\n        _registerInterface(ICandidate(address(this)).isCandidateContract.selector);\n    }\n    \n    function setSeigManager(address _seigMan) public onlyOwner override {\n        seigManager =_seigMan;\n    }\n\n    function updateSeigniorage() public override returns (bool) {\n        require(seigManager != address(0), \"Candidate: SeigManager is zero\");\n        return ISeigManager(seigManager).updateSeigniorage();\n    }\n    \n    function isCommitteeLayer2() public override view returns (bool) {\n        return true;\n    }\n\n    function candidateAndOwner() public override view returns (address, address) {\n        return (candidate, owner);\n    }\n\n    function isCandidateContract() public override view returns (bool) {\n        return true;\n    }\n\n    function operator() public view returns (address) { return candidate; }\n    function isLayer2() public view returns (bool) { return true; }\n    function currentFork() public view returns (uint) { return 1; }\n    function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }\n    /*function changeCandidate(address _candidate) public {\n        candidate = _candidate;\n    }*/\n}\n",
   "sourcePath": "/data/github/onther/tokamak-dao-contracts3/contracts/dao/Candidate.sol",
   "ast": {
@@ -247,28 +247,28 @@
         193
       ],
       "ERC165": [
-        5468
+        5737
       ],
       "ICandidate": [
-        3974
+        4185
       ],
       "IDAOCommittee": [
-        4485
+        4696
       ],
       "IERC20": [
-        5926
+        6195
       ],
       "ILayer2Registry": [
-        4598
+        4809
       ],
       "ISeigManager": [
-        4762
+        4973
       ],
       "Ownabled": [
-        5279
+        5548
       ],
       "SafeMath": [
-        5848
+        6117
       ]
     },
     "id": 194,
@@ -292,7 +292,7 @@
         "id": 35,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5280,
+        "sourceUnit": 5549,
         "src": "57:32:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -303,7 +303,7 @@
         "id": 37,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4486,
+        "sourceUnit": 4697,
         "src": "91:64:1",
         "symbolAliases": [
           {
@@ -325,7 +325,7 @@
         "id": 39,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5927,
+        "sourceUnit": 6196,
         "src": "156:92:1",
         "symbolAliases": [
           {
@@ -347,7 +347,7 @@
         "id": 41,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5849,
+        "sourceUnit": 6118,
         "src": "249:88:1",
         "symbolAliases": [
           {
@@ -369,7 +369,7 @@
         "id": 43,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4763,
+        "sourceUnit": 4974,
         "src": "338:62:1",
         "symbolAliases": [
           {
@@ -391,7 +391,7 @@
         "id": 45,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 3975,
+        "sourceUnit": 4186,
         "src": "401:58:1",
         "symbolAliases": [
           {
@@ -413,7 +413,7 @@
         "id": 47,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4599,
+        "sourceUnit": 4810,
         "src": "460:68:1",
         "symbolAliases": [
           {
@@ -435,7 +435,7 @@
         "id": 49,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5469,
+        "sourceUnit": 5738,
         "src": "529:93:1",
         "symbolAliases": [
           {
@@ -459,10 +459,10 @@
               "id": 50,
               "name": "Ownabled",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5279,
+              "referencedDeclaration": 5548,
               "src": "646:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownabled_$5279",
+                "typeIdentifier": "t_contract$_Ownabled_$5548",
                 "typeString": "contract Ownabled"
               }
             },
@@ -475,10 +475,10 @@
               "id": 52,
               "name": "ICandidate",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3974,
+              "referencedDeclaration": 4185,
               "src": "656:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ICandidate_$3974",
+                "typeIdentifier": "t_contract$_ICandidate_$4185",
                 "typeString": "contract ICandidate"
               }
             },
@@ -491,10 +491,10 @@
               "id": 54,
               "name": "ERC165",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5468,
+              "referencedDeclaration": 5737,
               "src": "668:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC165_$5468",
+                "typeIdentifier": "t_contract$_ERC165_$5737",
                 "typeString": "contract ERC165"
               }
             },
@@ -504,20 +504,20 @@
           }
         ],
         "contractDependencies": [
-          3974,
-          5279,
-          5468,
-          5652
+          4185,
+          5548,
+          5737,
+          5921
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 193,
         "linearizedBaseContracts": [
           193,
-          5468,
-          5652,
-          3974,
-          5279
+          5737,
+          5921,
+          4185,
+          5548
         ],
         "name": "Candidate",
         "nodeType": "ContractDefinition",
@@ -528,10 +528,10 @@
               "id": 56,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5848,
+              "referencedDeclaration": 6117,
               "src": "687:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$5848",
+                "typeIdentifier": "t_contract$_SafeMath_$6117",
                 "typeString": "library SafeMath"
               }
             },
@@ -798,10 +798,10 @@
                               "name": "ICandidate",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3974,
+                              "referencedDeclaration": 4185,
                               "src": "941:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_ICandidate_$3974_$",
+                                "typeIdentifier": "t_type$_t_contract$_ICandidate_$4185_$",
                                 "typeString": "type(contract ICandidate)"
                               }
                             },
@@ -816,7 +816,7 @@
                             "src": "941:25:1",
                             "tryCall": false,
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ICandidate_$3974",
+                              "typeIdentifier": "t_contract$_ICandidate_$4185",
                               "typeString": "contract ICandidate"
                             }
                           },
@@ -827,7 +827,7 @@
                           "lValueRequested": false,
                           "memberName": "isCandidateContract",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3973,
+                          "referencedDeclaration": 4184,
                           "src": "941:45:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bool_$",
@@ -859,7 +859,7 @@
                       "name": "_registerInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5467,
+                      "referencedDeclaration": 5736,
                       "src": "922:18:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes4_$returns$__$",
@@ -967,7 +967,7 @@
           },
           {
             "baseFunctions": [
-              3951
+              4162
             ],
             "body": {
               "id": 103,
@@ -1031,7 +1031,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5258,
+                  "referencedDeclaration": 5527,
                   "src": "1062:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1098,7 +1098,7 @@
           },
           {
             "baseFunctions": [
-              3956
+              4167
             ],
             "body": {
               "id": 126,
@@ -1290,10 +1290,10 @@
                           "name": "ISeigManager",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4762,
+                          "referencedDeclaration": 4973,
                           "src": "1280:12:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4762_$",
+                            "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4973_$",
                             "typeString": "type(contract ISeigManager)"
                           }
                         },
@@ -1308,7 +1308,7 @@
                         "src": "1280:25:1",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ISeigManager_$4762",
+                          "typeIdentifier": "t_contract$_ISeigManager_$4973",
                           "typeString": "contract ISeigManager"
                         }
                       },
@@ -1319,7 +1319,7 @@
                       "lValueRequested": false,
                       "memberName": "updateSeigniorage",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4739,
+                      "referencedDeclaration": 4950,
                       "src": "1280:43:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$_t_bool_$",
@@ -1408,7 +1408,7 @@
           },
           {
             "baseFunctions": [
-              3961
+              4172
             ],
             "body": {
               "id": 135,
@@ -1499,7 +1499,7 @@
           },
           {
             "baseFunctions": [
-              3968
+              4179
             ],
             "body": {
               "id": 148,
@@ -1526,7 +1526,7 @@
                         "name": "owner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5238,
+                        "referencedDeclaration": 5507,
                         "src": "1547:5:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1642,7 +1642,7 @@
           },
           {
             "baseFunctions": [
-              3973
+              4184
             ],
             "body": {
               "id": 157,
@@ -2097,28 +2097,28 @@
         193
       ],
       "ERC165": [
-        5468
+        5737
       ],
       "ICandidate": [
-        3974
+        4185
       ],
       "IDAOCommittee": [
-        4485
+        4696
       ],
       "IERC20": [
-        5926
+        6195
       ],
       "ILayer2Registry": [
-        4598
+        4809
       ],
       "ISeigManager": [
-        4762
+        4973
       ],
       "Ownabled": [
-        5279
+        5548
       ],
       "SafeMath": [
-        5848
+        6117
       ]
     },
     "id": 194,
@@ -2142,7 +2142,7 @@
         "id": 35,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5280,
+        "sourceUnit": 5549,
         "src": "57:32:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2153,7 +2153,7 @@
         "id": 37,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4486,
+        "sourceUnit": 4697,
         "src": "91:64:1",
         "symbolAliases": [
           {
@@ -2175,7 +2175,7 @@
         "id": 39,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5927,
+        "sourceUnit": 6196,
         "src": "156:92:1",
         "symbolAliases": [
           {
@@ -2197,7 +2197,7 @@
         "id": 41,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5849,
+        "sourceUnit": 6118,
         "src": "249:88:1",
         "symbolAliases": [
           {
@@ -2219,7 +2219,7 @@
         "id": 43,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4763,
+        "sourceUnit": 4974,
         "src": "338:62:1",
         "symbolAliases": [
           {
@@ -2241,7 +2241,7 @@
         "id": 45,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 3975,
+        "sourceUnit": 4186,
         "src": "401:58:1",
         "symbolAliases": [
           {
@@ -2263,7 +2263,7 @@
         "id": 47,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 4599,
+        "sourceUnit": 4810,
         "src": "460:68:1",
         "symbolAliases": [
           {
@@ -2285,7 +2285,7 @@
         "id": 49,
         "nodeType": "ImportDirective",
         "scope": 194,
-        "sourceUnit": 5469,
+        "sourceUnit": 5738,
         "src": "529:93:1",
         "symbolAliases": [
           {
@@ -2309,10 +2309,10 @@
               "id": 50,
               "name": "Ownabled",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5279,
+              "referencedDeclaration": 5548,
               "src": "646:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownabled_$5279",
+                "typeIdentifier": "t_contract$_Ownabled_$5548",
                 "typeString": "contract Ownabled"
               }
             },
@@ -2325,10 +2325,10 @@
               "id": 52,
               "name": "ICandidate",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3974,
+              "referencedDeclaration": 4185,
               "src": "656:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ICandidate_$3974",
+                "typeIdentifier": "t_contract$_ICandidate_$4185",
                 "typeString": "contract ICandidate"
               }
             },
@@ -2341,10 +2341,10 @@
               "id": 54,
               "name": "ERC165",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5468,
+              "referencedDeclaration": 5737,
               "src": "668:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC165_$5468",
+                "typeIdentifier": "t_contract$_ERC165_$5737",
                 "typeString": "contract ERC165"
               }
             },
@@ -2354,20 +2354,20 @@
           }
         ],
         "contractDependencies": [
-          3974,
-          5279,
-          5468,
-          5652
+          4185,
+          5548,
+          5737,
+          5921
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 193,
         "linearizedBaseContracts": [
           193,
-          5468,
-          5652,
-          3974,
-          5279
+          5737,
+          5921,
+          4185,
+          5548
         ],
         "name": "Candidate",
         "nodeType": "ContractDefinition",
@@ -2378,10 +2378,10 @@
               "id": 56,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5848,
+              "referencedDeclaration": 6117,
               "src": "687:8:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$5848",
+                "typeIdentifier": "t_contract$_SafeMath_$6117",
                 "typeString": "library SafeMath"
               }
             },
@@ -2648,10 +2648,10 @@
                               "name": "ICandidate",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3974,
+                              "referencedDeclaration": 4185,
                               "src": "941:10:1",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_ICandidate_$3974_$",
+                                "typeIdentifier": "t_type$_t_contract$_ICandidate_$4185_$",
                                 "typeString": "type(contract ICandidate)"
                               }
                             },
@@ -2666,7 +2666,7 @@
                             "src": "941:25:1",
                             "tryCall": false,
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ICandidate_$3974",
+                              "typeIdentifier": "t_contract$_ICandidate_$4185",
                               "typeString": "contract ICandidate"
                             }
                           },
@@ -2677,7 +2677,7 @@
                           "lValueRequested": false,
                           "memberName": "isCandidateContract",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3973,
+                          "referencedDeclaration": 4184,
                           "src": "941:45:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_bool_$",
@@ -2709,7 +2709,7 @@
                       "name": "_registerInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5467,
+                      "referencedDeclaration": 5736,
                       "src": "922:18:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes4_$returns$__$",
@@ -2817,7 +2817,7 @@
           },
           {
             "baseFunctions": [
-              3951
+              4162
             ],
             "body": {
               "id": 103,
@@ -2881,7 +2881,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5258,
+                  "referencedDeclaration": 5527,
                   "src": "1062:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2948,7 +2948,7 @@
           },
           {
             "baseFunctions": [
-              3956
+              4167
             ],
             "body": {
               "id": 126,
@@ -3140,10 +3140,10 @@
                           "name": "ISeigManager",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4762,
+                          "referencedDeclaration": 4973,
                           "src": "1280:12:1",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4762_$",
+                            "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4973_$",
                             "typeString": "type(contract ISeigManager)"
                           }
                         },
@@ -3158,7 +3158,7 @@
                         "src": "1280:25:1",
                         "tryCall": false,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_ISeigManager_$4762",
+                          "typeIdentifier": "t_contract$_ISeigManager_$4973",
                           "typeString": "contract ISeigManager"
                         }
                       },
@@ -3169,7 +3169,7 @@
                       "lValueRequested": false,
                       "memberName": "updateSeigniorage",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 4739,
+                      "referencedDeclaration": 4950,
                       "src": "1280:43:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$_t_bool_$",
@@ -3258,7 +3258,7 @@
           },
           {
             "baseFunctions": [
-              3961
+              4172
             ],
             "body": {
               "id": 135,
@@ -3349,7 +3349,7 @@
           },
           {
             "baseFunctions": [
-              3968
+              4179
             ],
             "body": {
               "id": 148,
@@ -3376,7 +3376,7 @@
                         "name": "owner",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5238,
+                        "referencedDeclaration": 5507,
                         "src": "1547:5:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3492,7 +3492,7 @@
           },
           {
             "baseFunctions": [
-              3973
+              4184
             ],
             "body": {
               "id": 157,
@@ -3946,7 +3946,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-12T01:26:21.470Z",
+  "updatedAt": "2021-01-13T08:10:22.467Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

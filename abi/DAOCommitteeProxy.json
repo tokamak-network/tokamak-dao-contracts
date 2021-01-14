@@ -120,7 +120,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -133,7 +134,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -146,7 +148,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -165,7 +168,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -178,7 +182,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -217,7 +222,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -236,7 +242,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -249,7 +256,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -268,7 +276,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -281,7 +290,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -294,7 +304,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -313,7 +324,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -326,7 +338,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -339,7 +352,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -359,7 +373,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -378,7 +393,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -391,7 +407,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -443,24 +460,25 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ton\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_impl\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_seigManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_layer2Registry\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_agendaManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_candidateFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_daoVault\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalbalance\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"memberIndex\",\"type\":\"uint256\"}],\"name\":\"ApplyMemberSuccess\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"stateMutability\":\"nonpayable\",\"type\":\"fallback\"},{\"inputs\":[],\"name\":\"_implementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"activityRewardPerSecond\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"agendaManager\",\"outputs\":[{\"internalType\":\"contract IDAOAgendaManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_candidate\",\"type\":\"address\"}],\"name\":\"candidateContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"candidateFactory\",\"outputs\":[{\"internalType\":\"contract ICandidateFactory\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"candidateInfos\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"candidateContract\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"memberJoinedTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"indexMembers\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rewardPeriod\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedTimestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"candidates\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"daoVault\",\"outputs\":[{\"internalType\":\"contract IDAOVault2\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"implementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_candidate\",\"type\":\"address\"}],\"name\":\"isMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"layer2Registry\",\"outputs\":[{\"internalType\":\"contract ILayer2Registry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxMember\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"members\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pauseProxy\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"seigManager\",\"outputs\":[{\"internalType\":\"contract ISeigManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_pause\",\"type\":\"bool\"}],\"name\":\"setProxyPause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ton\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"name\":\"upgradeTo\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}. Time complexity O(1), guaranteed to always use less than 30 000 gas.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol\":\"DAOCommitteeProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOAgendaManager.sol\":{\"keccak256\":\"0x1351ac57f6a242fd48234fbab17f45b265e1ec487b5ae435290c1989707cf9dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3bcf201b5a8bd3689fdabd039713fa28d0e04f2f28851d6256f3102c48ac3ed6\",\"dweb:/ipfs/QmXy8hd7QcP57kpPR95yJJtPPY7oyDbjTG47y9MK9cobFD\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol\":{\"keccak256\":\"0xc1c81c730f53396dfc891c40f2daa3f37698ef863fba71437de3e8006503ea8e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff4c4e3d3a5b3b8b513d879450dbe54ad14d66f8aae6d7b235eda08be99e7db7\",\"dweb:/ipfs/QmNMq5mszMptRv8C7sTa3w1UaM9nBGr9T8f5323J5atfzd\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/StorageStateCommittee.sol\":{\"keccak256\":\"0x40e9fb1f524d5548b26640a9384d1711225035f8d834f87c79ba0ff60d449663\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4690aaf76fcf91fb46bd914cb02d8375857967ead74a7ab54e8a81894c6787dd\",\"dweb:/ipfs/QmXkUxxHb4dmHHfYkjcBxHG2Ee9mMajarGhjKdynjARUwb\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ICandidateFactory.sol\":{\"keccak256\":\"0x2bdad9040702af7fd0c33a4882856d96b8128918bcef3b24dfe8ad9015405d28\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2c5e7e23fe55cf4ae8d4642d8290d9ec1d2f3ab792bd7e6ff203d61db037fa0\",\"dweb:/ipfs/QmUK8yL5QLnoMJp6ugjFjGcXhrBrqxk3aVtTHxYcptWTMY\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOAgendaManager.sol\":{\"keccak256\":\"0x47ceb5a341e9ab9d64367507af67cfcffd72933935143ca39cb59c1cf5d57394\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6d52a2d1bdf05e70932fe9e62aaf8dc95ed05c985ec005bc17c34a8acea8f260\",\"dweb:/ipfs/QmV2yU3ubaqmxYccxtmy7HfkFBeaWbuwPK5xoRHTi8z8Ue\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOCommittee.sol\":{\"keccak256\":\"0xb2fcf73829b3db3d6b69e4643d66ea7ed2ff7f97b563c5bed6dbf19d3a8d1633\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3bcc77ce98aa924bc494770ce6c1b0a89e11bf9aa04f1f9e0ddf06b20d490cfb\",\"dweb:/ipfs/QmYXCMy11cFBStLTamSxkyXiVwWfRN3hUQ5rRi1cH1TgY4\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOVault2.sol\":{\"keccak256\":\"0x1840a15bd58a1c8bca8905f62b1336464e2194fe15be5b49ef922c4b5441595f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://799c52bde7e7ffb7c0ca892468fdffc27e7b1f8007bd86fede67780047381ea5\",\"dweb:/ipfs/QmaHHzfdbDVdjwnfspZK5JWXPbD5TvWtmwXTB8HsbUPmv7\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ILayer2Registry.sol\":{\"keccak256\":\"0xb6476dfa9c1005ce74a190a63ca0fea565461735ab5dc149cec27c1637238d63\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f07c82c23bed64dd0e030f3cfa207553e95affe26ab2eac99097e2cc1ce3750\",\"dweb:/ipfs/QmTJDMihaxSp8k4BUvZKkbMSq7N7cyd3kwF1qvwqwXdcCq\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ISeigManager.sol\":{\"keccak256\":\"0xf5b1ebf3a233491959264a1d95805d99f51eded196d5592b9e6320ee551f9e3a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6fcca9ab7db2d9d907bb259e82452bd42c0628bf5a9d4ebf0c4483966e1c5c71\",\"dweb:/ipfs/Qmat1XCV6esMHWA7kjxjfPLgV12kAwLJdfd36CAEtD4Xr5\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/lib/Agenda.sol\":{\"keccak256\":\"0x5fe910c089e53f89093d159e81078caa404a74bd742fc6eaebe2ecab4aefc001\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c7717e7f9d658d5eec4980688232b2b1ec66917a8fac970cb7d3f4269c5122c0\",\"dweb:/ipfs/QmWooEE6dCs3SFoYcCo3fgiQnugJufykLvEdRwfJLBRRkR\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x8d3cb350f04ff49cfb10aef08d87f19dcbaecc8027b0bed12f3275cd12f38cf0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ded47ec7c96750f9bd04bbbc84f659992d4ba901cb7b532a52cd468272cf378f\",\"dweb:/ipfs/QmfBrGtQP7rZEqEg6Wz6jh2N2Kukpj1z5v3CGWmAqrzm96\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0xf7c39c7e6d06ed3bda90cfefbcbf2ddc32c599c3d6721746546ad64946efccaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cb57a28e189cd8b05748db44bdd51d608e6f1364dd1b35ad921e1bc82c10631e\",\"dweb:/ipfs/QmaWWTBbVu2pRR9XUbE4iC159NoP59cRF9ZJwhf4ghFN9i\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xd6b90e604fb2eb2d641c7110c72440bf2dc999ec6ab8ff60f200e71ca75d1d90\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7b92d8ab83b21ff984b1f0d6d66897d5afb1f2052004cbcb133cea023e0ae468\",\"dweb:/ipfs/QmTarypkQrFp4UMjTh7Zzhz2nZLz5uPS4nJQtHDEuwBVe6\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0xf70bc25d981e4ec9673a995ad2995d5d493ea188d3d8f388bba9c227ce09fb82\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd970f51e3a77790c2f02b5b1759827c3b897c3d98c407b3631e8af32e3dc93c\",\"dweb:/ipfs/QmPF85Amgbqjk3SNZKsPCsqCw8JfwYEPMnnhvMJUyX58je\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x3b21f2c8d626de3b9925ae33e972d8bf5c8b1bffb3f4ee94daeed7d0679036e6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f8d45329fecbf0836ad7543330c3ecd0f8d0ffa42d4016278c3eb2215fdcdfe\",\"dweb:/ipfs/QmXWLT7GcnHtA5NiD6MFi2CV3EWJY4wv5mLNnypqYDrxL3\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5f02220344881ce43204ae4a6281145a67bc52c2bb1290a791857df3d19d78f5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://24427744bd3e6cb73c17010119af12a318289c0253a4d9acb8576c9fb3797b08\",\"dweb:/ipfs/QmTLDqpKRBuxGxRAmjgXt9AkXyACW3MtKzi7PYjm5iMfGC\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b50604051610b59380380610b59833981810160405260e081101561003357600080fd5b508051602082015160408301516060840151608085015160a086015160c0909601519495939492939192909190600061006a610177565b600b80546001600160a01b0319166001600160a01b038316908117909155604051919250906000907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a3506100c86301ffc9a760e01b61017b565b600080546001600160a01b03199081166001600160a01b038a811691909117909255600d8054821689841617905560058054821688841617905560048054821687841617905560028054821686841617905560038054821685841617905560018054909116918316919091179055670de0b6b3a7640000600a5561016b7f4273ca16e32229270629d776700e1c07e4a1080fc9b26d21f6608efc2b31dc4d61017b565b505050505050506101ff565b3390565b6001600160e01b031980821614156101da576040805162461bcd60e51b815260206004820152601c60248201527f4552433136353a20696e76616c696420696e7465726661636520696400000000604482015290519081900360640190fd5b6001600160e01b0319166000908152600c60205260409020805460ff19166001179055565b61094b8061020e6000396000f3fe608060405234801561001057600080fd5b50600436106101425760003560e01c8063651d08cd116100b85780638da5cb5b1161007c5780638da5cb5b146102fd578063a230c52414610305578063b5dd11581461032b578063cc48b94714610333578063cf2a239c1461033b578063f2fde38b1461034357610142565b8063651d08cd146102a05780636fb7f558146102c6578063715018a6146102ce5780637cb00d25146102d65780637f331636146102f557610142565b80633659cfe61161010a5780633659cfe61461023d5780635903bd6c1461026357806359679b0f1461026b5780635c60da1b146102735780635daf08ca1461027b57806363a8fd891461029857610142565b806301ffc9a71461014c57806303e3c9ac1461018757806327fd92fd146101a15780632e011c1e146101c55780633477ee2e14610220575b61014a610369565b005b6101736004803603602081101561016257600080fd5b50356001600160e01b0319166103f6565b604080519115158252519081900360200190f35b61018f610415565b60408051918252519081900360200190f35b6101a961041b565b604080516001600160a01b039092168252519081900360200190f35b6101eb600480360360208110156101db57600080fd5b50356001600160a01b031661042a565b604080516001600160a01b03909616865260208601949094528484019290925260608401526080830152519081900360a00190f35b6101a96004803603602081101561023657600080fd5b5035610463565b61014a6004803603602081101561025357600080fd5b50356001600160a01b031661048d565b6101a961057c565b6101a961058b565b6101a961059a565b6101a96004803603602081101561029157600080fd5b50356105a9565b6101736105b9565b6101a9600480360360208110156102b657600080fd5b50356001600160a01b03166105c9565b6101a96105e7565b61014a6105f6565b61014a600480360360208110156102ec57600080fd5b50351515610698565b61018f61070e565b6101a9610714565b6101736004803603602081101561031b57600080fd5b50356001600160a01b0316610723565b6101a9610743565b6101a9610752565b6101a9610761565b61014a6004803603602081101561035957600080fd5b50356001600160a01b0316610770565b600061037361059a565b90506001600160a01b038116158015906103975750600d54600160a01b900460ff16155b6103d25760405162461bcd60e51b81526004018080602001828103825260318152602001806108e56031913960400191505060405180910390fd5b3660008037600080366000845af43d6000803e8080156103f1573d6000f35b3d6000fd5b6001600160e01b0319166000908152600c602052604090205460ff1690565b60085481565b6002546001600160a01b031681565b600960205260009081526040902080546001820154600283015460038401546004909401546001600160a01b0390931693919290919085565b6006818154811061047357600080fd5b6000918252602090912001546001600160a01b0316905081565b610495610869565b600b546001600160a01b039081169116146104e5576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d546001600160a01b03828116911614156105325760405162461bcd60e51b81526004018080602001828103825260318152602001806108946031913960400191505060405180910390fd5b600d80546001600160a01b0319166001600160a01b0383169081179091556040517fbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b90600090a250565b6001546001600160a01b031681565b600d546001600160a01b031681565b600d546001600160a01b031690565b6007818154811061047357600080fd5b600d54600160a01b900460ff1681565b6001600160a01b039081166000908152600960205260409020541690565b6005546001600160a01b031681565b6105fe610869565b600b546001600160a01b0390811691161461064e576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600b546040516000916001600160a01b0316907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600b80546001600160a01b0319169055565b6106a0610869565b600b546001600160a01b039081169116146106f0576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d8054911515600160a01b0260ff60a01b19909216919091179055565b600a5481565b600b546001600160a01b031690565b6001600160a01b0316600090815260096020526040902060010154151590565b6003546001600160a01b031681565b6000546001600160a01b031681565b6004546001600160a01b031681565b610778610869565b600b546001600160a01b039081169116146107c8576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b6001600160a01b03811661080d5760405162461bcd60e51b815260040180806020018281038252602681526020018061086e6026913960400191505060405180910390fd5b600b546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600b80546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737344414f436f6d6d697474656550726f78793a20696d706c656d656e746174696f6e2061646472657373206973207a65726f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657244414f436f6d6d697474656550726f78793a20696d706c206973207a65726f204f522070726f78792069732066616c7365a2646970667358221220eaff49124f6ac8f71914bae83cb25eb4bd93ed5cf739172ff28ba2c71d4a239564736f6c63430007060033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101425760003560e01c8063651d08cd116100b85780638da5cb5b1161007c5780638da5cb5b146102fd578063a230c52414610305578063b5dd11581461032b578063cc48b94714610333578063cf2a239c1461033b578063f2fde38b1461034357610142565b8063651d08cd146102a05780636fb7f558146102c6578063715018a6146102ce5780637cb00d25146102d65780637f331636146102f557610142565b80633659cfe61161010a5780633659cfe61461023d5780635903bd6c1461026357806359679b0f1461026b5780635c60da1b146102735780635daf08ca1461027b57806363a8fd891461029857610142565b806301ffc9a71461014c57806303e3c9ac1461018757806327fd92fd146101a15780632e011c1e146101c55780633477ee2e14610220575b61014a610369565b005b6101736004803603602081101561016257600080fd5b50356001600160e01b0319166103f6565b604080519115158252519081900360200190f35b61018f610415565b60408051918252519081900360200190f35b6101a961041b565b604080516001600160a01b039092168252519081900360200190f35b6101eb600480360360208110156101db57600080fd5b50356001600160a01b031661042a565b604080516001600160a01b03909616865260208601949094528484019290925260608401526080830152519081900360a00190f35b6101a96004803603602081101561023657600080fd5b5035610463565b61014a6004803603602081101561025357600080fd5b50356001600160a01b031661048d565b6101a961057c565b6101a961058b565b6101a961059a565b6101a96004803603602081101561029157600080fd5b50356105a9565b6101736105b9565b6101a9600480360360208110156102b657600080fd5b50356001600160a01b03166105c9565b6101a96105e7565b61014a6105f6565b61014a600480360360208110156102ec57600080fd5b50351515610698565b61018f61070e565b6101a9610714565b6101736004803603602081101561031b57600080fd5b50356001600160a01b0316610723565b6101a9610743565b6101a9610752565b6101a9610761565b61014a6004803603602081101561035957600080fd5b50356001600160a01b0316610770565b600061037361059a565b90506001600160a01b038116158015906103975750600d54600160a01b900460ff16155b6103d25760405162461bcd60e51b81526004018080602001828103825260318152602001806108e56031913960400191505060405180910390fd5b3660008037600080366000845af43d6000803e8080156103f1573d6000f35b3d6000fd5b6001600160e01b0319166000908152600c602052604090205460ff1690565b60085481565b6002546001600160a01b031681565b600960205260009081526040902080546001820154600283015460038401546004909401546001600160a01b0390931693919290919085565b6006818154811061047357600080fd5b6000918252602090912001546001600160a01b0316905081565b610495610869565b600b546001600160a01b039081169116146104e5576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d546001600160a01b03828116911614156105325760405162461bcd60e51b81526004018080602001828103825260318152602001806108946031913960400191505060405180910390fd5b600d80546001600160a01b0319166001600160a01b0383169081179091556040517fbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b90600090a250565b6001546001600160a01b031681565b600d546001600160a01b031681565b600d546001600160a01b031690565b6007818154811061047357600080fd5b600d54600160a01b900460ff1681565b6001600160a01b039081166000908152600960205260409020541690565b6005546001600160a01b031681565b6105fe610869565b600b546001600160a01b0390811691161461064e576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600b546040516000916001600160a01b0316907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600b80546001600160a01b0319169055565b6106a0610869565b600b546001600160a01b039081169116146106f0576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d8054911515600160a01b0260ff60a01b19909216919091179055565b600a5481565b600b546001600160a01b031690565b6001600160a01b0316600090815260096020526040902060010154151590565b6003546001600160a01b031681565b6000546001600160a01b031681565b6004546001600160a01b031681565b610778610869565b600b546001600160a01b039081169116146107c8576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b6001600160a01b03811661080d5760405162461bcd60e51b815260040180806020018281038252602681526020018061086e6026913960400191505060405180910390fd5b600b546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600b80546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737344414f436f6d6d697474656550726f78793a20696d706c656d656e746174696f6e2061646472657373206973207a65726f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657244414f436f6d6d697474656550726f78793a20696d706c206973207a65726f204f522070726f78792069732066616c7365a2646970667358221220eaff49124f6ac8f71914bae83cb25eb4bd93ed5cf739172ff28ba2c71d4a239564736f6c63430007060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ton\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_impl\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_seigManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_layer2Registry\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_agendaManager\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_candidateFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_daoVault\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"member\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalbalance\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"memberIndex\",\"type\":\"uint256\"}],\"name\":\"ApplyMemberSuccess\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"stateMutability\":\"nonpayable\",\"type\":\"fallback\"},{\"inputs\":[],\"name\":\"_implementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"activityRewardPerSecond\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"agendaManager\",\"outputs\":[{\"internalType\":\"contract IDAOAgendaManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_candidate\",\"type\":\"address\"}],\"name\":\"candidateContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"candidateFactory\",\"outputs\":[{\"internalType\":\"contract ICandidateFactory\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"candidateInfos\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"candidateContract\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"memberJoinedTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"indexMembers\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rewardPeriod\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedTimestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"candidates\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"daoVault\",\"outputs\":[{\"internalType\":\"contract IDAOVault2\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"implementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_candidate\",\"type\":\"address\"}],\"name\":\"isMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"layer2Registry\",\"outputs\":[{\"internalType\":\"contract ILayer2Registry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxMember\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"members\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pauseProxy\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"seigManager\",\"outputs\":[{\"internalType\":\"contract ISeigManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_pause\",\"type\":\"bool\"}],\"name\":\"setProxyPause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ton\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"impl\",\"type\":\"address\"}],\"name\":\"upgradeTo\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}. Time complexity O(1), guaranteed to always use less than 30 000 gas.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol\":\"DAOCommitteeProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOAgendaManager.sol\":{\"keccak256\":\"0x6edd470aacfc1d8f33a6e6b1887c6904ab99032072777cf25a8e996da68f9095\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8b00ca03efda900144da421019554b2b6232622409aa12304d31e3ab792b3f72\",\"dweb:/ipfs/QmUABaf8oBhRyieBVHXGoBwkXpxTvBTgEtRbZBweDXYMea\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol\":{\"keccak256\":\"0xc1c81c730f53396dfc891c40f2daa3f37698ef863fba71437de3e8006503ea8e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff4c4e3d3a5b3b8b513d879450dbe54ad14d66f8aae6d7b235eda08be99e7db7\",\"dweb:/ipfs/QmNMq5mszMptRv8C7sTa3w1UaM9nBGr9T8f5323J5atfzd\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/dao/StorageStateCommittee.sol\":{\"keccak256\":\"0x40e9fb1f524d5548b26640a9384d1711225035f8d834f87c79ba0ff60d449663\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4690aaf76fcf91fb46bd914cb02d8375857967ead74a7ab54e8a81894c6787dd\",\"dweb:/ipfs/QmXkUxxHb4dmHHfYkjcBxHG2Ee9mMajarGhjKdynjARUwb\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ICandidateFactory.sol\":{\"keccak256\":\"0x2bdad9040702af7fd0c33a4882856d96b8128918bcef3b24dfe8ad9015405d28\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2c5e7e23fe55cf4ae8d4642d8290d9ec1d2f3ab792bd7e6ff203d61db037fa0\",\"dweb:/ipfs/QmUK8yL5QLnoMJp6ugjFjGcXhrBrqxk3aVtTHxYcptWTMY\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOAgendaManager.sol\":{\"keccak256\":\"0x47ceb5a341e9ab9d64367507af67cfcffd72933935143ca39cb59c1cf5d57394\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6d52a2d1bdf05e70932fe9e62aaf8dc95ed05c985ec005bc17c34a8acea8f260\",\"dweb:/ipfs/QmV2yU3ubaqmxYccxtmy7HfkFBeaWbuwPK5xoRHTi8z8Ue\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOCommittee.sol\":{\"keccak256\":\"0xb2fcf73829b3db3d6b69e4643d66ea7ed2ff7f97b563c5bed6dbf19d3a8d1633\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3bcc77ce98aa924bc494770ce6c1b0a89e11bf9aa04f1f9e0ddf06b20d490cfb\",\"dweb:/ipfs/QmYXCMy11cFBStLTamSxkyXiVwWfRN3hUQ5rRi1cH1TgY4\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/IDAOVault2.sol\":{\"keccak256\":\"0x1840a15bd58a1c8bca8905f62b1336464e2194fe15be5b49ef922c4b5441595f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://799c52bde7e7ffb7c0ca892468fdffc27e7b1f8007bd86fede67780047381ea5\",\"dweb:/ipfs/QmaHHzfdbDVdjwnfspZK5JWXPbD5TvWtmwXTB8HsbUPmv7\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ILayer2Registry.sol\":{\"keccak256\":\"0xb6476dfa9c1005ce74a190a63ca0fea565461735ab5dc149cec27c1637238d63\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f07c82c23bed64dd0e030f3cfa207553e95affe26ab2eac99097e2cc1ce3750\",\"dweb:/ipfs/QmTJDMihaxSp8k4BUvZKkbMSq7N7cyd3kwF1qvwqwXdcCq\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/interfaces/ISeigManager.sol\":{\"keccak256\":\"0xf5b1ebf3a233491959264a1d95805d99f51eded196d5592b9e6320ee551f9e3a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6fcca9ab7db2d9d907bb259e82452bd42c0628bf5a9d4ebf0c4483966e1c5c71\",\"dweb:/ipfs/Qmat1XCV6esMHWA7kjxjfPLgV12kAwLJdfd36CAEtD4Xr5\"]},\"/data/github/onther/tokamak-dao-contracts3/contracts/lib/Agenda.sol\":{\"keccak256\":\"0x5fe910c089e53f89093d159e81078caa404a74bd742fc6eaebe2ecab4aefc001\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c7717e7f9d658d5eec4980688232b2b1ec66917a8fac970cb7d3f4269c5122c0\",\"dweb:/ipfs/QmWooEE6dCs3SFoYcCo3fgiQnugJufykLvEdRwfJLBRRkR\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x8d3cb350f04ff49cfb10aef08d87f19dcbaecc8027b0bed12f3275cd12f38cf0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ded47ec7c96750f9bd04bbbc84f659992d4ba901cb7b532a52cd468272cf378f\",\"dweb:/ipfs/QmfBrGtQP7rZEqEg6Wz6jh2N2Kukpj1z5v3CGWmAqrzm96\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0xf7c39c7e6d06ed3bda90cfefbcbf2ddc32c599c3d6721746546ad64946efccaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cb57a28e189cd8b05748db44bdd51d608e6f1364dd1b35ad921e1bc82c10631e\",\"dweb:/ipfs/QmaWWTBbVu2pRR9XUbE4iC159NoP59cRF9ZJwhf4ghFN9i\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xd6b90e604fb2eb2d641c7110c72440bf2dc999ec6ab8ff60f200e71ca75d1d90\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7b92d8ab83b21ff984b1f0d6d66897d5afb1f2052004cbcb133cea023e0ae468\",\"dweb:/ipfs/QmTarypkQrFp4UMjTh7Zzhz2nZLz5uPS4nJQtHDEuwBVe6\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0xf70bc25d981e4ec9673a995ad2995d5d493ea188d3d8f388bba9c227ce09fb82\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd970f51e3a77790c2f02b5b1759827c3b897c3d98c407b3631e8af32e3dc93c\",\"dweb:/ipfs/QmPF85Amgbqjk3SNZKsPCsqCw8JfwYEPMnnhvMJUyX58je\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x3b21f2c8d626de3b9925ae33e972d8bf5c8b1bffb3f4ee94daeed7d0679036e6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f8d45329fecbf0836ad7543330c3ecd0f8d0ffa42d4016278c3eb2215fdcdfe\",\"dweb:/ipfs/QmXWLT7GcnHtA5NiD6MFi2CV3EWJY4wv5mLNnypqYDrxL3\"]},\"/data/github/onther/tokamak-dao-contracts3/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5f02220344881ce43204ae4a6281145a67bc52c2bb1290a791857df3d19d78f5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://24427744bd3e6cb73c17010119af12a318289c0253a4d9acb8576c9fb3797b08\",\"dweb:/ipfs/QmTLDqpKRBuxGxRAmjgXt9AkXyACW3MtKzi7PYjm5iMfGC\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50604051610b59380380610b59833981810160405260e081101561003357600080fd5b508051602082015160408301516060840151608085015160a086015160c0909601519495939492939192909190600061006a610177565b600b80546001600160a01b0319166001600160a01b038316908117909155604051919250906000907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a3506100c86301ffc9a760e01b61017b565b600080546001600160a01b03199081166001600160a01b038a811691909117909255600d8054821689841617905560058054821688841617905560048054821687841617905560028054821686841617905560038054821685841617905560018054909116918316919091179055670de0b6b3a7640000600a5561016b7f4273ca16e32229270629d776700e1c07e4a1080fc9b26d21f6608efc2b31dc4d61017b565b505050505050506101ff565b3390565b6001600160e01b031980821614156101da576040805162461bcd60e51b815260206004820152601c60248201527f4552433136353a20696e76616c696420696e7465726661636520696400000000604482015290519081900360640190fd5b6001600160e01b0319166000908152600c60205260409020805460ff19166001179055565b61094b8061020e6000396000f3fe608060405234801561001057600080fd5b50600436106101425760003560e01c8063651d08cd116100b85780638da5cb5b1161007c5780638da5cb5b146102fd578063a230c52414610305578063b5dd11581461032b578063cc48b94714610333578063cf2a239c1461033b578063f2fde38b1461034357610142565b8063651d08cd146102a05780636fb7f558146102c6578063715018a6146102ce5780637cb00d25146102d65780637f331636146102f557610142565b80633659cfe61161010a5780633659cfe61461023d5780635903bd6c1461026357806359679b0f1461026b5780635c60da1b146102735780635daf08ca1461027b57806363a8fd891461029857610142565b806301ffc9a71461014c57806303e3c9ac1461018757806327fd92fd146101a15780632e011c1e146101c55780633477ee2e14610220575b61014a610369565b005b6101736004803603602081101561016257600080fd5b50356001600160e01b0319166103f6565b604080519115158252519081900360200190f35b61018f610415565b60408051918252519081900360200190f35b6101a961041b565b604080516001600160a01b039092168252519081900360200190f35b6101eb600480360360208110156101db57600080fd5b50356001600160a01b031661042a565b604080516001600160a01b03909616865260208601949094528484019290925260608401526080830152519081900360a00190f35b6101a96004803603602081101561023657600080fd5b5035610463565b61014a6004803603602081101561025357600080fd5b50356001600160a01b031661048d565b6101a961057c565b6101a961058b565b6101a961059a565b6101a96004803603602081101561029157600080fd5b50356105a9565b6101736105b9565b6101a9600480360360208110156102b657600080fd5b50356001600160a01b03166105c9565b6101a96105e7565b61014a6105f6565b61014a600480360360208110156102ec57600080fd5b50351515610698565b61018f61070e565b6101a9610714565b6101736004803603602081101561031b57600080fd5b50356001600160a01b0316610723565b6101a9610743565b6101a9610752565b6101a9610761565b61014a6004803603602081101561035957600080fd5b50356001600160a01b0316610770565b600061037361059a565b90506001600160a01b038116158015906103975750600d54600160a01b900460ff16155b6103d25760405162461bcd60e51b81526004018080602001828103825260318152602001806108e56031913960400191505060405180910390fd5b3660008037600080366000845af43d6000803e8080156103f1573d6000f35b3d6000fd5b6001600160e01b0319166000908152600c602052604090205460ff1690565b60085481565b6002546001600160a01b031681565b600960205260009081526040902080546001820154600283015460038401546004909401546001600160a01b0390931693919290919085565b6006818154811061047357600080fd5b6000918252602090912001546001600160a01b0316905081565b610495610869565b600b546001600160a01b039081169116146104e5576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d546001600160a01b03828116911614156105325760405162461bcd60e51b81526004018080602001828103825260318152602001806108946031913960400191505060405180910390fd5b600d80546001600160a01b0319166001600160a01b0383169081179091556040517fbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b90600090a250565b6001546001600160a01b031681565b600d546001600160a01b031681565b600d546001600160a01b031690565b6007818154811061047357600080fd5b600d54600160a01b900460ff1681565b6001600160a01b039081166000908152600960205260409020541690565b6005546001600160a01b031681565b6105fe610869565b600b546001600160a01b0390811691161461064e576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600b546040516000916001600160a01b0316907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600b80546001600160a01b0319169055565b6106a0610869565b600b546001600160a01b039081169116146106f0576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d8054911515600160a01b0260ff60a01b19909216919091179055565b600a5481565b600b546001600160a01b031690565b6001600160a01b0316600090815260096020526040902060010154151590565b6003546001600160a01b031681565b6000546001600160a01b031681565b6004546001600160a01b031681565b610778610869565b600b546001600160a01b039081169116146107c8576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b6001600160a01b03811661080d5760405162461bcd60e51b815260040180806020018281038252602681526020018061086e6026913960400191505060405180910390fd5b600b546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600b80546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737344414f436f6d6d697474656550726f78793a20696d706c656d656e746174696f6e2061646472657373206973207a65726f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657244414f436f6d6d697474656550726f78793a20696d706c206973207a65726f204f522070726f78792069732066616c7365a2646970667358221220d89ed2ae40e106e41832e1cda5412d1d3b1082dfcf1eb778b813dd7985fdd3bf64736f6c63430007060033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101425760003560e01c8063651d08cd116100b85780638da5cb5b1161007c5780638da5cb5b146102fd578063a230c52414610305578063b5dd11581461032b578063cc48b94714610333578063cf2a239c1461033b578063f2fde38b1461034357610142565b8063651d08cd146102a05780636fb7f558146102c6578063715018a6146102ce5780637cb00d25146102d65780637f331636146102f557610142565b80633659cfe61161010a5780633659cfe61461023d5780635903bd6c1461026357806359679b0f1461026b5780635c60da1b146102735780635daf08ca1461027b57806363a8fd891461029857610142565b806301ffc9a71461014c57806303e3c9ac1461018757806327fd92fd146101a15780632e011c1e146101c55780633477ee2e14610220575b61014a610369565b005b6101736004803603602081101561016257600080fd5b50356001600160e01b0319166103f6565b604080519115158252519081900360200190f35b61018f610415565b60408051918252519081900360200190f35b6101a961041b565b604080516001600160a01b039092168252519081900360200190f35b6101eb600480360360208110156101db57600080fd5b50356001600160a01b031661042a565b604080516001600160a01b03909616865260208601949094528484019290925260608401526080830152519081900360a00190f35b6101a96004803603602081101561023657600080fd5b5035610463565b61014a6004803603602081101561025357600080fd5b50356001600160a01b031661048d565b6101a961057c565b6101a961058b565b6101a961059a565b6101a96004803603602081101561029157600080fd5b50356105a9565b6101736105b9565b6101a9600480360360208110156102b657600080fd5b50356001600160a01b03166105c9565b6101a96105e7565b61014a6105f6565b61014a600480360360208110156102ec57600080fd5b50351515610698565b61018f61070e565b6101a9610714565b6101736004803603602081101561031b57600080fd5b50356001600160a01b0316610723565b6101a9610743565b6101a9610752565b6101a9610761565b61014a6004803603602081101561035957600080fd5b50356001600160a01b0316610770565b600061037361059a565b90506001600160a01b038116158015906103975750600d54600160a01b900460ff16155b6103d25760405162461bcd60e51b81526004018080602001828103825260318152602001806108e56031913960400191505060405180910390fd5b3660008037600080366000845af43d6000803e8080156103f1573d6000f35b3d6000fd5b6001600160e01b0319166000908152600c602052604090205460ff1690565b60085481565b6002546001600160a01b031681565b600960205260009081526040902080546001820154600283015460038401546004909401546001600160a01b0390931693919290919085565b6006818154811061047357600080fd5b6000918252602090912001546001600160a01b0316905081565b610495610869565b600b546001600160a01b039081169116146104e5576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d546001600160a01b03828116911614156105325760405162461bcd60e51b81526004018080602001828103825260318152602001806108946031913960400191505060405180910390fd5b600d80546001600160a01b0319166001600160a01b0383169081179091556040517fbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b90600090a250565b6001546001600160a01b031681565b600d546001600160a01b031681565b600d546001600160a01b031690565b6007818154811061047357600080fd5b600d54600160a01b900460ff1681565b6001600160a01b039081166000908152600960205260409020541690565b6005546001600160a01b031681565b6105fe610869565b600b546001600160a01b0390811691161461064e576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600b546040516000916001600160a01b0316907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600b80546001600160a01b0319169055565b6106a0610869565b600b546001600160a01b039081169116146106f0576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b600d8054911515600160a01b0260ff60a01b19909216919091179055565b600a5481565b600b546001600160a01b031690565b6001600160a01b0316600090815260096020526040902060010154151590565b6003546001600160a01b031681565b6000546001600160a01b031681565b6004546001600160a01b031681565b610778610869565b600b546001600160a01b039081169116146107c8576040805162461bcd60e51b815260206004820181905260248201526000805160206108c5833981519152604482015290519081900360640190fd5b6001600160a01b03811661080d5760405162461bcd60e51b815260040180806020018281038252602681526020018061086e6026913960400191505060405180910390fd5b600b546040516001600160a01b038084169216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3600b80546001600160a01b0319166001600160a01b0392909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737344414f436f6d6d697474656550726f78793a20696d706c656d656e746174696f6e2061646472657373206973207a65726f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657244414f436f6d6d697474656550726f78793a20696d706c206973207a65726f204f522070726f78792069732066616c7365a2646970667358221220d89ed2ae40e106e41832e1cda5412d1d3b1082dfcf1eb778b813dd7985fdd3bf64736f6c63430007060033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "262:4245:5:-:0;;;460:843;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;460:843:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;882:17:24;902:12;:10;:12::i;:::-;924:6;:18;;-1:-1:-1;;;;;;924:18:24;-1:-1:-1;;;;;924:18:24;;;;;;;;957:43;;924:18;;-1:-1:-1;924:18:24;-1:-1:-1;;957:43:24;;-1:-1:-1;;957:43:24;-1:-1:-1;768:40:25;-1:-1:-1;;;768:18:25;:40::i;:::-;736:3:5;:10;;-1:-1:-1;;;;;;736:10:5;;;-1:-1:-1;;;;;736:10:5;;;;;;;;;;756:15;:23;;;;;;;;;;789:11;:40;;;;;;;;;;839:14;:49;;;;;;;;;;898:13;:49;;;;;;;;;;-1:-1:-1;957:55:5;;;;;;;;;;-1:-1:-1;1107:32:5;;;;;;;;;;;;;;1200:4;-1:-1:-1;1174:30:5;1215:81;1241:53;1215:18;:81::i;:::-;460:843;;;;;;;262:4245;;598:104:23;685:10;598:104;:::o;1499:198:25:-;-1:-1:-1;;;;;;1582:25:25;;;;;1574:66;;;;;-1:-1:-1;;;1574:66:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;;1650:33:25;;;;;:20;:33;;;;;:40;;-1:-1:-1;;1650:40:25;1686:4;1650:40;;;1499:198::o;262:4245:5:-;;;;;;;",
-  "deployedSourceMap": "262:4245:5:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3524:11;:9;:11::i;:::-;262:4245;965:140:25;;;;;;;;;;;;;;;;-1:-1:-1;965:140:25;-1:-1:-1;;;;;;965:140:25;;:::i;:::-;;;;;;;;;;;;;;;;;;1285:24:7;;;:::i;:::-;;;;;;;;;;;;;;;;988:38;;;:::i;:::-;;;;-1:-1:-1;;;;;988:38:7;;;;;;;;;;;;;;1362:55;;;;;;;;;;;;;;;;-1:-1:-1;1362:55:7;-1:-1:-1;;;;;1362:55:7;;:::i;:::-;;;;-1:-1:-1;;;;;1362:55:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1222:27;;;;;;;;;;;;;;;;-1:-1:-1;1222:27:7;;:::i;3174:213:5:-;;;;;;;;;;;;;;;;-1:-1:-1;3174:213:5;-1:-1:-1;;;;;3174:213:5;;:::i;956:26:7:-;;;:::i;337:30:5:-;;;:::i;3393:95::-;;;:::i;1255:24:7:-;;;;;;;;;;;;;;;;-1:-1:-1;1255:24:7;;:::i;373:22:5:-;;;:::i;2735:145:7:-;;;;;;;;;;;;;;;;-1:-1:-1;2735:145:7;-1:-1:-1;;;;;2735:145:7;;:::i;1184:31::-;;;:::i;1706:145:24:-;;;:::i;1309:89:5:-;;;;;;;;;;;;;;;;-1:-1:-1;1309:89:5;;;;:::i;1424:38:7:-;;;:::i;1083:77:24:-;;;:::i;2593:136:7:-;;;;;;;;;;;;;;;;-1:-1:-1;2593:136:7;-1:-1:-1;;;;;2593:136:7;;:::i;1094:41::-;;;:::i;932:18::-;;;:::i;1141:37::-;;;:::i;2000:240:24:-;;;;;;;;;;;;;;;;-1:-1:-1;2000:240:24;-1:-1:-1;;;;;2000:240:24;;:::i;3548:957:5:-;3588:13;3604:16;:14;:16::i;:::-;3588:32;-1:-1:-1;;;;;;3638:19:5;;;;;;:42;;-1:-1:-1;3661:10:5;;-1:-1:-1;;;3661:10:5;;;;:19;3638:42;3630:104;;;;-1:-1:-1;;;3630:104:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4013:14;4010:1;4007;3994:34;4218:1;4215;4199:14;4196:1;4189:5;4182;4169:51;4294:16;4291:1;4288;4273:38;4332:6;4399:38;;;;4470:16;4467:1;4460:27;4399:38;4418:16;4415:1;4408:27;965:140:25;-1:-1:-1;;;;;;1065:33:25;1042:4;1065:33;;;:20;:33;;;;;;;;;965:140::o;1285:24:7:-;;;;:::o;988:38::-;;;-1:-1:-1;;;;;988:38:7;;:::o;1362:55::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;1362:55:7;;;;;;;;;;:::o;1222:27::-;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;1222:27:7;;-1:-1:-1;1222:27:7;:::o;3174:213:5:-;1297:12:24;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:24;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:24;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:24;;;;;;;;;;;;;;;3242:15:5::1;::::0;-1:-1:-1;;;;;3242:23:5;;::::1;:15:::0;::::1;:23;;3234:85;;;;-1:-1:-1::0;;;3234:85:5::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3329:15;:22:::0;;-1:-1:-1;;;;;;3329:22:5::1;-1:-1:-1::0;;;;;3329:22:5;::::1;::::0;;::::1;::::0;;;3366:14:::1;::::0;::::1;::::0;-1:-1:-1;;3366:14:5::1;3174:213:::0;:::o;956:26:7:-;;;-1:-1:-1;;;;;956:26:7;;:::o;337:30:5:-;;;-1:-1:-1;;;;;337:30:5;;:::o;3393:95::-;3466:15;;-1:-1:-1;;;;;3466:15:5;3393:95;:::o;1255:24:7:-;;;;;;;;;;;;373:22:5;;;-1:-1:-1;;;373:22:5;;;;;:::o;2735:145:7:-;-1:-1:-1;;;;;2829:26:7;;;2803:7;2829:26;;;:14;:26;;;;;:44;;;2735:145::o;1184:31::-;;;-1:-1:-1;;;;;1184:31:7;;:::o;1706:145:24:-;1297:12;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:24;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:24;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:24;;;;;;;;;;;;;;;1796:6:::1;::::0;1775:40:::1;::::0;1812:1:::1;::::0;-1:-1:-1;;;;;1796:6:24::1;::::0;1775:40:::1;::::0;1812:1;;1775:40:::1;1825:6;:19:::0;;-1:-1:-1;;;;;;1825:19:24::1;::::0;;1706:145::o;1309:89:5:-;1297:12:24;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:24;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:24;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:24;;;;;;;;;;;;;;;1372:10:5::1;:19:::0;;;::::1;;-1:-1:-1::0;;;1372:19:5::1;-1:-1:-1::0;;;;1372:19:5;;::::1;::::0;;;::::1;::::0;;1309:89::o;1424:38:7:-;;;;:::o;1083:77:24:-;1147:6;;-1:-1:-1;;;;;1147:6:24;1083:77;:::o;2593:136:7:-;-1:-1:-1;;;;;2675:26:7;2652:4;2675:26;;;:14;:26;;;;;:43;;;:47;;;2593:136::o;1094:41::-;;;-1:-1:-1;;;;;1094:41:7;;:::o;932:18::-;;;-1:-1:-1;;;;;932:18:7;;:::o;1141:37::-;;;-1:-1:-1;;;;;1141:37:7;;:::o;2000:240:24:-;1297:12;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:24;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:24;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:24;;;;;;;;;;;;;;;-1:-1:-1;;;;;2088:22:24;::::1;2080:73;;;;-1:-1:-1::0;;;2080:73:24::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2189:6;::::0;2168:38:::1;::::0;-1:-1:-1;;;;;2168:38:24;;::::1;::::0;2189:6:::1;::::0;2168:38:::1;::::0;2189:6:::1;::::0;2168:38:::1;2216:6;:17:::0;;-1:-1:-1;;;;;;2216:17:24::1;-1:-1:-1::0;;;;;2216:17:24;;;::::1;::::0;;;::::1;::::0;;2000:240::o;598:104:23:-;685:10;598:104;:::o",
+  "sourceMap": "262:4245:5:-:0;;;460:843;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;460:843:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;882:17:25;902:12;:10;:12::i;:::-;924:6;:18;;-1:-1:-1;;;;;;924:18:25;-1:-1:-1;;;;;924:18:25;;;;;;;;957:43;;924:18;;-1:-1:-1;924:18:25;-1:-1:-1;;957:43:25;;-1:-1:-1;;957:43:25;-1:-1:-1;768:40:26;-1:-1:-1;;;768:18:26;:40::i;:::-;736:3:5;:10;;-1:-1:-1;;;;;;736:10:5;;;-1:-1:-1;;;;;736:10:5;;;;;;;;;;756:15;:23;;;;;;;;;;789:11;:40;;;;;;;;;;839:14;:49;;;;;;;;;;898:13;:49;;;;;;;;;;-1:-1:-1;957:55:5;;;;;;;;;;-1:-1:-1;1107:32:5;;;;;;;;;;;;;;1200:4;-1:-1:-1;1174:30:5;1215:81;1241:53;1215:18;:81::i;:::-;460:843;;;;;;;262:4245;;598:104:24;685:10;598:104;:::o;1499:198:26:-;-1:-1:-1;;;;;;1582:25:26;;;;;1574:66;;;;;-1:-1:-1;;;1574:66:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;;1650:33:26;;;;;:20;:33;;;;;:40;;-1:-1:-1;;1650:40:26;1686:4;1650:40;;;1499:198::o;262:4245:5:-;;;;;;;",
+  "deployedSourceMap": "262:4245:5:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3524:11;:9;:11::i;:::-;262:4245;965:140:26;;;;;;;;;;;;;;;;-1:-1:-1;965:140:26;-1:-1:-1;;;;;;965:140:26;;:::i;:::-;;;;;;;;;;;;;;;;;;1285:24:7;;;:::i;:::-;;;;;;;;;;;;;;;;988:38;;;:::i;:::-;;;;-1:-1:-1;;;;;988:38:7;;;;;;;;;;;;;;1362:55;;;;;;;;;;;;;;;;-1:-1:-1;1362:55:7;-1:-1:-1;;;;;1362:55:7;;:::i;:::-;;;;-1:-1:-1;;;;;1362:55:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1222:27;;;;;;;;;;;;;;;;-1:-1:-1;1222:27:7;;:::i;3174:213:5:-;;;;;;;;;;;;;;;;-1:-1:-1;3174:213:5;-1:-1:-1;;;;;3174:213:5;;:::i;956:26:7:-;;;:::i;337:30:5:-;;;:::i;3393:95::-;;;:::i;1255:24:7:-;;;;;;;;;;;;;;;;-1:-1:-1;1255:24:7;;:::i;373:22:5:-;;;:::i;2735:145:7:-;;;;;;;;;;;;;;;;-1:-1:-1;2735:145:7;-1:-1:-1;;;;;2735:145:7;;:::i;1184:31::-;;;:::i;1706:145:25:-;;;:::i;1309:89:5:-;;;;;;;;;;;;;;;;-1:-1:-1;1309:89:5;;;;:::i;1424:38:7:-;;;:::i;1083:77:25:-;;;:::i;2593:136:7:-;;;;;;;;;;;;;;;;-1:-1:-1;2593:136:7;-1:-1:-1;;;;;2593:136:7;;:::i;1094:41::-;;;:::i;932:18::-;;;:::i;1141:37::-;;;:::i;2000:240:25:-;;;;;;;;;;;;;;;;-1:-1:-1;2000:240:25;-1:-1:-1;;;;;2000:240:25;;:::i;3548:957:5:-;3588:13;3604:16;:14;:16::i;:::-;3588:32;-1:-1:-1;;;;;;3638:19:5;;;;;;:42;;-1:-1:-1;3661:10:5;;-1:-1:-1;;;3661:10:5;;;;:19;3638:42;3630:104;;;;-1:-1:-1;;;3630:104:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4013:14;4010:1;4007;3994:34;4218:1;4215;4199:14;4196:1;4189:5;4182;4169:51;4294:16;4291:1;4288;4273:38;4332:6;4399:38;;;;4470:16;4467:1;4460:27;4399:38;4418:16;4415:1;4408:27;965:140:26;-1:-1:-1;;;;;;1065:33:26;1042:4;1065:33;;;:20;:33;;;;;;;;;965:140::o;1285:24:7:-;;;;:::o;988:38::-;;;-1:-1:-1;;;;;988:38:7;;:::o;1362:55::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;1362:55:7;;;;;;;;;;:::o;1222:27::-;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;1222:27:7;;-1:-1:-1;1222:27:7;:::o;3174:213:5:-;1297:12:25;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:25;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:25;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:25;;;;;;;;;;;;;;;3242:15:5::1;::::0;-1:-1:-1;;;;;3242:23:5;;::::1;:15:::0;::::1;:23;;3234:85;;;;-1:-1:-1::0;;;3234:85:5::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3329:15;:22:::0;;-1:-1:-1;;;;;;3329:22:5::1;-1:-1:-1::0;;;;;3329:22:5;::::1;::::0;;::::1;::::0;;;3366:14:::1;::::0;::::1;::::0;-1:-1:-1;;3366:14:5::1;3174:213:::0;:::o;956:26:7:-;;;-1:-1:-1;;;;;956:26:7;;:::o;337:30:5:-;;;-1:-1:-1;;;;;337:30:5;;:::o;3393:95::-;3466:15;;-1:-1:-1;;;;;3466:15:5;3393:95;:::o;1255:24:7:-;;;;;;;;;;;;373:22:5;;;-1:-1:-1;;;373:22:5;;;;;:::o;2735:145:7:-;-1:-1:-1;;;;;2829:26:7;;;2803:7;2829:26;;;:14;:26;;;;;:44;;;2735:145::o;1184:31::-;;;-1:-1:-1;;;;;1184:31:7;;:::o;1706:145:25:-;1297:12;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:25;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:25;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:25;;;;;;;;;;;;;;;1796:6:::1;::::0;1775:40:::1;::::0;1812:1:::1;::::0;-1:-1:-1;;;;;1796:6:25::1;::::0;1775:40:::1;::::0;1812:1;;1775:40:::1;1825:6;:19:::0;;-1:-1:-1;;;;;;1825:19:25::1;::::0;;1706:145::o;1309:89:5:-;1297:12:25;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:25;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:25;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:25;;;;;;;;;;;;;;;1372:10:5::1;:19:::0;;;::::1;;-1:-1:-1::0;;;1372:19:5::1;-1:-1:-1::0;;;;1372:19:5;;::::1;::::0;;;::::1;::::0;;1309:89::o;1424:38:7:-;;;;:::o;1083:77:25:-;1147:6;;-1:-1:-1;;;;;1147:6:25;1083:77;:::o;2593:136:7:-;-1:-1:-1;;;;;2675:26:7;2652:4;2675:26;;;:14;:26;;;;;:43;;;:47;;;2593:136::o;1094:41::-;;;-1:-1:-1;;;;;1094:41:7;;:::o;932:18::-;;;-1:-1:-1;;;;;932:18:7;;:::o;1141:37::-;;;-1:-1:-1;;;;;1141:37:7;;:::o;2000:240:25:-;1297:12;:10;:12::i;:::-;1287:6;;-1:-1:-1;;;;;1287:6:25;;;:22;;;1279:67;;;;;-1:-1:-1;;;1279:67:25;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;1279:67:25;;;;;;;;;;;;;;;-1:-1:-1;;;;;2088:22:25;::::1;2080:73;;;;-1:-1:-1::0;;;2080:73:25::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2189:6;::::0;2168:38:::1;::::0;-1:-1:-1;;;;;2168:38:25;;::::1;::::0;2189:6:::1;::::0;2168:38:::1;::::0;2189:6:::1;::::0;2168:38:::1;2216:6;:17:::0;;-1:-1:-1;;;;;;2216:17:25::1;-1:-1:-1::0;;;;;2216:17:25;;;::::1;::::0;;;::::1;::::0;;2000:240::o;598:104:24:-;685:10;598:104;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.7.6;\n\nimport \"./StorageStateCommittee.sol\";\nimport \"../../node_modules/@openzeppelin/contracts/access/Ownable.sol\";\nimport { ERC165 } from \"../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol\";\n\ncontract DAOCommitteeProxy is StorageStateCommittee, Ownable, ERC165 {\n    address public _implementation;\n    bool public pauseProxy;\n\n    event Upgraded(address indexed implementation);\n     \n    constructor(\n        address _ton,\n        address _impl,\n        address _seigManager,\n        address _layer2Registry,\n        address _agendaManager,\n        address _candidateFactory,\n        //address _activityRewardManager,\n        address _daoVault\n    )\n    {\n        ton = _ton;\n        _implementation = _impl;\n        seigManager = ISeigManager(_seigManager);\n        layer2Registry = ILayer2Registry(_layer2Registry);\n        agendaManager = IDAOAgendaManager(_agendaManager);\n        candidateFactory = ICandidateFactory(_candidateFactory);\n        //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);\n        daoVault = IDAOVault2(_daoVault);\n        //maxMember = 3;\n        activityRewardPerSecond = 1e18;\n\n        _registerInterface(bytes4(keccak256(\"onApprove(address,address,uint256,bytes)\")));\n    }\n\n    function setProxyPause(bool _pause) onlyOwner public {\n        pauseProxy = _pause;\n    }\n\n    /*function setProxyStore(address payable _storeAddress) onlyOwner public {\n        require(_storeAddress != address(0), \"DAOCommitteeProxy: store address is zero\");\n        store = DAOCommitteeStore(_storeAddress);\n    }\n\n    function setProxyAgendaManager(address _addr) onlyOwner validStore public {\n        require(_addr != address(0), \"DAOCommitteeProxy: agendamanager address is zero\");\n        agendaManager = DAOAgendaManager(_addr);\n        store.setAgendaManager(_addr);\n    }\n\n    function setProxyAactivityfeeManager(address _addr) onlyOwner validStore public {\n        require(_addr != address(0), \"DAOCommitteeProxy: ActivityFeeManager address is zero\");\n        activityfeeManager = DAOActivityFeeManager(_addr);\n        store.setActivityFeeManager(_addr);\n    }\n\n    //--\n    function setProxyElection(address _addr) onlyOwner public {\n        require(_addr != address(0), \"DAOCommitteeProxy: election address is zero\");\n        election = DAOElectionStore(_addr);\n    }\n\n    function setProxyCommitteeL2Factory(address _addr) onlyOwner public {\n        require(_addr != address(0), \"DAOCommitteeProxy: factory address is zero\");\n        committeeL2Factory = CommitteeL2FactoryI(_addr);\n        election.setCommitteeL2Factory(_addr);\n    }\n\n    function setProxyLayer2Registry(address _addr) onlyOwner public {\n        require(_addr != address(0), \"DAOCommitteeProxy: registry address is zero\");\n        layer2Registry = Layer2RegistryI(_addr);\n        election.setLayer2Registry(_addr);\n    }\n\n    function setProxySeigManager(address _addr) onlyOwner public {\n        require(_addr != address(0), \"DAOCommitteeProxy: SeigManager address is zero\");\n        seigManager = SeigManagerI(_addr);\n        election.setSeigManager(_addr);\n    }*/\n    //--\n\n    function upgradeTo(address impl) public onlyOwner {\n        require(_implementation != impl, \"DAOCommitteeProxy: implementation address is zero\");\n        _implementation = impl;\n        emit Upgraded(impl);\n    }\n\n    function implementation() public view returns (address) {\n        return _implementation;\n    }\n\n    fallback() external {\n        _fallback();\n    }\n\n    function _fallback() internal {\n        address _impl = implementation();\n        require(_impl != address(0) && pauseProxy == false, \"DAOCommitteeProxy: impl is zero OR proxy is false\");\n\n        assembly {\n            // Copy msg.data. We take full control of memory in this inline assembly\n            // block because it will not return to Solidity code. We overwrite the\n            // Solidity scratch pad at memory position 0.\n            calldatacopy(0, 0, calldatasize())\n\n            // Call the implementation.\n            // out and outsize are 0 because we don't know the size yet.\n            let result := delegatecall(gas(), _impl, 0, calldatasize(), 0, 0)\n\n            // Copy the returned data.\n            returndatacopy(0, 0, returndatasize())\n\n            switch result\n            // delegatecall returns 0 on error.\n            case 0 { revert(0, returndatasize()) }\n            default { return(0, returndatasize()) }\n        }\n    }\n}\n",
   "sourcePath": "/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol",
   "ast": {
     "absolutePath": "/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol",
     "exportedSymbols": {
       "Context": [
-        5363
+        5571
       ],
       "DAOAgendaManager": [
         1683
@@ -469,40 +487,40 @@
         3484
       ],
       "ERC165": [
-        5529
+        5737
       ],
       "ICandidateFactory": [
-        4051
+        4201
       ],
       "IDAOAgendaManager": [
-        4406
+        4556
       ],
       "IDAOCommittee": [
-        4546
+        4696
       ],
       "IDAOVault2": [
-        4605
+        4755
       ],
       "IERC20": [
-        5987
+        6195
       ],
       "ILayer2Registry": [
-        4659
+        4809
       ],
       "ISeigManager": [
-        4823
+        4973
       ],
       "LibAgenda": [
-        4881
+        5089
       ],
       "Ownable": [
-        5472
+        5680
       ],
       "SafeMath": [
-        5909
+        6117
       ],
       "StorageStateCommittee": [
-        3956
+        4106
       ]
     },
     "id": 3485,
@@ -526,7 +544,7 @@
         "id": 3323,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 3957,
+        "sourceUnit": 4107,
         "src": "57:37:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -537,7 +555,7 @@
         "id": 3324,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 5473,
+        "sourceUnit": 5681,
         "src": "95:71:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -548,7 +566,7 @@
         "id": 3326,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 5530,
+        "sourceUnit": 5738,
         "src": "167:93:5",
         "symbolAliases": [
           {
@@ -572,10 +590,10 @@
               "id": 3327,
               "name": "StorageStateCommittee",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3956,
+              "referencedDeclaration": 4106,
               "src": "292:21:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_StorageStateCommittee_$3956",
+                "typeIdentifier": "t_contract$_StorageStateCommittee_$4106",
                 "typeString": "contract StorageStateCommittee"
               }
             },
@@ -588,10 +606,10 @@
               "id": 3329,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5472,
+              "referencedDeclaration": 5680,
               "src": "315:7:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$5472",
+                "typeIdentifier": "t_contract$_Ownable_$5680",
                 "typeString": "contract Ownable"
               }
             },
@@ -604,10 +622,10 @@
               "id": 3331,
               "name": "ERC165",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5529,
+              "referencedDeclaration": 5737,
               "src": "324:6:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC165_$5529",
+                "typeIdentifier": "t_contract$_ERC165_$5737",
                 "typeString": "contract ERC165"
               }
             },
@@ -617,22 +635,22 @@
           }
         ],
         "contractDependencies": [
-          3956,
-          5363,
-          5472,
-          5529,
-          5713
+          4106,
+          5571,
+          5680,
+          5737,
+          5921
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 3484,
         "linearizedBaseContracts": [
           3484,
-          5529,
-          5713,
-          5472,
-          5363,
-          3956
+          5737,
+          5921,
+          5680,
+          5571,
+          4106
         ],
         "name": "DAOCommitteeProxy",
         "nodeType": "ContractDefinition",
@@ -752,7 +770,7 @@
                       "name": "ton",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3812,
+                      "referencedDeclaration": 3962,
                       "src": "736:3:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -838,10 +856,10 @@
                       "name": "seigManager",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3822,
+                      "referencedDeclaration": 3972,
                       "src": "789:11:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                        "typeIdentifier": "t_contract$_ISeigManager_$4973",
                         "typeString": "contract ISeigManager"
                       }
                     },
@@ -873,10 +891,10 @@
                         "name": "ISeigManager",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4823,
+                        "referencedDeclaration": 4973,
                         "src": "803:12:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4823_$",
+                          "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4973_$",
                           "typeString": "type(contract ISeigManager)"
                         }
                       },
@@ -891,13 +909,13 @@
                       "src": "803:26:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                        "typeIdentifier": "t_contract$_ISeigManager_$4973",
                         "typeString": "contract ISeigManager"
                       }
                     },
                     "src": "789:40:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                      "typeIdentifier": "t_contract$_ISeigManager_$4973",
                       "typeString": "contract ISeigManager"
                     }
                   },
@@ -917,10 +935,10 @@
                       "name": "layer2Registry",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3820,
+                      "referencedDeclaration": 3970,
                       "src": "839:14:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                        "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                         "typeString": "contract ILayer2Registry"
                       }
                     },
@@ -952,10 +970,10 @@
                         "name": "ILayer2Registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4659,
+                        "referencedDeclaration": 4809,
                         "src": "856:15:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ILayer2Registry_$4659_$",
+                          "typeIdentifier": "t_type$_t_contract$_ILayer2Registry_$4809_$",
                           "typeString": "type(contract ILayer2Registry)"
                         }
                       },
@@ -970,13 +988,13 @@
                       "src": "856:32:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                        "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                         "typeString": "contract ILayer2Registry"
                       }
                     },
                     "src": "839:49:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                      "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                       "typeString": "contract ILayer2Registry"
                     }
                   },
@@ -996,10 +1014,10 @@
                       "name": "agendaManager",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3816,
+                      "referencedDeclaration": 3966,
                       "src": "898:13:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                         "typeString": "contract IDAOAgendaManager"
                       }
                     },
@@ -1031,10 +1049,10 @@
                         "name": "IDAOAgendaManager",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4406,
+                        "referencedDeclaration": 4556,
                         "src": "914:17:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IDAOAgendaManager_$4406_$",
+                          "typeIdentifier": "t_type$_t_contract$_IDAOAgendaManager_$4556_$",
                           "typeString": "type(contract IDAOAgendaManager)"
                         }
                       },
@@ -1049,13 +1067,13 @@
                       "src": "914:33:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                         "typeString": "contract IDAOAgendaManager"
                       }
                     },
                     "src": "898:49:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                      "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                       "typeString": "contract IDAOAgendaManager"
                     }
                   },
@@ -1075,10 +1093,10 @@
                       "name": "candidateFactory",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3818,
+                      "referencedDeclaration": 3968,
                       "src": "957:16:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                        "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                         "typeString": "contract ICandidateFactory"
                       }
                     },
@@ -1110,10 +1128,10 @@
                         "name": "ICandidateFactory",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4051,
+                        "referencedDeclaration": 4201,
                         "src": "976:17:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ICandidateFactory_$4051_$",
+                          "typeIdentifier": "t_type$_t_contract$_ICandidateFactory_$4201_$",
                           "typeString": "type(contract ICandidateFactory)"
                         }
                       },
@@ -1128,13 +1146,13 @@
                       "src": "976:36:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                        "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                         "typeString": "contract ICandidateFactory"
                       }
                     },
                     "src": "957:55:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                      "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                       "typeString": "contract ICandidateFactory"
                     }
                   },
@@ -1154,10 +1172,10 @@
                       "name": "daoVault",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3814,
+                      "referencedDeclaration": 3964,
                       "src": "1107:8:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                        "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                         "typeString": "contract IDAOVault2"
                       }
                     },
@@ -1189,10 +1207,10 @@
                         "name": "IDAOVault2",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4605,
+                        "referencedDeclaration": 4755,
                         "src": "1118:10:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IDAOVault2_$4605_$",
+                          "typeIdentifier": "t_type$_t_contract$_IDAOVault2_$4755_$",
                           "typeString": "type(contract IDAOVault2)"
                         }
                       },
@@ -1207,13 +1225,13 @@
                       "src": "1118:21:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                        "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                         "typeString": "contract IDAOVault2"
                       }
                     },
                     "src": "1107:32:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                      "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                       "typeString": "contract IDAOVault2"
                     }
                   },
@@ -1233,7 +1251,7 @@
                       "name": "activityRewardPerSecond",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3836,
+                      "referencedDeclaration": 3986,
                       "src": "1174:23:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1379,7 +1397,7 @@
                       "name": "_registerInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5528,
+                      "referencedDeclaration": 5736,
                       "src": "1215:18:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes4_$returns$__$",
@@ -1684,7 +1702,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5421,
+                  "referencedDeclaration": 5629,
                   "src": "1345:9:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1964,7 +1982,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5421,
+                  "referencedDeclaration": 5629,
                   "src": "3214:9:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2768,7 +2786,7 @@
     "absolutePath": "/data/github/onther/tokamak-dao-contracts3/contracts/dao/DAOCommitteeProxy.sol",
     "exportedSymbols": {
       "Context": [
-        5363
+        5571
       ],
       "DAOAgendaManager": [
         1683
@@ -2777,40 +2795,40 @@
         3484
       ],
       "ERC165": [
-        5529
+        5737
       ],
       "ICandidateFactory": [
-        4051
+        4201
       ],
       "IDAOAgendaManager": [
-        4406
+        4556
       ],
       "IDAOCommittee": [
-        4546
+        4696
       ],
       "IDAOVault2": [
-        4605
+        4755
       ],
       "IERC20": [
-        5987
+        6195
       ],
       "ILayer2Registry": [
-        4659
+        4809
       ],
       "ISeigManager": [
-        4823
+        4973
       ],
       "LibAgenda": [
-        4881
+        5089
       ],
       "Ownable": [
-        5472
+        5680
       ],
       "SafeMath": [
-        5909
+        6117
       ],
       "StorageStateCommittee": [
-        3956
+        4106
       ]
     },
     "id": 3485,
@@ -2834,7 +2852,7 @@
         "id": 3323,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 3957,
+        "sourceUnit": 4107,
         "src": "57:37:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2845,7 +2863,7 @@
         "id": 3324,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 5473,
+        "sourceUnit": 5681,
         "src": "95:71:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2856,7 +2874,7 @@
         "id": 3326,
         "nodeType": "ImportDirective",
         "scope": 3485,
-        "sourceUnit": 5530,
+        "sourceUnit": 5738,
         "src": "167:93:5",
         "symbolAliases": [
           {
@@ -2880,10 +2898,10 @@
               "id": 3327,
               "name": "StorageStateCommittee",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3956,
+              "referencedDeclaration": 4106,
               "src": "292:21:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_StorageStateCommittee_$3956",
+                "typeIdentifier": "t_contract$_StorageStateCommittee_$4106",
                 "typeString": "contract StorageStateCommittee"
               }
             },
@@ -2896,10 +2914,10 @@
               "id": 3329,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5472,
+              "referencedDeclaration": 5680,
               "src": "315:7:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$5472",
+                "typeIdentifier": "t_contract$_Ownable_$5680",
                 "typeString": "contract Ownable"
               }
             },
@@ -2912,10 +2930,10 @@
               "id": 3331,
               "name": "ERC165",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5529,
+              "referencedDeclaration": 5737,
               "src": "324:6:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC165_$5529",
+                "typeIdentifier": "t_contract$_ERC165_$5737",
                 "typeString": "contract ERC165"
               }
             },
@@ -2925,22 +2943,22 @@
           }
         ],
         "contractDependencies": [
-          3956,
-          5363,
-          5472,
-          5529,
-          5713
+          4106,
+          5571,
+          5680,
+          5737,
+          5921
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 3484,
         "linearizedBaseContracts": [
           3484,
-          5529,
-          5713,
-          5472,
-          5363,
-          3956
+          5737,
+          5921,
+          5680,
+          5571,
+          4106
         ],
         "name": "DAOCommitteeProxy",
         "nodeType": "ContractDefinition",
@@ -3060,7 +3078,7 @@
                       "name": "ton",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3812,
+                      "referencedDeclaration": 3962,
                       "src": "736:3:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -3146,10 +3164,10 @@
                       "name": "seigManager",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3822,
+                      "referencedDeclaration": 3972,
                       "src": "789:11:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                        "typeIdentifier": "t_contract$_ISeigManager_$4973",
                         "typeString": "contract ISeigManager"
                       }
                     },
@@ -3181,10 +3199,10 @@
                         "name": "ISeigManager",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4823,
+                        "referencedDeclaration": 4973,
                         "src": "803:12:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4823_$",
+                          "typeIdentifier": "t_type$_t_contract$_ISeigManager_$4973_$",
                           "typeString": "type(contract ISeigManager)"
                         }
                       },
@@ -3199,13 +3217,13 @@
                       "src": "803:26:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                        "typeIdentifier": "t_contract$_ISeigManager_$4973",
                         "typeString": "contract ISeigManager"
                       }
                     },
                     "src": "789:40:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ISeigManager_$4823",
+                      "typeIdentifier": "t_contract$_ISeigManager_$4973",
                       "typeString": "contract ISeigManager"
                     }
                   },
@@ -3225,10 +3243,10 @@
                       "name": "layer2Registry",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3820,
+                      "referencedDeclaration": 3970,
                       "src": "839:14:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                        "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                         "typeString": "contract ILayer2Registry"
                       }
                     },
@@ -3260,10 +3278,10 @@
                         "name": "ILayer2Registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4659,
+                        "referencedDeclaration": 4809,
                         "src": "856:15:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ILayer2Registry_$4659_$",
+                          "typeIdentifier": "t_type$_t_contract$_ILayer2Registry_$4809_$",
                           "typeString": "type(contract ILayer2Registry)"
                         }
                       },
@@ -3278,13 +3296,13 @@
                       "src": "856:32:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                        "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                         "typeString": "contract ILayer2Registry"
                       }
                     },
                     "src": "839:49:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ILayer2Registry_$4659",
+                      "typeIdentifier": "t_contract$_ILayer2Registry_$4809",
                       "typeString": "contract ILayer2Registry"
                     }
                   },
@@ -3304,10 +3322,10 @@
                       "name": "agendaManager",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3816,
+                      "referencedDeclaration": 3966,
                       "src": "898:13:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                         "typeString": "contract IDAOAgendaManager"
                       }
                     },
@@ -3339,10 +3357,10 @@
                         "name": "IDAOAgendaManager",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4406,
+                        "referencedDeclaration": 4556,
                         "src": "914:17:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IDAOAgendaManager_$4406_$",
+                          "typeIdentifier": "t_type$_t_contract$_IDAOAgendaManager_$4556_$",
                           "typeString": "type(contract IDAOAgendaManager)"
                         }
                       },
@@ -3357,13 +3375,13 @@
                       "src": "914:33:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                        "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                         "typeString": "contract IDAOAgendaManager"
                       }
                     },
                     "src": "898:49:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IDAOAgendaManager_$4406",
+                      "typeIdentifier": "t_contract$_IDAOAgendaManager_$4556",
                       "typeString": "contract IDAOAgendaManager"
                     }
                   },
@@ -3383,10 +3401,10 @@
                       "name": "candidateFactory",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3818,
+                      "referencedDeclaration": 3968,
                       "src": "957:16:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                        "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                         "typeString": "contract ICandidateFactory"
                       }
                     },
@@ -3418,10 +3436,10 @@
                         "name": "ICandidateFactory",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4051,
+                        "referencedDeclaration": 4201,
                         "src": "976:17:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ICandidateFactory_$4051_$",
+                          "typeIdentifier": "t_type$_t_contract$_ICandidateFactory_$4201_$",
                           "typeString": "type(contract ICandidateFactory)"
                         }
                       },
@@ -3436,13 +3454,13 @@
                       "src": "976:36:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                        "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                         "typeString": "contract ICandidateFactory"
                       }
                     },
                     "src": "957:55:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ICandidateFactory_$4051",
+                      "typeIdentifier": "t_contract$_ICandidateFactory_$4201",
                       "typeString": "contract ICandidateFactory"
                     }
                   },
@@ -3462,10 +3480,10 @@
                       "name": "daoVault",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3814,
+                      "referencedDeclaration": 3964,
                       "src": "1107:8:5",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                        "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                         "typeString": "contract IDAOVault2"
                       }
                     },
@@ -3497,10 +3515,10 @@
                         "name": "IDAOVault2",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4605,
+                        "referencedDeclaration": 4755,
                         "src": "1118:10:5",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IDAOVault2_$4605_$",
+                          "typeIdentifier": "t_type$_t_contract$_IDAOVault2_$4755_$",
                           "typeString": "type(contract IDAOVault2)"
                         }
                       },
@@ -3515,13 +3533,13 @@
                       "src": "1118:21:5",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                        "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                         "typeString": "contract IDAOVault2"
                       }
                     },
                     "src": "1107:32:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IDAOVault2_$4605",
+                      "typeIdentifier": "t_contract$_IDAOVault2_$4755",
                       "typeString": "contract IDAOVault2"
                     }
                   },
@@ -3541,7 +3559,7 @@
                       "name": "activityRewardPerSecond",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3836,
+                      "referencedDeclaration": 3986,
                       "src": "1174:23:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3687,7 +3705,7 @@
                       "name": "_registerInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5528,
+                      "referencedDeclaration": 5736,
                       "src": "1215:18:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_bytes4_$returns$__$",
@@ -3992,7 +4010,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5421,
+                  "referencedDeclaration": 5629,
                   "src": "1345:9:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -4272,7 +4290,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 5421,
+                  "referencedDeclaration": 5629,
                   "src": "3214:9:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5144,152 +5162,12 @@
         }
       },
       "links": {},
-      "address": "0xb52efEBd68c9633F7DF9d601bD1F4e285B041d7a",
-      "transactionHash": "0x99fa83490d8031db3cca06fc32e221ada1e3755b00c26d94756be2d4ee438139"
-    },
-    "1609886307866": {
-      "events": {
-        "0xda6c16eb4f8fb6ec38ec7e9454e1c4edc683be68090430dad446a152fa719789": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "member",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "totalbalance",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "memberIndex",
-              "type": "uint256"
-            }
-          ],
-          "name": "ApplyMemberSuccess",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address"
-            }
-          ],
-          "name": "Upgraded",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0xD65Bd26C3A1E0f5650A19be31cfBE685fbE04C6d",
-      "transactionHash": "0xfbfc7507811ec88091bc5360c2629643e329a7bc9f806c87a1d1dd724cdebd81"
-    },
-    "1609900875874": {
-      "events": {
-        "0xda6c16eb4f8fb6ec38ec7e9454e1c4edc683be68090430dad446a152fa719789": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "member",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "totalbalance",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "memberIndex",
-              "type": "uint256"
-            }
-          ],
-          "name": "ApplyMemberSuccess",
-          "type": "event"
-        },
-        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address"
-            }
-          ],
-          "name": "Upgraded",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0xD65Bd26C3A1E0f5650A19be31cfBE685fbE04C6d",
-      "transactionHash": "0xad6adf0e20858dece3aa78e933b082b5e8ca76c538c89da0e7748248737d0977"
+      "address": "0x8d01ed892A609206B17600e75C204E342DF71eCf",
+      "transactionHash": "0xf1638e307eccd2736cb6ce65c1668fa8f361ec8c7d66d9bbc14fae208cfbb9e4"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-13T07:27:53.075Z",
+  "updatedAt": "2021-01-14T02:58:06.661Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

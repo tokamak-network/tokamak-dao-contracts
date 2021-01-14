@@ -15149,7 +15149,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-07T04:02:54.447Z",
+  "updatedAt": "2021-01-13T20:29:55.801Z",
   "devdoc": {
     "details": "Implementation of coin age token based on ERC20 of openzeppelin-solidity * AutoRefactorCoinage stores `_totalSupply` and `_balances` as RAY BASED value, `_allowances` as RAY FACTORED value. * This takes public function (including _approve) parameters as RAY FACTORED value and internal function (including approve) parameters as RAY BASED value, and emits event in RAY FACTORED value. * `RAY BASED` = `RAY FACTORED`  / factor *  factor increases exponentially for each block mined.",
     "methods": {
