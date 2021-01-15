@@ -751,7 +751,7 @@ describe('Test 1', function () {
           return (await agendaManager.isVoter(_agendaID, voter));
       }
 
-      async function castVote(_agendaID, voter, vote) {
+      async function castVote(_agendaID, voter, _vote) {
         const agenda1 = await agendaManager.agendas(_agendaID);
         const beforeCountingYes = agenda1[AGENDA_INDEX_COUNTING_YES];
         const beforeCountingNo = agenda1[AGENDA_INDEX_COUNTING_NO];
@@ -762,17 +762,21 @@ describe('Test 1', function () {
         //voterInfo1[VOTER_INFO_HAS_VOTED].should.be.equal(false);
         (await isVoter(_agendaID, voter)).should.be.equal(true);
 
-        await committeeProxy.castVote(_agendaID, vote, "test comment", {from: voter});
+        await committeeProxy.castVote(_agendaID, _vote, "test comment", {from: voter});
 
         const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
         voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
         voterInfo2[VOTER_INFO_HAS_VOTED].should.be.equal(true);
-        voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(vote));
+        voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(_vote));
 
         const agenda2 = await agendaManager.agendas(_agendaID);
-        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(vote === VOTE_YES ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(vote === VOTE_NO ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(_vote === VOTE_YES ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+
+        const result = await agendaManager.getVoteStatus(_agendaID, voter);
+        result[0].should.be.equal(true);
+        result[1].should.be.bignumber.equal(toBN(_vote));
       }
 
       for (let i = 0; i < votesList.length; i++) {
