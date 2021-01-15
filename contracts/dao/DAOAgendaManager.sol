@@ -19,7 +19,6 @@ contract DAOAgendaManager is Ownable {
     }
     
     address public ton;
-    address public activityRewardManager;
     IDAOCommittee public committee;
     
     uint256 public createAgendaFees; // 아젠다생성비용(TON)
@@ -96,11 +95,6 @@ contract DAOAgendaManager is Ownable {
         minimunVotingPeriodSeconds = _minimunVotingPeriodSeconds;
     }
       
-    function setActivityRewardManager(address _man) public onlyOwner {
-        require(_man != address(0), "DAOAgendaManager: ActivityRewardManager is zero");
-        activityRewardManager = _man;
-    }
-
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) public onlyOwner {
         require(quorumNumerator > 0 && quorumDenominator > 0 && quorumNumerator < quorumDenominator, "DAOAgendaManager: invalid quorum");
         quorum = Ratio(quorumNumerator,quorumDenominator);
@@ -109,6 +103,17 @@ contract DAOAgendaManager is Ownable {
     function hasVoted(uint256 _agendaID, address _user) public view returns (bool) {
         require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
         return voterInfos[_agendaID][_user].hasVoted;
+    }
+
+    function getVoteStatus(uint256 _agendaID, address _user) public view returns (bool, uint256) {
+        require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
+        
+        LibAgenda.Voter storage voter = voterInfos[_agendaID][_user];
+
+        return (
+            voter.hasVoted,
+            voter.vote
+        );
     }
     
     function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) public view returns (uint) {

@@ -538,29 +538,50 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         returns (uint256 totalsupply)
     {
         address candidateContract = candidateContract(_candidate);
-        require(candidateContract != address(0), "This account is not a candidate");
-
-        address coinage = seigManager.coinages(candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).totalSupply();
+        return totalSupplyOnCandidateContract(candidateContract);
     }
 
     function balanceOfOnCandidate(
         address _candidate,
-        address account
+        address _account
     )
         public
         view
         returns (uint256 amount)
     {
         address candidateContract = candidateContract(_candidate);
-        require(candidateContract != address(0), "This account is not a candidate");
-
-        address coinage = seigManager.coinages(candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).balanceOf(account);
+        return balanceOfOnCandidateContract(candidateContract, _account);
     }
     
+    function totalSupplyOnCandidateContract(
+        address _candidateContract
+    )
+        public
+        view
+        returns (uint256 totalsupply)
+    {
+        require(_candidateContract != address(0), "This account is not a candidate");
+
+        address coinage = seigManager.coinages(_candidateContract);
+        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        return IERC20(coinage).totalSupply();
+    }
+
+    function balanceOfOnCandidateContract(
+        address _candidateContract,
+        address _account
+    )
+        public
+        view
+        returns (uint256 amount)
+    {
+        require(_candidateContract != address(0), "This account is not a candidate");
+
+        address coinage = seigManager.coinages(_candidateContract);
+        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        return IERC20(coinage).balanceOf(_account);
+    }
+
     function candidatesLength() public view returns (uint256) {
         return candidates.length;
     }
