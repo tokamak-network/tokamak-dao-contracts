@@ -46,9 +46,11 @@ process.on('exit', function () {
   console.log(o);
 });
 
-const [ candidate1, candidate2, candidate3, user1, user2, user3, user4,user5,user6,candidate4] = accounts;
+const [ candidate1, candidate2, candidate3, user1, user2, user3, user4,user5,operator1,operator2] = accounts;
 const candidates = [candidate1, candidate2, candidate3];
-const users = [user1, user2, user3, user4, user5, user6];
+const users = [user1, user2, user3, user4, user5];
+const operators = [operator1,operator2];
+
 const deployer = defaultSender;
 
 const _TON = createCurrency('TON');
@@ -119,7 +121,7 @@ const DAO_SEIG_RATE = _WTON('0.5');
 const PSEIG_RATE = _WTON('0.4');
 
 const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
-
+const TON_USER_STAKE_AMOUNT = _TON('10');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
@@ -141,6 +143,8 @@ let powerton;
 
 //
 let noticePeriod, votingPeriod , agendaFee; 
+let layer2s=[];
+
 
 describe('Test 1', function () {
   before(async function () {
@@ -289,6 +293,8 @@ describe('Test 1', function () {
     seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
+    await operators.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
+
     await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
@@ -475,6 +481,22 @@ describe('Test 1', function () {
 
     await layer2.setSeigManager(seigManager.address, {from: operator});
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address, {from: operator});
+    
+    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+
+    const minimum = await seigManager.minimumAmount();
+    const beforeTonBalance = await ton.balanceOf(operator); 
+    await deposit(layer2.address, operator, stakeAmountTON);
+
+    const afterTonBalance = await ton.balanceOf(operator);
+    beforeTonBalance.sub(afterTonBalance).should.be.bignumber.equal(stakeAmountTON);
+
+    const coinageAddress = await seigManager.coinages(layer2.address);
+    const coinage = await AutoRefactorCoinage.at(coinageAddress);
+    const stakedAmount = await coinage.balanceOf(operator);
+    stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
+    
     return layer2;
   }
 
@@ -505,8 +527,41 @@ describe('Test 1', function () {
     newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
     
-    return newSeigManager.address;
+    /* 
+   console.log('layer2s[0].address', layer2s[0].address);
+   console.log('seigManager', seigManager.address);
+   console.log('registry.owner', await registry.owner());
+   console.log('committeeProxy.address',committeeProxy.address);
+    */
+   
+   //onlyOperatorOrSeigManager
+   const _layer0 = await Layer2.at(layer2s[0].address);
+   await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
+   const _layer1 = await Layer2.at(layer2s[1].address);
+   await _layer1.setSeigManager(newSeigManager.address,{from: operator2});
+
+   //onlyOwnerOrOperator : committeeProxy 에서 실행하거나, 
+   await registry.deployCoinage(layer2s[0].address, newSeigManager.address, {from: operator1});
+   await registry.deployCoinage(layer2s[1].address, newSeigManager.address, {from: operator2});
+
+   await wton.setSeigManager(newSeigManager.address);
+ 
+   const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+   const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+
+   const coinageAddress = await newSeigManager.coinages(_layer1.address); 
+   const coinage = await AutoRefactorCoinage.at(coinageAddress);
+  // const stakedAmount = await coinage.balanceOf(operator2);
+  // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
+  
+  expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
+   return newSeigManager;
   }
+  
+  async function addlayer2s(operator){
+    let _layer2 = await addOperator(operator);
+    layer2s.push(_layer2);
+  } 
 
   async function agendaVoteYesAll(agendaid){
     const agenda = await agendaManager.agendas(agendaid);  
@@ -519,12 +574,24 @@ describe('Test 1', function () {
     time.increaseTo(votingEndTimestamp);
    
   } 
+  async function balanceOfAccountByLayer2(_layer2, _account){
+    const coinageAddress = await seigManager.coinages(_layer2);
+    const coinage = await AutoRefactorCoinage.at(coinageAddress);
+    const stakedAmountWTON = await coinage.balanceOf(_account);
+
+    return stakedAmountWTON; 
+  }
 
   before(async function () { 
-    this.timeout(1000000);
+    this.timeout(1000000); 
+
+    await addlayer2s(operator1);
+    await addlayer2s(operator2);
+
     await addCandidate(candidate1);
     await addCandidate(candidate2);
     await addCandidate(candidate3); 
+
     await committeeProxy.changeMember(0, {from: candidate1});
     await committeeProxy.changeMember(1, {from: candidate2});
     await committeeProxy.changeMember(2, {from: candidate3});
@@ -532,22 +599,32 @@ describe('Test 1', function () {
     noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
     votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
     agendaFee = await agendaManager.createAgendaFees();
-
+    
+    
+    
+    
   });
 
 
   describe('Agenda - depositManager', function () { 
+    it('depositManager.deposit', async function () {  
+      const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+      const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
 
-    it('depositManager.setSeigManager', async function () { 
+      await deposit(layer2s[0].address, user1, stakeAmountTON); 
+      let stakedAmountWTON = await balanceOfAccountByLayer2(layer2s[0].address, user1);
+      stakedAmountWTON.should.be.bignumber.equal(stakeAmountWTON);
+      
+    });
 
+    it('depositManager.transferOwnership to committeeProxy', async function () {  
       await depositManager.transferOwnership(committeeProxy.address);
+    });
 
-      const newSeigAddress = await newSeigManager(); 
-      // await depositManager.setSeigManager(newSeigAddress,{from: committeeProxy.address } );
-      // wton.setSeigManager(newSeigAddress,{from:committeeProxy.address} );
-
+    it('depositManager.setSeigManager - by execute Agenda in committeeProxy', async function () {  
+      const _newSeigManager = await newSeigManager();  
       const selector = web3.eth.abi.encodeFunctionSignature("setSeigManager(address)"); 
-      const data = padLeft(newSeigAddress, 64); 
+      const data = padLeft(_newSeigManager.address, 64); 
       const functionBytecode = selector.concat(data.substring(2));  
       const param = web3.eth.abi.encodeParameters(
         ["address", "uint256", "uint256", "bytes"],
@@ -562,8 +639,26 @@ describe('Test 1', function () {
       );
       agendaID = (await agendaManager.numAgendas()).sub(toBN("1")); 
       await agendaVoteYesAll(agendaID); 
-      await committeeProxy.executeAgenda(agendaID);  
+      await committeeProxy.executeAgenda(agendaID);   
+      
+      (await depositManager.seigManager()).should.be.equal(_newSeigManager.address);
+      // await depositManager.setSeigManager(newSeigAddress,{from: committeeProxy.address } );
+      // wton.setSeigManager(_newSeigManager.address);
+      seigManager = _newSeigManager;
     });
+      
+    it('depositManager.deposit', async function () {  
+
+      const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+      const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+       
+      await deposit(layer2s[0].address, user2, stakeAmountTON);
+      let stakedAmountWTON = await balanceOfAccountByLayer2(layer2s[0].address, user2);
+      stakedAmountWTON.should.be.bignumber.equal(stakeAmountWTON);
+    
+    });
+    
+
       
   });
  
