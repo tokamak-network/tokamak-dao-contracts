@@ -545,6 +545,7 @@ describe('Test 1', function () {
    await registry.deployCoinage(layer2s[1].address, newSeigManager.address, {from: operator2});
 
    await wton.setSeigManager(newSeigManager.address);
+   await powerton.setSeigManager(newSeigManager.address);
  
    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
@@ -651,7 +652,6 @@ describe('Test 1', function () {
 
       const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
       const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-       
       await deposit(layer2s[0].address, user2, stakeAmountTON);
       let stakedAmountWTON = await balanceOfAccountByLayer2(layer2s[0].address, user2);
       stakedAmountWTON.should.be.bignumber.equal(stakeAmountWTON);
