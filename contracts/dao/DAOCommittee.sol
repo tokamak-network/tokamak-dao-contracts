@@ -2,7 +2,8 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import "./StorageStateCommittee.sol";
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
@@ -12,7 +13,7 @@ import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
 import { ERC165Checker } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165Checker.sol";
 
-contract DAOCommittee is StorageStateCommittee, Ownable {
+contract DAOCommittee is StorageStateCommittee, AccessControl {
     using SafeMath for uint256;
     using LibAgenda for *;
      
@@ -76,6 +77,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         address indexed candidate,
         uint256 amount
     );
+
+    modifier onlyOwner() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
+        _;
+    }
 
     //////////////////////////////////////////////////////////////////////
     // setters

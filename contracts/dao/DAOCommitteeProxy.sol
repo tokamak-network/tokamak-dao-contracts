@@ -2,14 +2,20 @@
 pragma solidity ^0.7.6;
 
 import "./StorageStateCommittee.sol";
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
-contract DAOCommitteeProxy is StorageStateCommittee, Ownable, ERC165 {
+contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
     address public _implementation;
     bool public pauseProxy;
 
     event Upgraded(address indexed implementation);
+
+    modifier onlyOwner() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
+        _;
+    }
      
     constructor(
         address _ton,
@@ -34,6 +40,8 @@ contract DAOCommitteeProxy is StorageStateCommittee, Ownable, ERC165 {
         activityRewardPerSecond = 1e18;
 
         _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, address(this));
     }
 
     function setProxyPause(bool _pause) onlyOwner public {
