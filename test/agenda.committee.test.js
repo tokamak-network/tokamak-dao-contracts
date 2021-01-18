@@ -345,6 +345,13 @@ describe('Test 1', function () {
       await executeAgenda(committeeProxy.address, functionBytecode);  
       expect(await committeeProxy.isExistCandidate(operator1)).to.equal(true); 
       
+      
+      params = [user2 , layer2s[1].address, 'user2'] ;
+      functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.registerOperatorByOwner,params);
+      let agendaID = await createAgenda(committeeProxy.address, functionBytecode); 
+      await agendaVoteYesAll(agendaID);  
+      await expectRevert.unspecified(committeeProxy.executeAgenda(agendaID) ); 
+        
     }); 
     it('committeeProxy.setActivityRewardPerSecond', async function () {   
       let reward = await committeeProxy.activityRewardPerSecond();
