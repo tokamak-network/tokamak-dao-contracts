@@ -27,6 +27,7 @@ interface IDAOAgendaManager  {
     function electCommiitteeForAgenda(uint256 _AgendaID, address[] calldata committees) external returns (bool);
     function validCommitteeForAgenda(uint256 _AgendaID, address user) external view returns (bool);
     function castVote(uint256 _AgendaID, address voter, uint _vote) external returns (bool);
+    function endAgendaVoting(uint256 _agendaID) external;
     function setExecuteAgenda(uint256 _AgendaID) external returns (bool success, uint result, bool executed, address target, bytes memory functionBytecode);
     function setResult(uint256 _agendaID, LibAgenda.AgendaResult _result) external;
     function setStatus(uint256 _agendaID, LibAgenda.AgendaStatus _status) external;

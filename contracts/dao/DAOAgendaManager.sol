@@ -331,6 +331,26 @@ contract DAOAgendaManager is Ownable {
         emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(_status));
         agenda.status = _status;
     }
+
+    function endAgendaVoting(uint256 _agendaID)
+        public
+        onlyOwner
+    {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        require(
+            agenda.status == LibAgenda.AgendaStatus.VOTING,
+            "DAOAgendaManager: agenda status is not changable"
+        );
+
+        require(
+            agenda.votingEndTimestamp <= block.timestamp,
+            "DAOAgendaManager: voting is not ended yet"
+        );
+
+        setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
+        setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
+    }
      
     function getExecutionInfo(uint256 _agendaID)
         public
@@ -349,7 +369,8 @@ contract DAOAgendaManager is Ownable {
 
     function isVotableStatus(uint256 _agendaID) public view returns (bool) {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
-        return agenda.status == LibAgenda.AgendaStatus.VOTING ||
+        return (agenda.status == LibAgenda.AgendaStatus.VOTING &&
+                agenda.votingEndTimestamp >= block.timestamp) ||
             (agenda.status == LibAgenda.AgendaStatus.NOTICE &&
                 agenda.noticeEndTimestamp <= block.timestamp);
 

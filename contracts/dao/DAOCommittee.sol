@@ -364,6 +364,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
     }
 
+    function endAgendaVoting(uint256 _agendaID) public {
+        agendaManager.endAgendaVoting(_agendaID);
+    }
+
     function executeAgenda(uint256 _agendaID) public validAgendaManager {
         require(
             agendaManager.canExecuteAgenda(_agendaID),

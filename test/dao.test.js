@@ -94,6 +94,7 @@ const VOTE_ABSTAIN = 0;
 const VOTE_YES = 1;
 const VOTE_NO = 2;
 
+const AGENDA_RESULT_PENDING = 0;
 const AGENDA_RESULT_ACCEPTED = 1;
 const AGENDA_RESULT_REJECTED = 2;
 const AGENDA_RESULT_DISMISSED = 3;
@@ -339,14 +340,25 @@ describe('Test 1', function () {
     await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
 
     ////////////////////////////////////////////////////////////////////////
+    // permissions
+    await ton.addMinter(committeeProxy.address);
+    await ton.transferOwnership(committeeProxy.address);
+
+    await wton.addMinter(committeeProxy.address);
+    await wton.transferOwnership(committeeProxy.address);
+
+    await seigManager.addPauser(committeeProxy.address);
 
     await registry.transferOwnership(committeeProxy.address);
+    await seigManager.transferOwnership(committeeProxy.address);
+    await depositManager.transferOwnership(committeeProxy.address);
+
     await daoVault2.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
-    await committee.transferOwnership(committeeProxy.address);
 
-    console.log('\n\n');
+    await ton.renounceMinter();
+    await wton.renounceMinter();
   } 
 
   async function deposit(candidateContractAddress, account, tonAmount) {
@@ -757,10 +769,11 @@ describe('Test 1', function () {
         const beforeCountingNo = agenda1[AGENDA_INDEX_COUNTING_NO];
         const beforeCountingAbstain = agenda1[AGENDA_INDEX_COUNTING_ABSTAIN];
 
-        //const voterInfo1 = await agendaManager.voterInfos(_agendaID, voter);
-        //voterInfo1[VOTER_INFO_ISVOTER].should.be.equal(true);
-        //voterInfo1[VOTER_INFO_HAS_VOTED].should.be.equal(false);
         (await isVoter(_agendaID, voter)).should.be.equal(true);
+
+        await expectRevert.unspecified(
+          committeeProxy.endAgendaVoting(_agendaID)
+        );
 
         await committeeProxy.castVote(_agendaID, _vote, "test comment", {from: voter});
 
@@ -867,6 +880,78 @@ describe('Test 1', function () {
           });
         });
       }
+
+      describe("dismiss agenda", async function () {
+        let agendaID;
+        it('create new agenda', async function () {
+          const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
+          const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+          const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
+          const newMinimumNoticePeriod = 10;
+          const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
+          const functionBytecode = selector.concat(data);
+
+          const param = web3.eth.abi.encodeParameters(
+            ["address", "uint256", "uint256", "bytes"],
+            [agendaManager.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+          );
+
+          const beforeBalance = await ton.balanceOf(user1);
+          const agendaFee = await agendaManager.createAgendaFees();
+          agendaFee.should.be.bignumber.gt(toBN("0"));
+
+          // create agenda
+          await ton.approveAndCall(
+            committeeProxy.address,
+            agendaFee,
+            param,
+            {from: user1}
+          );
+          const afterBalance = await ton.balanceOf(user1);
+          afterBalance.should.be.bignumber.lt(beforeBalance);
+          beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
+
+          agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+          const executionInfo = await agendaManager.executionInfos(agendaID);
+          executionInfo[0].should.be.equal(agendaManager.address);
+          executionInfo[1].should.be.equal(functionBytecode);
+        });
+
+        it('increase block time and check votable', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+          await time.increaseTo(noticeEndTimestamp);
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(true);
+        });
+
+        it(`cast vote`, async function () {
+          await castVote(agendaID, candidates[0], VOTE_YES);
+        });
+
+        it("check vote result/status", async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_PENDING));
+          agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_VOTING));
+        });
+
+        it('increase block time', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+          await time.increaseTo(noticeEndTimestamp.add(toBN("1")));
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+        });
+
+        it("end agenda voting", async function () {
+          await committeeProxy.endAgendaVoting(agendaID);
+        });
+
+        it("check vote result/status", async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_DISMISSED));
+          agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_ENDED));
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+        });
+      });
     });
   });
 
