@@ -20,10 +20,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
 
     struct AgendaCreatingData {
-        address target;
+        address[] target;
         uint256 noticePeriodSeconds;
         uint256 votingPeriodSeconds;
-        bytes functionBytecode;
+        bytes[] functionBytecode;
     }
 
     //////////////////////////////
@@ -33,7 +33,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     event AgendaCreated(
         address indexed from,
         uint256 indexed id,
-        address target,
+        address[] targets,
         uint256 noticePeriodSeconds,
         uint256 votingPeriodSeconds
     );
@@ -47,7 +47,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
     event AgendaExecuted(
         uint256 indexed id,
-        address target
+        address[] target
     );
 
     event CandidateContractCreated(
@@ -374,11 +374,13 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
             "DAOCommittee: can not execute the agenda"
         );
         
-        (address target, bytes memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
+        (address[] memory target, bytes[] memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
        
-        (bool success, ) = address(target).call(functionBytecode);
-        require(success, "DAOCommittee: Failed to execute the agenda");
-         
+        for (uint256 i = 0; i < target.length; i++) {
+            (bool success, ) = address(target[i]).call(functionBytecode[i]);
+            require(success, "DAOCommittee: Failed to execute the agenda");
+        }
+
         agendaManager.setExecutedAgenda(_agendaID);
 
         emit AgendaExecuted(_agendaID, target);
@@ -468,7 +470,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         returns (AgendaCreatingData memory data)
     {
         (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
-            abi.decode(input, (address, uint256, uint256, bytes));
+            abi.decode(input, (address[], uint256, uint256, bytes[]));
     }
 
     function payCreatingAgendaFee(address _creator) internal {
@@ -480,10 +482,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
    
     function _createAgenda(
         address _creator,
-        address _target,
+        address[] memory _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
-        bytes memory _functionBytecode
+        bytes[] memory _functionBytecodes
     )
         internal
         validAgendaManager
@@ -493,17 +495,17 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         payCreatingAgendaFee(_creator);
 
         uint256 agendaID = agendaManager.newAgenda(
-            _target,
+            _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
             0,
-            _functionBytecode
+            _functionBytecodes
         );
           
         emit AgendaCreated(
             _creator,
             agendaID,
-            _target,
+            _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds
         );

@@ -362,6 +362,9 @@ describe('Test 1', function () {
     await agendaManager.transferOwnership(committeeProxy.address);
     //await committee.transferOwnership(committeeProxy.address);
 
+    await ton.renounceMinter();
+    await wton.renounceMinter();
+    await seigManager.renouncePauser();
   } 
 
   async function deposit(candidateContractAddress, account, tonAmount) {
@@ -525,6 +528,18 @@ describe('Test 1', function () {
             sig: "mint(address,uint256)",
             paramTypes: ["address", "uint256"],
             params: [user1, "12345"]
+          }, {
+            sig: "addMinter(address)",
+            paramTypes: ["address"],
+            params: [user1]
+          }, {
+            sig: "renounceMinter()",
+            paramTypes: [],
+            params: []
+          }, {
+            sig: "renounceOwnership()",
+            paramTypes: [],
+            params: []
           }
         ]
       }, {
@@ -541,6 +556,30 @@ describe('Test 1', function () {
           sig: "burnFrom(address,uint256)",
           paramTypes: ["address", "uint256"],
           params: ["$DAOVault2", "12345"]
+        }, {
+          sig: "addMinter(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceMinter(address)",
+          paramTypes: ["address"],
+          params: ["$TON"]
+        }, {
+          sig: "renounceMinter()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceTonMinter()",
+          paramTypes: [],
+          params: []
         }]
       }, {
         name: "DepositManager",
@@ -548,6 +587,14 @@ describe('Test 1', function () {
           sig: "setGlobalWithdrawalDelay(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
         }]
       }, {
         name: "SeigManager",
@@ -579,16 +626,44 @@ describe('Test 1', function () {
           sig: "setMinimumAmount(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
+        }, {
+          sig: "addPauser(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "renouncePauser()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "setDao(address)",
+          paramTypes: ["address"],
+          params: ["$DAOVault2"]
+        }, {
+          sig: "setDaoSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["1"]
+        }, {
+          sig: "renounceWTONMinter()",
+          paramTypes: [],
+          params: []
         }]
-      }, /*{
+      }, {
         name: "Layer2Registry",
         //contract: registry,
         functions: [{
-          sig: "unregister(address)",
+          sig: "transferOwnership(address)",
           paramTypes: ["address"],
-          params: []
+          params: [user1]
         }]
-      }, */{
+      }, {
         name: "DAOCommitteeProxy",
         functions: [{
           sig: "setProxyPause(bool)",
@@ -655,6 +730,75 @@ describe('Test 1', function () {
         }]
       }]
 
+      const testCasesMultiExecution = [
+        [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DAOCommittee",
+          sig: "setMinimunNoticePeriodSeconds(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "SeigManager",
+          sig: "setPowerTONSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }, {
+          name: "SeigManager",
+          sig: "setDaoSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }, {
+          name: "SeigManager",
+          sig: "setPseigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "renounceWTONMinter()",
+          paramTypes: [],
+          params: []
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }]
+      ]
+
       let instances;
       beforeEach(async function () {
         instances = {
@@ -701,9 +845,12 @@ describe('Test 1', function () {
                 ))
               );
 
+              console.log(`testCase.functions[j].sig: ${JSON.stringify(testCase.functions[j].sig)}`);
+              console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
+
               const param = web3.eth.abi.encodeParameters(
-                ["address", "uint256", "uint256", "bytes"],
-                [testContract.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+                ["address[]", "uint256", "uint256", "bytes[]"],
+                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
               );
 
               const agendaFee = await agendaManager.createAgendaFees();
@@ -713,6 +860,8 @@ describe('Test 1', function () {
                 param,
                 {from: user1}
               );
+
+              console.log(`param: ${JSON.stringify(param)}`);
 
               agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
               const agenda = await agendaManager.agendas(agendaID);  
@@ -728,9 +877,89 @@ describe('Test 1', function () {
               const agendaAfter = await agendaManager.agendas(agendaID);
               agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
 
+              const tmp = await agendaManager.getExecutionInfo(agendaID);
+              console.log(`tmp: ${JSON.stringify(tmp)}`);
+
               await committeeProxy.executeAgenda(agendaID);
             });
           }
+        });
+      }
+
+      for (let i = 0; i < testCasesMultiExecution.length; i++) {
+        describe(`multi execution`, async function () {
+          const testCase = testCasesMultiExecution[i];
+
+          it(`agenda executing #${i}`, async function () {
+            this.timeout(1000000);
+            const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
+            const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+
+            function getParam(param) {
+              if (typeof param === "string" && param[0] === "$") {
+                  return instances[param.substring(1)].address
+              } else {
+                return param;
+              }
+            }
+
+            let targets = [];
+            let functionBytecode = [];
+            for (let j = 0; j < testCase.length; j++) {
+              //console.log(`target name: ${testCase[j].name}`);
+              //console.log(`target: ${instances[testCase[j].name].address}`);
+              targets.push(instances[testCase[j].name].address)
+              const selector = web3.eth.abi.encodeFunctionSignature(testCase[j].sig);
+
+              const params = testCase[j].params.map(param => getParam(param));
+
+              functionBytecode.push(selector.concat(unmarshalString(
+                web3.eth.abi.encodeParameters(
+                  testCase[j].paramTypes,
+                  params
+                )))
+              );
+
+              //console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
+            }
+
+            const param = web3.eth.abi.encodeParameters(
+              ["address[]", "uint256", "uint256", "bytes[]"],
+              [targets, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+            );
+
+            const agendaFee = await agendaManager.createAgendaFees();
+            await ton.approveAndCall(
+              committeeProxy.address,
+              agendaFee,
+              param,
+              {from: user1}
+            );
+
+            //console.log(`param: ${JSON.stringify(param)}`);
+
+            agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+            const agenda = await agendaManager.agendas(agendaID);  
+            const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+            await time.increaseTo(noticeEndTimestamp);
+
+            // cast vote
+            for (let k = 0; k < 2; k++) {
+              await castVote(agendaID, candidates[k], VOTE_YES);
+            }
+
+            // check status
+            const agendaAfter = await agendaManager.agendas(agendaID);
+            agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
+
+            /*const tmp = await agendaManager.getExecutionInfo(agendaID);
+            console.log(`tmp: ${JSON.stringify(tmp)}`);
+
+            const tmp2 = await agendaManager.getExecutionInfo1(agendaID, 0);
+            console.log(`tmp2: ${JSON.stringify(tmp2)}`);*/
+
+            await committeeProxy.executeAgenda(agendaID);
+          });
         });
       }
     });
