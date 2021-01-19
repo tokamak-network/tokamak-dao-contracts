@@ -300,7 +300,7 @@ describe('Test 1', function () {
     daoVault2 = await DAOVault2.new(ton.address, wton.address);
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
     //===================================================
-    agendaManager = await DAOAgendaManager.new(ton.address);
+    agendaManager = await DAOAgendaManager.new();
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();

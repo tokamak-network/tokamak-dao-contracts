@@ -229,7 +229,7 @@ class DaoContracts {
     initializeDaoContracts  = async function (owner ) {
       //this = self;
       this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
-      this.agendaManager = await DAOAgendaManager.new(this.ton.address,{from:owner});
+      this.agendaManager = await DAOAgendaManager.new({from:owner});
       this.candidateFactory = await CandidateFactory.new({from:owner});
       this.committee = await DAOCommittee.new({from:owner});
       this.daoCommitteeProxy = await DAOCommitteeProxy.new(

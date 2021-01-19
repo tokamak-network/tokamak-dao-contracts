@@ -14,7 +14,6 @@ contract DAOAgendaManager is Ownable {
 
     enum VoteChoice { ABSTAIN, YES, NO, MAX }
 
-    address public ton;
     IDAOCommittee public committee;
     
     uint256 public createAgendaFees; // 아젠다생성비용(TON)
@@ -42,12 +41,11 @@ contract DAOAgendaManager is Ownable {
         _;
     }
     
-    constructor(address _ton/*, address _activityRewardManager*/) {
+    constructor() {
         minimumNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
         minimumVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
         
         createAgendaFees = 100000000000000000000; // 100 TON
-        ton = _ton;
     }
 
     function getStatus(uint _status) public pure returns (LibAgenda.AgendaStatus emnustatus) {
