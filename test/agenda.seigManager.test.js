@@ -367,19 +367,71 @@ describe('Test 1', function () {
       await DaoContractsDeployed.setDaoContract(data); 
 
     } );
-    /* 
-    it('seigManager.setDao', async function () {  
+
+    it('seigManager.setDao', async function () { 
+      let _daoVault2 = await DAOVault2.new(ton.address, wton.address,{from:owner}); 
+      let params = [_daoVault2.address] ;
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setDao,params); 
+      await executeAgenda(seigManager.address, functionBytecode); 
+      expect(await seigManager.dao()).to.equal(_daoVault2.address); 
+
     });
 
-    it('seigManager.setPowerTONSeigRate', async function () {  
-    });
-    
+    it('seigManager.setPowerTONSeigRate setDaoSeigRate setPseigRate ', async function () {  
+      this.timeout(1000000);
 
-    it('seigManager.setDaoSeigRate', async function () {  
-    });
+      const POWERTON_SEIG_RATE_2 = _WTON('0.4'); 
+      const DAO_SEIG_RATE_2 = _WTON('0.3');  
+      const PSEIG_RATE_2 = _WTON('0.3');  
+
+      let powerTonRate =  await seigManager.powerTONSeigRate();
+      powerTonRate.should.be.bignumber.equal(toBN(POWERTON_SEIG_RATE.toFixed(WTON_UNIT))); 
+      let params = [POWERTON_SEIG_RATE_2.toFixed(WTON_UNIT)] ;
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTONSeigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode); 
+      powerTonRate =  await seigManager.powerTONSeigRate();
+      powerTonRate.should.be.bignumber.equal(toBN(POWERTON_SEIG_RATE_2.toFixed(WTON_UNIT))); 
+     
+      let daoSeigRate =  await seigManager.daoSeigRate();
+      daoSeigRate.should.be.bignumber.equal(toBN(DAO_SEIG_RATE.toFixed(WTON_UNIT))); 
+       params = [DAO_SEIG_RATE_2.toFixed(WTON_UNIT)] ;
+       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setDaoSeigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode);  
+      daoSeigRate =  await seigManager.daoSeigRate();
+      daoSeigRate.should.be.bignumber.equal(toBN(DAO_SEIG_RATE_2.toFixed(WTON_UNIT))); 
+     
+      let rSeigRate =  await seigManager.relativeSeigRate();
+      rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE.toFixed(WTON_UNIT))); 
+       params = [PSEIG_RATE_2.toFixed(WTON_UNIT)] ;
+       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPseigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode);  
+      rSeigRate =  await seigManager.relativeSeigRate();
+      rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE_2.toFixed(WTON_UNIT))); 
+     
+
+      // --  
+      
+        params = [POWERTON_SEIG_RATE.toFixed(WTON_UNIT)] ;
+       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTONSeigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode);  
+      powerTonRate =  await seigManager.powerTONSeigRate();
+      powerTonRate.should.be.bignumber.equal(toBN(POWERTON_SEIG_RATE.toFixed(WTON_UNIT))); 
+      
+       params = [DAO_SEIG_RATE.toFixed(WTON_UNIT)] ;
+       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setDaoSeigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode);  
+      daoSeigRate =  await seigManager.daoSeigRate();
+      daoSeigRate.should.be.bignumber.equal(toBN(DAO_SEIG_RATE.toFixed(WTON_UNIT))); 
+      
+       params = [PSEIG_RATE.toFixed(WTON_UNIT)] ;
+       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPseigRate,params); 
+      await executeAgenda(seigManager.address, functionBytecode); 
+      rSeigRate =  await seigManager.relativeSeigRate(); 
+      rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE.toFixed(WTON_UNIT))); 
     
-    it('seigManager.setPseigRate', async function () {  
     });
+
+    /*   
     
     it('seigManager.setCoinageFactory', async function () {  
     });
