@@ -10,19 +10,10 @@ const { marshalString, unmarshalString } = require('./helpers/marshal');
 
 const { createCurrency, createCurrencyRatio } = require('@makerdao/currency');
 
-const web3Helper = require('web3-abi-helper').Web3Helper;
-
 const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
-<<<<<<< Updated upstream:test/execute.test.js
-=======
-var DaoContracts = require('../utils/plasma_test_deploy.js');
-
-var DAOCommitteeJson = require('../build/contracts/DAOCommittee.json');
-
->>>>>>> Stashed changes:test/agenda.committee.test.js
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -146,42 +137,32 @@ let daoVault;
 let seigManager;
 let powerton;
 
-<<<<<<< Updated upstream:test/execute.test.js
-=======
-//
-let noticePeriod, votingPeriod , agendaFee; 
-let layer2s=[];
-
-let DaoDeployed = new DaoContracts(); 
-let objectAbiMapping = null ;
-
->>>>>>> Stashed changes:test/agenda.committee.test.js
 describe('Test 1', function () {
   beforeEach(async function () {
     this.timeout(1000000);
-    console.log('owner:',owner );
-    objectAbiMapping = await DaoDeployed.objectMapping( DAOCommitteeJson.abi ) ;
- 
-    let  initializePlasma = await DaoDeployed.initializePlasmaEvmContracts(owner);
- 
-    ton = initializePlasma.ton;
-    wton = initializePlasma.wton;
-    registry = initializePlasma.registry;
-    depositManager = initializePlasma.depositManager;
-    factory = initializePlasma.coinageFactory;
-    daoVault = initializePlasma.daoVault;
-    seigManager = initializePlasma.seigManager;
-    powerton = initializePlasma.powerton;
-     
 
-    let  initializeDao = await DaoDeployed.initializeDaoContracts(owner);
- 
-    daoVault2 = initializeDao.daoVault2;
-    agendaManager = initializeDao.agendaManager;
-    candidateFactory = initializeDao.candidateFactory;
-    committee = initializeDao.committee;
-    committeeProxy = initializeDao.committeeProxy; 
-    
+    /*[
+      ton,
+      wton,
+      registry,
+      depositManager,
+      coinageFactory,
+      daoVault,
+      seigManager,
+      powerton
+    ] = await deployPlasmaEvmContracts(owner);*/
+
+    /*[
+      daoVault2,
+      agendaManager,
+      candidateFactory,
+      committee,
+      committeeProxy
+    ] = await deployDaoContracts(owner);*/
+
+    await initializePlasmaEvmContracts(); 
+    await initializeDaoContracts();
+
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
   });
@@ -252,7 +233,6 @@ describe('Test 1', function () {
     }  
     assert(false, 'Did not find event');
   } 
-<<<<<<< Updated upstream:test/execute.test.js
 
 
   async function initializePlasmaEvmContracts() {
@@ -382,11 +362,11 @@ describe('Test 1', function () {
     await agendaManager.transferOwnership(committeeProxy.address);
     //await committee.transferOwnership(committeeProxy.address);
 
+    await ton.renounceMinter();
+    await wton.renounceMinter();
+    await seigManager.renouncePauser();
   } 
 
-=======
- /* 
->>>>>>> Stashed changes:test/agenda.committee.test.js
   async function deposit(candidateContractAddress, account, tonAmount) {
     const beforeBalance = await ton.balanceOf(account);
     beforeBalance.should.be.bignumber.gte(tonAmount);
@@ -405,7 +385,6 @@ describe('Test 1', function () {
     const afterBalance = await ton.balanceOf(account);
     beforeBalance.sub(afterBalance).should.be.bignumber.equal(tonAmount);
   }
-  */
 
   async function totalBalanceOfCandidate(candidate) {
     const candidateContractAddress = await committeeProxy.candidateContract(candidate);
@@ -413,8 +392,6 @@ describe('Test 1', function () {
     const coinage = await AutoRefactorCoinage.at(coinageAddress);
     return await coinage.totalSupply();
   }
-
-  /* 
 
   async function addCandidate(candidate) {
     const minimum = await seigManager.minimumAmount();
@@ -429,7 +406,7 @@ describe('Test 1', function () {
     (await registry.layer2s(candidateContractAddress)).should.be.equal(true);
 
     await deposit(candidateContractAddress, candidate, stakeAmountTON);
-     
+
     const afterTonBalance = await ton.balanceOf(candidate);
     beforeTonBalance.sub(afterTonBalance).should.be.bignumber.equal(stakeAmountTON);
 
@@ -449,7 +426,6 @@ describe('Test 1', function () {
     }
     foundCandidate.should.be.equal(true);
   }
-  */
 
   async function addCandidateWithoutDeposit(candidate) {
     const minimum = await seigManager.minimumAmount();
@@ -475,7 +451,7 @@ describe('Test 1', function () {
     }
     foundCandidate.should.be.equal(true);
   }
-/* 
+
   async function addOperator(operator) {
     const etherToken = await EtherToken.new(true, ton.address, true, {from: operator});
 
@@ -502,12 +478,10 @@ describe('Test 1', function () {
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address, {from: operator});
     return layer2;
   }
-  */
 
   async function isVoter(_agendaID, voter) {
     const agenda = await agendaManager.agendas(_agendaID);
 
-<<<<<<< Updated upstream:test/execute.test.js
     if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
       return (await committeeProxy.isMember(voter));
     else
@@ -519,122 +493,15 @@ describe('Test 1', function () {
     const beforeCountingYes = agenda1[AGENDA_INDEX_COUNTING_YES];
     const beforeCountingNo = agenda1[AGENDA_INDEX_COUNTING_NO];
     const beforeCountingAbstain = agenda1[AGENDA_INDEX_COUNTING_ABSTAIN];
-=======
-    await newSeigManager.setPowerTON(powerton.address); 
-    await newSeigManager.setDao(daoVault2.address);
-    await wton.addMinter(newSeigManager.address);
-    //await ton.addMinter(wton.address);
-    
-    /* 
-    await Promise.all([
-      depositManager,
-      wton,
-    ].map(contract => contract.setSeigManager(newSeigManager.address)));
-    */ 
-
-    newSeigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-    newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-    newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-    await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-    
-    /* 
-   console.log('layer2s[0].address', layer2s[0].address);
-   console.log('seigManager', seigManager.address);
-   console.log('registry.owner', await registry.owner());
-   console.log('committeeProxy.address',committeeProxy.address);
-    */
-   
-   //onlyOperatorOrSeigManager
-   const _layer0 = await Layer2.at(layer2s[0].address);
-   await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
-   const _layer1 = await Layer2.at(layer2s[1].address);
-   await _layer1.setSeigManager(newSeigManager.address,{from: operator2});
-
-   //onlyOwnerOrOperator : committeeProxy 에서 실행하거나, 
-   await registry.deployCoinage(layer2s[0].address, newSeigManager.address, {from: operator1});
-   await registry.deployCoinage(layer2s[1].address, newSeigManager.address, {from: operator2});
-
-   await wton.setSeigManager(newSeigManager.address);
-   await powerton.setSeigManager(newSeigManager.address);
- 
-   const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
-   const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-
-   const coinageAddress = await newSeigManager.coinages(_layer1.address); 
-   const coinage = await AutoRefactorCoinage.at(coinageAddress);
-    // const stakedAmount = await coinage.balanceOf(operator2);
-    // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
-  
-    expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
-    return newSeigManager;
-  }
-  
-  async function addlayer2s(operator){
-    let _layer2 = await DaoDeployed.addOperator(operator);
-    layer2s.push(_layer2); 
-  } 
-
-  function setDaoContract(dao){ 
-    if(dao!=null){
-      if(dao.ton!=null) ton = dao.ton;
-      if(dao.seigManager!=null) seigManager = dao.seigManager;
-      if(dao.registry!=null) registry = dao.registry;
-     // if(dao.ton!=null) ton = dao.ton;
-     // if(dao.ton!=null) ton = dao.ton; 
-    }   
-  }  
-   
-  async function agendaVoteYesAll(agendaid, candidates){
-    const agenda = await agendaManager.agendas(agendaid);  
-    const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
-    time.increaseTo(noticeEndTimestamp); 
-    await committeeProxy.castVote(agendaid,1,' candidate1 yes ', {from: candidate1});  
-    const agendaAfterStartVoting = await agendaManager.agendas(agendaid);   
-    const votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp; 
-    await committeeProxy.castVote(agendaid,1,' candidate2 yes ',{from:candidate2}); 
-    time.increaseTo(votingEndTimestamp);
-   
-  }  
-
-  async function balanceOfAccountByLayer2(_layer2, _account){
-    const coinageAddress = await seigManager.coinages(_layer2);
-    const coinage = await AutoRefactorCoinage.at(coinageAddress);
-    const stakedAmountWTON = await coinage.balanceOf(_account);
-
-    return stakedAmountWTON; 
-  }
-  
-  async function createAgenda(_target, _functionBytecode){ 
-      const param = web3.eth.abi.encodeParameters(
-        ["address", "uint256", "uint256", "bytes"],
-        [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
-      );
-      // create agenda
-      await ton.approveAndCall(
-        committeeProxy.address,
-        agendaFee,
-        param,
-        {from: user1}
-      );
-      agendaID = (await agendaManager.numAgendas()).sub(toBN("1")); 
-      return agendaID;
-  }
->>>>>>> Stashed changes:test/agenda.committee.test.js
 
     (await isVoter(_agendaID, voter)).should.be.equal(true);
 
     await committeeProxy.castVote(_agendaID, vote, "test comment", {from: voter});
 
-<<<<<<< Updated upstream:test/execute.test.js
     const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
     voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
     voterInfo2[VOTER_INFO_HAS_VOTED].should.be.equal(true);
     voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(vote));
-=======
-    await DaoDeployed.addCandidate(candidate1);
-    await DaoDeployed.addCandidate(candidate2);
-    await DaoDeployed.addCandidate(candidate3); 
->>>>>>> Stashed changes:test/agenda.committee.test.js
 
     const agenda2 = await agendaManager.agendas(_agendaID);
     agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(vote === VOTE_YES ? toBN(1) : toBN(0)));
@@ -642,7 +509,6 @@ describe('Test 1', function () {
     agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
   }
 
-<<<<<<< Updated upstream:test/execute.test.js
   describe('Execute', function () {
     beforeEach(async function () { 
       this.timeout(1000000);
@@ -662,6 +528,18 @@ describe('Test 1', function () {
             sig: "mint(address,uint256)",
             paramTypes: ["address", "uint256"],
             params: [user1, "12345"]
+          }, {
+            sig: "addMinter(address)",
+            paramTypes: ["address"],
+            params: [user1]
+          }, {
+            sig: "renounceMinter()",
+            paramTypes: [],
+            params: []
+          }, {
+            sig: "renounceOwnership()",
+            paramTypes: [],
+            params: []
           }
         ]
       }, {
@@ -678,6 +556,30 @@ describe('Test 1', function () {
           sig: "burnFrom(address,uint256)",
           paramTypes: ["address", "uint256"],
           params: ["$DAOVault2", "12345"]
+        }, {
+          sig: "addMinter(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceMinter(address)",
+          paramTypes: ["address"],
+          params: ["$TON"]
+        }, {
+          sig: "renounceMinter()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceTonMinter()",
+          paramTypes: [],
+          params: []
         }]
       }, {
         name: "DepositManager",
@@ -685,6 +587,14 @@ describe('Test 1', function () {
           sig: "setGlobalWithdrawalDelay(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
         }]
       }, {
         name: "SeigManager",
@@ -716,16 +626,44 @@ describe('Test 1', function () {
           sig: "setMinimumAmount(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
+        }, {
+          sig: "addPauser(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "renounceOwnership()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "renouncePauser()",
+          paramTypes: [],
+          params: []
+        }, {
+          sig: "transferOwnership(address)",
+          paramTypes: ["address"],
+          params: [user1]
+        }, {
+          sig: "setDao(address)",
+          paramTypes: ["address"],
+          params: ["$DAOVault2"]
+        }, {
+          sig: "setDaoSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["1"]
+        }, {
+          sig: "renounceWTONMinter()",
+          paramTypes: [],
+          params: []
         }]
-      }, /*{
+      }, {
         name: "Layer2Registry",
         //contract: registry,
         functions: [{
-          sig: "unregister(address)",
+          sig: "transferOwnership(address)",
           paramTypes: ["address"],
-          params: []
+          params: [user1]
         }]
-      }, */{
+      }, {
         name: "DAOCommitteeProxy",
         functions: [{
           sig: "setProxyPause(bool)",
@@ -792,6 +730,75 @@ describe('Test 1', function () {
         }]
       }]
 
+      const testCasesMultiExecution = [
+        [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "DAOCommittee",
+          sig: "setMinimunNoticePeriodSeconds(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }], [{
+          name: "SeigManager",
+          sig: "setPowerTONSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }, {
+          name: "SeigManager",
+          sig: "setDaoSeigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }, {
+          name: "SeigManager",
+          sig: "setPseigRate(uint256)",
+          paramTypes: ["uint256"],
+          params: ["110000000000000000000000000"]
+        }], [{
+          name: "DepositManager",
+          sig: "setGlobalWithdrawalDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }, {
+          name: "SeigManager",
+          sig: "renounceWTONMinter()",
+          paramTypes: [],
+          params: []
+        }, {
+          name: "SeigManager",
+          sig: "setAdjustDelay(uint256)",
+          paramTypes: ["uint256"],
+          params: ["12345"]
+        }]
+      ]
+
       let instances;
       beforeEach(async function () {
         instances = {
@@ -838,9 +845,12 @@ describe('Test 1', function () {
                 ))
               );
 
+              console.log(`testCase.functions[j].sig: ${JSON.stringify(testCase.functions[j].sig)}`);
+              console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
+
               const param = web3.eth.abi.encodeParameters(
-                ["address", "uint256", "uint256", "bytes"],
-                [testContract.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+                ["address[]", "uint256", "uint256", "bytes[]"],
+                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
               );
 
               const agendaFee = await agendaManager.createAgendaFees();
@@ -850,6 +860,8 @@ describe('Test 1', function () {
                 param,
                 {from: user1}
               );
+
+              console.log(`param: ${JSON.stringify(param)}`);
 
               agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
               const agenda = await agendaManager.agendas(agendaID);  
@@ -865,131 +877,91 @@ describe('Test 1', function () {
               const agendaAfter = await agendaManager.agendas(agendaID);
               agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
 
+              const tmp = await agendaManager.getExecutionInfo(agendaID);
+              console.log(`tmp: ${JSON.stringify(tmp)}`);
+
               await committeeProxy.executeAgenda(agendaID);
             });
           }
         });
       }
-=======
-    it('committeeProxy.transferOwnership to committeeProxy self ', async function () {  
-      await committeeProxy.transferOwnership(committeeProxy.address);
-      expect(await committeeProxy.owner()).to.equal(committeeProxy.address);
-    });
-    it('committeeProxy.setDaoVault', async function () {   
-      let _daoVault2 = await DAOVault2.new(ton.address, wton.address);
 
-      const selector = web3.eth.abi.encodeFunctionSignature("setDaoVault(address)");   
-      const data = padLeft(_daoVault2.address, 64); 
-      const functionBytecode = selector.concat(data.substring(2));   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.daoVault()).to.equal(_daoVault2.address); 
-    });
-    it('committeeProxy.setLayer2Registry', async function () {  
-      let _registry = await Layer2Registry.new({from:owner}); 
-      const selector = web3.eth.abi.encodeFunctionSignature("setLayer2Registry(address)");   
-      const data = padLeft(_registry.address, 64); 
-      const functionBytecode = selector.concat(data.substring(2));   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.layer2Registry()).to.equal(_registry.address); 
-    });
-    /* 
-    it('committeeProxy.setAgendaManager', async function () {  
-      this.agendaManager = await DAOAgendaManager.new(this.ton.address,{from:owner}); 
-      const selector = web3.eth.abi.encodeFunctionSignature("setAgendaManager(address)");   
-      const data = padLeft(_agendaManager.address, 64); 
-      const functionBytecode = selector.concat(data.substring(2));   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.agendaManager()).to.equal(_agendaManager.address);  
-    });
-    */
-    it('committeeProxy.setSeigManager', async function () {  
-      let _newSeigManager = await newSeigManager();
-      const selector = web3.eth.abi.encodeFunctionSignature("setSeigManager(address)");   
-      const data = padLeft(_newSeigManager.address, 64); 
-      const functionBytecode = selector.concat(data.substring(2));   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.seigManager()).to.equal(_newSeigManager.address); 
- 
-    });
-    it('committeeProxy.setCandidateFactory', async function () { 
-      let _candidateFactory = await CandidateFactory.new({from:owner});
-      const selector = web3.eth.abi.encodeFunctionSignature("setCandidateFactory(address)");   
-      const data = padLeft(_candidateFactory.address, 64); 
-      const functionBytecode = selector.concat(data.substring(2));   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.candidateFactory()).to.equal(_candidateFactory.address); 
- 
-    });
+      for (let i = 0; i < testCasesMultiExecution.length; i++) {
+        describe(`multi execution`, async function () {
+          const testCase = testCasesMultiExecution[i];
 
-    it('committeeProxy.registerOperatorByOwner', async function () {  
-      //let objectMapping = await DaoDeployed.objectMapping( DAOCommitteeJson.abi ) 
-      console.log(objectAbiMapping.registerOperatorByOwner) ;
+          it(`agenda executing #${i}`, async function () {
+            this.timeout(1000000);
+            const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
+            const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
 
-      //const selector = web3.eth.abi.encodeFunctionSignature("registerOperatorByOwner(address,address,string)");   
-      
-      let params = [operator1, layer2s[0],'operator1 ']; 
-       
-      //let functionBytecode = web3Helper.encodeMethod(objectAbiMapping.registerOperatorByOwner, params);
-      //let functionBytecode =  web3.eth.abi.encodeFunctionCall(method, params);
-      //console.log('registerOperatorByOwner ', functionBytecode) ;
-      //const data = padLeft(_candidateFactory.address, 64); 
-      //const functionBytecode = selector.concat(data.substring(2));   
-    //  let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-    //  await agendaVoteYesAll(agendaID, candidates); 
-    //  await committeeProxy.executeAgenda(agendaID);   
-     // expect(await committeeProxy.candidateFactory()).to.equal(_candidateFactory.address); 
- 
-    });  
+            function getParam(param) {
+              if (typeof param === "string" && param[0] === "$") {
+                  return instances[param.substring(1)].address
+              } else {
+                return param;
+              }
+            }
 
-    /* 
-    it('committeeProxy.setTon', async function () {  
-       
-    });
-    */
-    //--
-    it('committeeProxy.renounceOwnership', async function () {  
-      const selector = web3.eth.abi.encodeFunctionSignature("renounceOwnership()");  
-      const functionBytecode = selector ;   
-      let agendaID = await createAgenda(committeeProxy.address,functionBytecode);
-      await agendaVoteYesAll(agendaID, candidates); 
-      await committeeProxy.executeAgenda(agendaID);   
-      expect(await committeeProxy.owner()).to.equal(ZERO_ADDRESS); 
-    });
+            let targets = [];
+            let functionBytecode = [];
+            for (let j = 0; j < testCase.length; j++) {
+              //console.log(`target name: ${testCase[j].name}`);
+              //console.log(`target: ${instances[testCase[j].name].address}`);
+              targets.push(instances[testCase[j].name].address)
+              const selector = web3.eth.abi.encodeFunctionSignature(testCase[j].sig);
 
-    /* 
-   
-    //-- 
-    it('committeeProxy.setActivityRewardPerSecond', async function () {  
-       
-    }); 
-    it('committeeProxy.setMaxMember', async function () {  
-       
-    }); 
-    it('committeeProxy.reduceMemberSlot', async function () {  
-       
-    }); 
-    it('committeeProxy.setAgendaStatus', async function () {  
-       
-    });
-    it('committeeProxy.setQuorum', async function () {  
-       
-    });
-    it('committeeProxy.setCreateAgendaFees', async function () {  
-       
-    });
-    it('committeeProxy.setMinimunNoticePeriodSeconds', async function () {  
-       
->>>>>>> Stashed changes:test/agenda.committee.test.js
+              const params = testCase[j].params.map(param => getParam(param));
+
+              functionBytecode.push(selector.concat(unmarshalString(
+                web3.eth.abi.encodeParameters(
+                  testCase[j].paramTypes,
+                  params
+                )))
+              );
+
+              //console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
+            }
+
+            const param = web3.eth.abi.encodeParameters(
+              ["address[]", "uint256", "uint256", "bytes[]"],
+              [targets, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+            );
+
+            const agendaFee = await agendaManager.createAgendaFees();
+            await ton.approveAndCall(
+              committeeProxy.address,
+              agendaFee,
+              param,
+              {from: user1}
+            );
+
+            //console.log(`param: ${JSON.stringify(param)}`);
+
+            agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+            const agenda = await agendaManager.agendas(agendaID);  
+            const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+            await time.increaseTo(noticeEndTimestamp);
+
+            // cast vote
+            for (let k = 0; k < 2; k++) {
+              await castVote(agendaID, candidates[k], VOTE_YES);
+            }
+
+            // check status
+            const agendaAfter = await agendaManager.agendas(agendaID);
+            agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
+
+            /*const tmp = await agendaManager.getExecutionInfo(agendaID);
+            console.log(`tmp: ${JSON.stringify(tmp)}`);
+
+            const tmp2 = await agendaManager.getExecutionInfo1(agendaID, 0);
+            console.log(`tmp2: ${JSON.stringify(tmp2)}`);*/
+
+            await committeeProxy.executeAgenda(agendaID);
+          });
+        });
+      }
     });
   });
 });

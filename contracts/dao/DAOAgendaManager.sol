@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -28,7 +29,7 @@ contract DAOAgendaManager is Ownable {
     
     LibAgenda.Agenda[] public agendas;
     mapping(uint256 => mapping(address => LibAgenda.Voter)) public voterInfos;
-    mapping(uint256 => LibAgenda.AgendaExecutionInfo) public executionInfos;
+    mapping(uint256 => LibAgenda.AgendaExecutionInfo) internal executionInfos;
     
     Ratio public quorum;
     
@@ -159,11 +160,11 @@ contract DAOAgendaManager is Ownable {
     }
    
     function newAgenda(
-        address _target,
+        address[] calldata _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
         uint256 _reward,
-        bytes calldata _functionBytecode
+        bytes[] calldata _functionBytecodes
     )
         onlyOwner
         public
@@ -187,8 +188,10 @@ contract DAOAgendaManager is Ownable {
         agendas.push(p);
 
         LibAgenda.AgendaExecutionInfo storage executionInfo = executionInfos[agendaID];
-        executionInfo.target = _target;
-        executionInfo.functionBytecode = _functionBytecode;
+        for (uint256 i = 0; i < _targets.length; i++) {
+            executionInfo.targets.push(_targets[i]);
+            executionInfo.functionBytecodes.push(_functionBytecodes[i]);
+        }
 
         //numAgendas = agendas.length;
         //agendaID = numAgendas.sub(1);
@@ -356,14 +359,14 @@ contract DAOAgendaManager is Ownable {
         public
         view
         returns(
-            address target,
-            bytes memory functionBytecode
+            address[] memory target,
+            bytes[] memory functionBytecode
         )
     {
         LibAgenda.AgendaExecutionInfo storage agenda = executionInfos[_agendaID];
         return (
-            agenda.target,
-            agenda.functionBytecode
+            agenda.targets,
+            agenda.functionBytecodes
         );
     }
 

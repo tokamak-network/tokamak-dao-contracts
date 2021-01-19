@@ -16,11 +16,11 @@ interface IDAOAgendaManager  {
     function setActivityFeeManager(address _man) external;
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) external;
     function newAgenda(
-        address _target,
+        address[] memory _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
         uint256 _reward,
-        bytes calldata _functionBytecode
+        bytes[] calldata _functionBytecodes
     )
         external
         returns (uint256 agendaID);
@@ -63,6 +63,11 @@ interface IDAOAgendaManager  {
     function getExecutionInfo(uint256 _agendaID)
         external
         view
+        returns(
+            address[] memory target,
+            bytes[] memory functionBytecode
+        );
+    function getExecutionInfo1(uint256 _agendaID, uint256 _index) external view 
         returns(
             address target,
             bytes memory functionBytecode
