@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -19,7 +20,6 @@ contract DAOAgendaManager is Ownable {
     }
     
     address public ton;
-    address public activityRewardManager;
     IDAOCommittee public committee;
     
     uint256 public createAgendaFees; // 아젠다생성비용(TON)
@@ -29,7 +29,7 @@ contract DAOAgendaManager is Ownable {
     
     LibAgenda.Agenda[] public agendas;
     mapping(uint256 => mapping(address => LibAgenda.Voter)) public voterInfos;
-    mapping(uint256 => LibAgenda.AgendaExecutionInfo) public executionInfos;
+    mapping(uint256 => LibAgenda.AgendaExecutionInfo) internal executionInfos;
     
     Ratio public quorum;
     
@@ -96,11 +96,6 @@ contract DAOAgendaManager is Ownable {
         minimunVotingPeriodSeconds = _minimunVotingPeriodSeconds;
     }
       
-    function setActivityRewardManager(address _man) public onlyOwner {
-        require(_man != address(0), "DAOAgendaManager: ActivityRewardManager is zero");
-        activityRewardManager = _man;
-    }
-
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) public onlyOwner {
         require(quorumNumerator > 0 && quorumDenominator > 0 && quorumNumerator < quorumDenominator, "DAOAgendaManager: invalid quorum");
         quorum = Ratio(quorumNumerator,quorumDenominator);
@@ -109,6 +104,17 @@ contract DAOAgendaManager is Ownable {
     function hasVoted(uint256 _agendaID, address _user) public view returns (bool) {
         require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
         return voterInfos[_agendaID][_user].hasVoted;
+    }
+
+    function getVoteStatus(uint256 _agendaID, address _user) public view returns (bool, uint256) {
+        require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
+        
+        LibAgenda.Voter storage voter = voterInfos[_agendaID][_user];
+
+        return (
+            voter.hasVoted,
+            voter.vote
+        );
     }
     
     function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) public view returns (uint) {
@@ -154,11 +160,11 @@ contract DAOAgendaManager is Ownable {
     }
    
     function newAgenda(
-        address _target,
+        address[] calldata _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
         uint256 _reward,
-        bytes calldata _functionBytecode
+        bytes[] calldata _functionBytecodes
     )
         onlyOwner
         public
@@ -182,8 +188,10 @@ contract DAOAgendaManager is Ownable {
         agendas.push(p);
 
         LibAgenda.AgendaExecutionInfo storage executionInfo = executionInfos[agendaID];
-        executionInfo.target = _target;
-        executionInfo.functionBytecode = _functionBytecode;
+        for (uint256 i = 0; i < _targets.length; i++) {
+            executionInfo.targets.push(_targets[i]);
+            executionInfo.functionBytecodes.push(_functionBytecodes[i]);
+        }
 
         //numAgendas = agendas.length;
         //agendaID = numAgendas.sub(1);
@@ -326,25 +334,46 @@ contract DAOAgendaManager is Ownable {
         emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(_status));
         agenda.status = _status;
     }
+
+    function endAgendaVoting(uint256 _agendaID)
+        public
+        onlyOwner
+    {
+        LibAgenda.Agenda storage agenda = agendas[_agendaID];
+
+        require(
+            agenda.status == LibAgenda.AgendaStatus.VOTING,
+            "DAOAgendaManager: agenda status is not changable"
+        );
+
+        require(
+            agenda.votingEndTimestamp <= block.timestamp,
+            "DAOAgendaManager: voting is not ended yet"
+        );
+
+        setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
+        setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
+    }
      
     function getExecutionInfo(uint256 _agendaID)
         public
         view
         returns(
-            address target,
-            bytes memory functionBytecode
+            address[] memory target,
+            bytes[] memory functionBytecode
         )
     {
         LibAgenda.AgendaExecutionInfo storage agenda = executionInfos[_agendaID];
         return (
-            agenda.target,
-            agenda.functionBytecode
+            agenda.targets,
+            agenda.functionBytecodes
         );
     }
 
     function isVotableStatus(uint256 _agendaID) public view returns (bool) {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
-        return agenda.status == LibAgenda.AgendaStatus.VOTING ||
+        return (agenda.status == LibAgenda.AgendaStatus.VOTING &&
+                agenda.votingEndTimestamp >= block.timestamp) ||
             (agenda.status == LibAgenda.AgendaStatus.NOTICE &&
                 agenda.noticeEndTimestamp <= block.timestamp);
 

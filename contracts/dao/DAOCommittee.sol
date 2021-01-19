@@ -2,7 +2,8 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import "./StorageStateCommittee.sol";
 
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
@@ -12,17 +13,17 @@ import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
 import { ERC165Checker } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165Checker.sol";
 
-contract DAOCommittee is StorageStateCommittee, Ownable {
+contract DAOCommittee is StorageStateCommittee, AccessControl {
     using SafeMath for uint256;
     using LibAgenda for *;
      
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
 
     struct AgendaCreatingData {
-        address target;
+        address[] target;
         uint256 noticePeriodSeconds;
         uint256 votingPeriodSeconds;
-        bytes functionBytecode;
+        bytes[] functionBytecode;
     }
 
     //////////////////////////////
@@ -32,7 +33,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
     event AgendaCreated(
         address indexed from,
         uint256 indexed id,
-        address target,
+        address[] targets,
         uint256 noticePeriodSeconds,
         uint256 votingPeriodSeconds
     );
@@ -46,7 +47,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
 
     event AgendaExecuted(
         uint256 indexed id,
-        address target
+        address[] target
     );
 
     event CandidateContractCreated(
@@ -76,6 +77,11 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         address indexed candidate,
         uint256 amount
     );
+
+    modifier onlyOwner() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
+        _;
+    }
 
     //////////////////////////////////////////////////////////////////////
     // setters
@@ -358,17 +364,23 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
     }
 
+    function endAgendaVoting(uint256 _agendaID) public {
+        agendaManager.endAgendaVoting(_agendaID);
+    }
+
     function executeAgenda(uint256 _agendaID) public validAgendaManager {
         require(
             agendaManager.canExecuteAgenda(_agendaID),
             "DAOCommittee: can not execute the agenda"
         );
         
-        (address target, bytes memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
+        (address[] memory target, bytes[] memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
        
-        (bool success, ) = address(target).call(functionBytecode);
-        require(success, "DAOCommittee: Failed to execute the agenda");
-         
+        for (uint256 i = 0; i < target.length; i++) {
+            (bool success, ) = address(target[i]).call(functionBytecode[i]);
+            require(success, "DAOCommittee: Failed to execute the agenda");
+        }
+
         agendaManager.setExecutedAgenda(_agendaID);
 
         emit AgendaExecuted(_agendaID, target);
@@ -458,7 +470,7 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         returns (AgendaCreatingData memory data)
     {
         (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
-            abi.decode(input, (address, uint256, uint256, bytes));
+            abi.decode(input, (address[], uint256, uint256, bytes[]));
     }
 
     function payCreatingAgendaFee(address _creator) internal {
@@ -470,10 +482,10 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
    
     function _createAgenda(
         address _creator,
-        address _target,
+        address[] memory _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
-        bytes memory _functionBytecode
+        bytes[] memory _functionBytecodes
     )
         internal
         validAgendaManager
@@ -483,17 +495,17 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         payCreatingAgendaFee(_creator);
 
         uint256 agendaID = agendaManager.newAgenda(
-            _target,
+            _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
             0,
-            _functionBytecode
+            _functionBytecodes
         );
           
         emit AgendaCreated(
             _creator,
             agendaID,
-            _target,
+            _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds
         );
@@ -538,29 +550,50 @@ contract DAOCommittee is StorageStateCommittee, Ownable {
         returns (uint256 totalsupply)
     {
         address candidateContract = candidateContract(_candidate);
-        require(candidateContract != address(0), "This account is not a candidate");
-
-        address coinage = seigManager.coinages(candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).totalSupply();
+        return totalSupplyOnCandidateContract(candidateContract);
     }
 
     function balanceOfOnCandidate(
         address _candidate,
-        address account
+        address _account
     )
         public
         view
         returns (uint256 amount)
     {
         address candidateContract = candidateContract(_candidate);
-        require(candidateContract != address(0), "This account is not a candidate");
-
-        address coinage = seigManager.coinages(candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).balanceOf(account);
+        return balanceOfOnCandidateContract(candidateContract, _account);
     }
     
+    function totalSupplyOnCandidateContract(
+        address _candidateContract
+    )
+        public
+        view
+        returns (uint256 totalsupply)
+    {
+        require(_candidateContract != address(0), "This account is not a candidate");
+
+        address coinage = seigManager.coinages(_candidateContract);
+        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        return IERC20(coinage).totalSupply();
+    }
+
+    function balanceOfOnCandidateContract(
+        address _candidateContract,
+        address _account
+    )
+        public
+        view
+        returns (uint256 amount)
+    {
+        require(_candidateContract != address(0), "This account is not a candidate");
+
+        address coinage = seigManager.coinages(_candidateContract);
+        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        return IERC20(coinage).balanceOf(_account);
+    }
+
     function candidatesLength() public view returns (uint256) {
         return candidates.length;
     }

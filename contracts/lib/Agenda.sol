@@ -34,8 +34,8 @@ library LibAgenda {
     }
 
     struct AgendaExecutionInfo {
-        address target;
-        bytes functionBytecode;
+        address[] targets;
+        bytes[] functionBytecodes;
     }
 
     /*function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {
