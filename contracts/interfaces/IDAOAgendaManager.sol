@@ -11,10 +11,10 @@ interface IDAOAgendaManager  {
     }
 
     function setCreateAgendaFees(uint256 _createAgendaFees) external;
-    function setMinimunNoticePeriodSeconds(uint256 _minimunNoticePeriodSeconds) external;
-    function setMinimunVotingPeriodSeconds(uint256 _minimunVotingPeriodSeconds) external;
+    function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) external;
+    function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) external;
     function setActivityFeeManager(address _man) external;
-    function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) external;
+    function setQuorum(uint256 _quorum) external;
     function newAgenda(
         address[] memory _targets,
         uint256 _noticePeriodSeconds,
@@ -35,7 +35,7 @@ interface IDAOAgendaManager  {
      
     // -- view functions
     function userHasVoted(uint256 _AgendaID, address _user) external view returns (bool);
-    function getQuorumRatio() external view returns (uint256 numerator, uint256 denominator);
+    function getQuorum() external view returns (uint256 quorum);
     function getAgendaNoticeEndTimeSeconds(uint256 _AgendaID) external view returns (uint);
     function getAgendaVotingStartTimeSeconds(uint256 _AgendaID) external view returns (uint);
     function getAgendaVotingEndTimeSeconds(uint256 _AgendaID) external view returns (uint) ;
@@ -72,7 +72,7 @@ interface IDAOAgendaManager  {
             address target,
             bytes memory functionBytecode
         );
-    function quorum() external view returns (Ratio memory);
+    function quorum() external view returns (uint256);
     function hasVoted(uint256 _agendaID, address _user) external view returns (bool);
     function isVoter(uint256 _agendaID, address _user) external view returns (bool);
     function createAgendaFees() external view returns (uint256);

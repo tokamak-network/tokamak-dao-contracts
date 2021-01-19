@@ -26,7 +26,6 @@ contract StorageStateCommittee {
     address public ton;
     IDAOVault2 public daoVault;
     IDAOAgendaManager public agendaManager;
-    //IDAOActivityRewardManager public activityRewardManager;
     ICandidateFactory public candidateFactory;
     ILayer2Registry public layer2Registry;
     ISeigManager public seigManager;
@@ -37,6 +36,7 @@ contract StorageStateCommittee {
 
     // candidate EOA => candidate information
     mapping(address => CandidateInfo) public candidateInfos;
+    uint256 public quorum;
 
     uint256 public activityRewardPerSecond;
 

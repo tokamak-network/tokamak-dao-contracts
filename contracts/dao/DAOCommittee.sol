@@ -30,6 +30,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     // Events
     //////////////////////////////
 
+    event QuorumChanged(
+        uint256 newQuorum
+    );
+
     event AgendaCreated(
         address indexed from,
         uint256 indexed id,
@@ -120,10 +124,18 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         activityRewardPerSecond = _value;
     }
 
-    function setMaxMember(uint256 _maxMember) onlyOwner public {
-        require(maxMember < _maxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
-        maxMember = _maxMember;
+    function increaseMaxMember(
+        uint256 _newMaxMember,
+        uint256 _quorum
+    )
+        public
+        onlyOwner
+    {
+        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
+        emit ChangedSlotMaximum(maxMember, _newMaxMember);
+        maxMember = _newMaxMember;
         fillMemberSlot();
+        setQuorum(_quorum);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -194,15 +206,15 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
         require(
             _memberIndex < maxMember,
-            "DAOCommitteeStore: index is not available"
+            "DAOCommittee: index is not available"
         );
         require(
             candidateInfo.candidateContract != address(0),
-            "DAOCommitteeStore: The address is not a candidate"
+            "DAOCommittee: The address is not a candidate"
         );
         require(
             candidateInfo.memberJoinedTime == 0,
-            "DAOCommitteeStore: already member"
+            "DAOCommittee: already member"
         );
         
         address prevMember = members[_memberIndex];
@@ -243,7 +255,13 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         candidateInfo.indexMembers = 0;
     }
 
-    function reduceMemberSlot(uint256 _reducingMemberIndex) public onlyOwner {
+    function reduceMemberSlot(
+        uint256 _reducingMemberIndex,
+        uint256 _quorum
+    )
+        public
+        onlyOwner
+    {
         address reducingMember = members[_reducingMemberIndex];
         CandidateInfo storage reducingCandidate = candidateInfos[reducingMember];
 
@@ -260,6 +278,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
         members.pop();
         maxMember = maxMember.sub(1);
+        setQuorum(_quorum);
 
         emit ChangedMember(_reducingMemberIndex, reducingMember, address(0));
         emit ChangedSlotMaximum(maxMember.add(1), maxMember);
@@ -288,14 +307,16 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     }
 
     function setQuorum(
-        uint256 _quorumNumerator,
-        uint256 _quorumDenominator
+        uint256 _quorum
     )
         public
         onlyOwner
         validAgendaManager
     {
-        agendaManager.setQuorum(_quorumNumerator, _quorumDenominator);
+        require(_quorum > 0, "DAOCommittee: invalid quorum");
+        require(_quorum <= maxMember, "DAOCommittee: quorum exceed max member");
+        quorum = _quorum;
+        emit QuorumChanged(quorum);
     }
 
     function setCreateAgendaFees(
@@ -308,24 +329,24 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         agendaManager.setCreateAgendaFees(_fees);
     }
 
-    function setMinimunNoticePeriodSeconds(
-        uint256 _minimunNoticePeriod
+    function setMinimumNoticePeriodSeconds(
+        uint256 _minimumNoticePeriod
     )
         public
         onlyOwner
         validAgendaManager
     {
-        agendaManager.setMinimunNoticePeriodSeconds(_minimunNoticePeriod);
+        agendaManager.setMinimumNoticePeriodSeconds(_minimumNoticePeriod);
     }
 
-    function setMinimunVotingPeriodSeconds(
-        uint256 _minimunVotingPeriod
+    function setMinimumVotingPeriodSeconds(
+        uint256 _minimumVotingPeriod
     )
         public
         onlyOwner
         validAgendaManager
     {
-        agendaManager.setMinimunVotingPeriodSeconds(_minimunVotingPeriod);
+        agendaManager.setMinimumVotingPeriodSeconds(_minimumVotingPeriod);
     }
 
     function castVote(
@@ -336,7 +357,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         public 
         validAgendaManager
     {
-        uint256 requiredVotes = requiredVotesToPass();
+        uint256 requiredVotes = quorum;
         require(requiredVotes > 0, "DAOCommittee: requiredVotes is zero");
         
         agendaManager.castVote(
@@ -530,16 +551,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         }
 
         return ICandidate(info.candidateContract).isCandidateContract();
-    }
-    
-    function requiredVotesToPass()
-        public
-        view
-        returns (uint256 requiredVotes)
-    {
-        IDAOAgendaManager.Ratio memory quorum = agendaManager.quorum();
-        uint256 total = members.length;
-        requiredVotes = total.mul(quorum.numerator).div(quorum.denominator);
     }
     
     function totalSupplyOnCandidate(

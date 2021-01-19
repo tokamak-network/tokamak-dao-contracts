@@ -331,13 +331,12 @@ describe('Test 1', function () {
       console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
       console.log('daoCommitteeProxy implementation :', impl) ;
     }
-    await committeeProxy.setMaxMember(3);
 
     ////////////////////////////////////////////////////////////////////////
     // test setting
     await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
 
     ////////////////////////////////////////////////////////////////////////
     // permissions
@@ -356,6 +355,8 @@ describe('Test 1', function () {
     await daoVault2.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
+
+    await committeeProxy.increaseMaxMember(3, 2);
 
     await ton.renounceMinter();
     await wton.renounceMinter();
@@ -642,7 +643,7 @@ describe('Test 1', function () {
       (await committeeProxy.members(1)).should.be.equal(ZERO_ADDRESS);
       expectRevert(
         committeeProxy.changeMember(1, {from: candidate1}),
-        "DAOCommitteeStore: already member"
+        "DAOCommittee: already member"
       );
     });
 
@@ -688,13 +689,13 @@ describe('Test 1', function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
         expectRevert(
           committeeProxy.changeMember(3, {from: candidate2}),
-          "DAOCommitteeStore: index is not available"
+          "DAOCommittee: index is not available"
         );
       });
 
       it('increase maximum', async function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
-        await committeeProxy.setMaxMember(4);
+        await committeeProxy.increaseMaxMember(4, 3);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('4'));
         (await committeeProxy.members(3)).should.be.equal(ZERO_ADDRESS);
       });
@@ -702,7 +703,7 @@ describe('Test 1', function () {
       it('decrease maximum', async function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('4'));
         (await committeeProxy.members(3)).should.be.equal(ZERO_ADDRESS);
-        await committeeProxy.reduceMemberSlot(3);
+        await committeeProxy.reduceMemberSlot(3, 2);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
       });
     });
@@ -795,16 +796,16 @@ describe('Test 1', function () {
       for (let i = 0; i < votesList.length; i++) {
         describe(`Agenda ${i}`, async function () {
           it('create new agenda', async function () {
-            const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-            const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
-            const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
+            const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+            const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
+            const selector = web3.eth.abi.encodeFunctionSignature("setMinimumNoticePeriodSeconds(uint256)");
             const newMinimumNoticePeriod = i * 10;
             const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
             const functionBytecode = selector.concat(data);
 
             const param = web3.eth.abi.encodeParameters(
-              ["address", "uint256", "uint256", "bytes"],
-              [agendaManager.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+              ["address[]", "uint256", "uint256", "bytes[]"],
+              [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
             );
 
             const beforeBalance = await ton.balanceOf(user1);
@@ -823,9 +824,10 @@ describe('Test 1', function () {
             beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
 
             agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
-            const executionInfo = await agendaManager.executionInfos(agendaID);
-            executionInfo[0].should.be.equal(agendaManager.address);
-            executionInfo[1].should.be.equal(functionBytecode);
+            //const executionInfo = await agendaManager.executionInfos(agendaID);
+            const executionInfo = await agendaManager.getExecutionInfo(agendaID);
+            executionInfo[0][0].should.be.equal(agendaManager.address);
+            executionInfo[1][0].should.be.equal(functionBytecode);
           });
 
           it('increase block time and check votable', async function () {
@@ -866,9 +868,9 @@ describe('Test 1', function () {
               agenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.equal(toBN("0"));
 
               if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_WAITING_EXEC) {
-                const beforeValue = await agendaManager.minimunNoticePeriodSeconds();
+                const beforeValue = await agendaManager.minimumNoticePeriodSeconds();
                 await committeeProxy.executeAgenda(agendaID);
-                const afterValue = await agendaManager.minimunNoticePeriodSeconds();
+                const afterValue = await agendaManager.minimumNoticePeriodSeconds();
                 beforeValue.should.be.bignumber.not.equal(afterValue);
                 afterValue.should.be.bignumber.equal(toBN(agendaID * 10));
 
@@ -884,16 +886,16 @@ describe('Test 1', function () {
       describe("dismiss agenda", async function () {
         let agendaID;
         it('create new agenda', async function () {
-          const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-          const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
-          const selector = web3.eth.abi.encodeFunctionSignature("setMinimunNoticePeriodSeconds(uint256)");
+          const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+          const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
+          const selector = web3.eth.abi.encodeFunctionSignature("setMinimumNoticePeriodSeconds(uint256)");
           const newMinimumNoticePeriod = 10;
           const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
           const functionBytecode = selector.concat(data);
 
           const param = web3.eth.abi.encodeParameters(
-            ["address", "uint256", "uint256", "bytes"],
-            [agendaManager.address, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+            ["address[]", "uint256", "uint256", "bytes[]"],
+            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
           );
 
           const beforeBalance = await ton.balanceOf(user1);
@@ -912,9 +914,10 @@ describe('Test 1', function () {
           beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
 
           agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
-          const executionInfo = await agendaManager.executionInfos(agendaID);
-          executionInfo[0].should.be.equal(agendaManager.address);
-          executionInfo[1].should.be.equal(functionBytecode);
+          //const executionInfo = await agendaManager.executionInfos(agendaID);
+          const executionInfo = await agendaManager.getExecutionInfo(agendaID);
+          executionInfo[0][0].should.be.equal(agendaManager.address);
+          executionInfo[1][0].should.be.equal(functionBytecode);
         });
 
         it('increase block time and check votable', async function () {
