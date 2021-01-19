@@ -453,8 +453,27 @@ class DaoContracts {
     return newSeigManager;
   } 
   
+  setDaoContract = async (data) => {
+    if(data!=null){
+      if(data.seigManager!=null)  this.seigManager = data.seigManager ;
+      if(data.ton!=null)  this.ton = data.ton ;
+      if(data.wton!=null)  this.wton = data.wton ;
+      if(data.powerton!=null)  this.powerton = data.powerton ;
+      if(data.registry!=null)  this.registry = data.registry ;
+      if(data.depositManager!=null)  this.depositManager = data.depositManager ;
+      if(data.factory!=null)  this.factory = data.factory ; 
+    } 
+    
+  }
 
+  balanceOfAccountByLayer2 = async function(_layer2, _account){
+    const coinageAddress = await this.seigManager.coinages(_layer2);
+    const coinage = await AutoRefactorCoinage.at(coinageAddress);
+    const stakedAmountWTON = await coinage.balanceOf(_account);
 
+    return stakedAmountWTON; 
+  }
+  
 objectMapping = async ( abi ) => {  
   let objects = {} ;
   if(abi!=null && abi.length > 0 ){
