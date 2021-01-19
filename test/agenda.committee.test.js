@@ -254,27 +254,9 @@ describe('Test 1', function () {
     time.increaseTo(votingEndTimestamp);
    
   }  
-  
-  async function createAgenda(_target, _functionBytecode){ 
-    agendaFee = await agendaManager.createAgendaFees();
-
-      const param = web3.eth.abi.encodeParameters(
-        ["address", "uint256", "uint256", "bytes"],
-        [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
-      );
-      // create agenda
-      await ton.approveAndCall(
-        committeeProxy.address,
-        agendaFee,
-        param,
-        {from: user1}
-      );
-      agendaID = (await agendaManager.numAgendas()).sub(toBN("1")); 
-      return agendaID;
-  }
-
+   
   async function executeAgenda(_target, _functionBytecode){ 
-    let agendaID = await createAgenda(_target, _functionBytecode); 
+    let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
     await agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   }
@@ -300,11 +282,12 @@ describe('Test 1', function () {
   });
   
   describe('Agenda - DAOCommittee', function () { 
-
+    /* 
     it('committeeProxy.transferOwnership to committeeProxy self ', async function () {  
       await committeeProxy.transferOwnership(committeeProxy.address);
       expect(await committeeProxy.owner()).to.equal(committeeProxy.address);
-    });
+    }); 
+    */
     it('committeeProxy.setSeigManager', async function () {  
       let _newSeigManager = await NewSeigManager(); 
       let params = [_newSeigManager.address] ;
@@ -339,16 +322,18 @@ describe('Test 1', function () {
    
     });
     it('committeeProxy.registerOperatorByOwner', async function () {  
+      this.timeout(1000000); 
+
       expect(await committeeProxy.isCandidate(operator1)).to.equal(false);  
       let params = [operator1 , layer2s[0].address, 'operator1'] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.registerOperatorByOwner,params);
       await executeAgenda(committeeProxy.address, functionBytecode);  
       expect(await committeeProxy.isExistCandidate(operator1)).to.equal(true); 
       
-      
+
       params = [user2 , layer2s[1].address, 'user2'] ;
       functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.registerOperatorByOwner,params);
-      let agendaID = await createAgenda(committeeProxy.address, functionBytecode); 
+      let agendaID = await DaoContractsDeployed.createAgenda(committeeProxy.address, functionBytecode); 
       await agendaVoteYesAll(agendaID);  
       await expectRevert.unspecified(committeeProxy.executeAgenda(agendaID) ); 
         
@@ -391,7 +376,7 @@ describe('Test 1', function () {
       let _newton =  await TON.new({from:owner}); 
       let params = [_newton.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setTon,params);
-      let agendaID = await createAgenda(committeeProxy.address, functionBytecode); 
+      let agendaID = await DaoContractsDeployed.createAgenda(committeeProxy.address, functionBytecode); 
       
       let agendaStatus = await agendaManager.getAgendaStatus(agendaID);
       agendaStatus.should.be.bignumber.equal(toBN("1"));
@@ -444,14 +429,26 @@ describe('Test 1', function () {
       min = await agendaManager.minimunVotingPeriodSeconds();
       min.should.be.bignumber.equal(toBN("300")); 
     }); 
+      
+    /*
+    it('committeeProxy.revokeRole', async function () {  
+      const DEFAULT_ADMIN_ROLE = 0x00;
+       
+      let _owner = await committeeProxy.hasRole(DEFAULT_ADMIN_ROLE, owner);
+      _owner.should.be.equal(true);  
 
-    //--
+      let params = [DEFAULT_ADMIN_ROLE,_owner ] ; 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.revokeRole,params);
+      await executeAgenda(committeeProxy.address, functionBytecode);    
+      expect(await committeeProxy.hasRole(DEFAULT_ADMIN_ROLE, owner)).to.equal(false); 
+    });
+   
     it('committeeProxy.renounceOwnership', async function () {   
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.renounceOwnership, []);
       await executeAgenda(committeeProxy.address, functionBytecode);    
       expect(await committeeProxy.owner()).to.equal(ZERO_ADDRESS); 
     });
-
+    */
     /* 
     it('committeeProxy.setQuorum', async function () {  
       let quorum = await agendaManager.quorum();

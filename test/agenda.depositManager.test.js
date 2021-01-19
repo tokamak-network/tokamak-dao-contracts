@@ -287,29 +287,10 @@ describe('Test 1', function () {
     
     time.increaseTo(votingEndTimestamp);
    
-  }  
-
-
-  async function createAgenda(_target, _functionBytecode){ 
-     agendaFee = await agendaManager.createAgendaFees();
-
-      const param = web3.eth.abi.encodeParameters(
-        ["address", "uint256", "uint256", "bytes"],
-        [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
-      );
-      // create agenda
-      await ton.approveAndCall(
-        committeeProxy.address,
-        agendaFee,
-        param,
-        {from: user1}
-      );
-      agendaID = (await agendaManager.numAgendas()).sub(toBN("1")); 
-      return agendaID;
-  }
+  }   
 
   async function executeAgenda(_target, _functionBytecode){ 
-    let agendaID = await createAgenda(_target, _functionBytecode); 
+    let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
     await agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   }
@@ -335,7 +316,7 @@ describe('Test 1', function () {
 
 
   describe('Agenda - depositManager', function () { 
-    it('depositManager.deposit', async function () {  
+    it('depositManager.deposit ', async function () {  
       const stakeAmountTON = TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT);
       const stakeAmountWTON = TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
 

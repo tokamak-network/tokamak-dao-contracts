@@ -260,8 +260,10 @@ class DaoContracts {
       await this.daoVault2.transferOwnership(this.committeeProxy.address,{from:owner});
       await this.agendaManager.setCommittee(this.committeeProxy.address,{from:owner});
       await this.agendaManager.transferOwnership(this.committeeProxy.address,{from:owner});
-      await this.committee.transferOwnership(this.committeeProxy.address,{from:owner});
-  
+     // await this.committee.transferOwnership(this.committeeProxy.address,{from:owner});
+     // let byteZERO = 0x0;
+     // await this.committee.grantRole( byteZERO, this.committeeProxy.address,{from:owner});
+        
       console.log('\n\n');
     
       let returnData ={
@@ -473,7 +475,7 @@ class DaoContracts {
 
     return stakedAmountWTON; 
   }
-  
+
 objectMapping = async ( abi ) => {  
   let objects = {} ;
   if(abi!=null && abi.length > 0 ){
@@ -488,139 +490,29 @@ objectMapping = async ( abi ) => {
   return objects;
 }  
 
+
+  createAgenda = async function(_target, _functionBytecode){ 
+      let agendaFee = await this.agendaManager.createAgendaFees();
+
+      let noticePeriod = await this.agendaManager.minimunNoticePeriodSeconds();
+      let votingPeriod = await this.agendaManager.minimunVotingPeriodSeconds();
+      
+      const param = web3.eth.abi.encodeParameters(
+        ["address[]", "uint256", "uint256", "bytes[]"],
+        [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
+      );
+      // create agenda
+      await this.ton.approveAndCall(
+        this.committeeProxy.address,
+        agendaFee,
+        param,
+        {from: user1}
+      );
+      let agendaID = (await this.agendaManager.numAgendas()).sub(toBN("1")); 
+      return agendaID;
+  }
+
 } 
  
-
-let ton;
-let wton;
-let registry;
-let depositManager;
-let factory;
-let daoVault;
-let seigManager;
-let powerton;
  
-/* 
-DaoContracts.prototype.initializePlasmaEvmContracts  = async function (owner) {
-  //this = self;
-  this.ton = await TON.new({from:owner});
-  this.wton = await WTON.new(ton.address,{from:owner});
-  this.registry = await Layer2Registry.new({from:owner});
-  this.depositManager = await DepositManager.new(
-    this.wton.address,
-    this.registry.address,
-      WITHDRAWAL_DELAY,
-      {from:owner}
-    );
-    this.factory = await CoinageFactory.new({from:owner});
-
-    let currentTime = await time.latest();
-    console.log(`currentTime1: ${currentTime}`);
-    this.daoVault = await DAOVault.new(this.wton.address, currentTime,{from:owner});
-    this.seigManager = await SeigManager.new(
-      this.ton.address,
-      this.wton.address,
-      this.registry.address,
-      this.depositManager.address,
-      SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-      this.factory.address
-      ,{from:owner}
-    );
-    this.powerton = await PowerTON.new(
-      this.seigManager.address,
-      this.wton.address,
-      ROUND_DURATION,
-      {from:owner}
-    );
-    await this.powerton.init({from:owner});
-
-    await this.seigManager.setPowerTON(this.powerton.address,{from:owner});
-    await this.powerton.start({from:owner});
-    await this.seigManager.setDao(this.daoVault.address,{from:owner});
-    await this.wton.addMinter(this.seigManager.address,{from:owner});
-    await this.ton.addMinter(this.wton.address,{from:owner});
-    
-    await Promise.all([
-      this.depositManager,
-      this.wton,
-    ].map(contract => contract.setSeigManager(this.seigManager.address,{from:owner})));
-      
-    // ton setting
-    await this.ton.mint(deployer, TON_INITIAL_SUPPLY.toFixed(TON_UNIT),{from:owner});
-    await this.ton.approve(this.wton.address, TON_INITIAL_SUPPLY.toFixed(TON_UNIT),{from:owner});
-     
-    this.seigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT),{from:owner});
-    this.seigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT),{from:owner});
-    this.seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT),{from:owner});
-    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)),{from:owner});
-    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)),{from:owner});  
-    await operators.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)),{from:owner});  
-
-    await this.wton.mint(this.daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT),{from:owner});
-
-    await this.seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT),{from:owner})
-  
-    let returnData ={
-      ton: ton, 
-      wton: wton, 
-      registry:registry ,
-      depositManager: depositManager, 
-      coinageFactory: factory, 
-      daoVault: daoVault, 
-      seigManager : seigManager, 
-      powerton: powerton
-    }
-    return  returnData;
-    
-  }
-*/
-/* 
-DaoContracts.prototype.initializeDaoContracts  = async function (owner ) {
-    //this = self;
-    this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
-    this.agendaManager = await DAOAgendaManager.new(this.ton.address,{from:owner});
-    this.candidateFactory = await CandidateFactory.new({from:owner});
-    this.committee = await DAOCommittee.new({from:owner});
-    this.daoCommitteeProxy = await DAOCommitteeProxy.new(
-      this.ton.address,
-      this.committee.address,
-      this.seigManager.address,
-      this.registry.address,
-      this.agendaManager.address,
-      this.candidateFactory.address,
-      this.daoVault2.address,
-      {from:owner}
-    );  
-    let impl = await this.daoCommitteeProxy.implementation({from:owner}) ;
-
-    this.committeeProxy = await DAOCommittee.at(this.daoCommitteeProxy.address,{from:owner}); 
-      
-    await this.committeeProxy.setMaxMember(3,{from:owner});
-
-    ////////////////////////////////////////////////////////////////////////
-    // test setting
-    await this.committeeProxy.setActivityRewardPerSecond(toBN("1"),{from:owner});
-    await this.agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"),{from:owner});
-    await this.agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"),{from:owner});
-
-    ////////////////////////////////////////////////////////////////////////
-
-    await this.registry.transferOwnership(committeeProxy.address,{from:owner});
-    await this.daoVault2.transferOwnership(committeeProxy.address,{from:owner});
-    await this.agendaManager.setCommittee(committeeProxy.address,{from:owner});
-    await this.agendaManager.transferOwnership(committeeProxy.address,{from:owner});
-    await this.committee.transferOwnership(committeeProxy.address,{from:owner});
-
-    console.log('\n\n');
-  
-    let returnData ={
-      daoVault2: daoVault2, 
-      agendaManager: agendaManager, 
-      candidateFactory:candidateFactory ,
-      committee: committee, 
-      committeeProxy: committeeProxy 
-    }
-    return  returnData;
-  } 
-  */ 
   module.exports =  DaoContracts;

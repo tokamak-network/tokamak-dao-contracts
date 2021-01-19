@@ -176,39 +176,7 @@ describe('Test 1', function () {
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
   });
-        
-  async function addCandidateWithoutDeposit(candidate) {
-    //const minimum = await seigManager.minimumAmount();
-    const minimum = await seigManager.minimumAmount();
-    const beforeTonBalance = await ton.balanceOf(candidate);
-
-    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
-    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-    //await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
-    //tmp = await ton.allowance(candidate, committeeProxy.address);
-    //tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
-    await committeeProxy.createCandidate(candidate, {from: candidate});
-
-    const candidateContractAddress = await committeeProxy.candidateContract(candidate);
-
-    //const testMemo = "candidate memo string";
-    //const data = web3.eth.abi.encodeParameter("string", testMemo);
-
-    (await registry.layer2s(candidateContractAddress)).should.be.equal(true);
- 
-    const candidatesLength = await committeeProxy.candidatesLength();
- 
-    let foundCandidate = false;
-    for (let i = 0; i < candidatesLength; i++) {
-      const address = await committeeProxy.candidates(i);
-      if (address === candidate) {
-        foundCandidate = true;
-        break;
-      }
-    }
-    foundCandidate.should.be.equal(true);
-  }
- 
+         
   async function NewPowerTON(){
     let _powerton = await PowerTON.new(
       seigManager.address,
@@ -293,29 +261,10 @@ describe('Test 1', function () {
     
     time.increaseTo(votingEndTimestamp);
    
-  }  
-
-
-  async function createAgenda(_target, _functionBytecode){ 
-     agendaFee = await agendaManager.createAgendaFees();
-
-      const param = web3.eth.abi.encodeParameters(
-        ["address", "uint256", "uint256", "bytes"],
-        [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
-      );
-      // create agenda
-      await ton.approveAndCall(
-        committeeProxy.address,
-        agendaFee,
-        param,
-        {from: user1}
-      );
-      agendaID = (await agendaManager.numAgendas()).sub(toBN("1")); 
-      return agendaID;
-  }
+  }   
 
   async function executeAgenda(_target, _functionBytecode){ 
-    let agendaID = await createAgenda(_target, _functionBytecode); 
+    let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
     await agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   }
