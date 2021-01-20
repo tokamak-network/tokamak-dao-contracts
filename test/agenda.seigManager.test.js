@@ -246,22 +246,25 @@ describe('Test 1', function () {
     layer2s.push(_layer2);
   } 
 
-
-  async function agendaVoteYesAll(agendaid){
-    const agenda = await agendaManager.agendas(agendaid);  
+  async function agendaVoteYesAll(agendaId){
+    let quorum = await committeeProxy.quorum();
+    let quorumInt = toBN(quorum).toNumber();
+    const agenda = await agendaManager.agendas(agendaId);  
     const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
     time.increaseTo(noticeEndTimestamp); 
-    await committeeProxy.castVote(agendaid,1,' candidate1 yes ', {from: candidate1});  
-    const agendaAfterStartVoting = await agendaManager.agendas(agendaid);   
-    const votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp; 
-    await committeeProxy.castVote(agendaid,1,' candidate2 yes ',{from:candidate2}); 
+    let agendaAfterStartVoting =0;
+    let votingEndTimestamp =0;
 
-    let maxnum = await committeeProxy.maxMember();
-    if(maxnum.gt(toBN("4")))  await committeeProxy.castVote(agendaid,1,' candidate3 yes ',{from:candidate3}); 
+    for(let i=0; i< candidates.length ; i++ ){
+      if(quorumInt >= (i+1)){
+        await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
+      }
+      if(i==0) agendaAfterStartVoting = await agendaManager.agendas(agendaId);   
+      if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
+    }
     
-    time.increaseTo(votingEndTimestamp);
-   
-  }   
+    time.increaseTo(votingEndTimestamp); 
+  }  
 
   async function executeAgenda(_target, _functionBytecode){ 
     let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
@@ -283,8 +286,8 @@ describe('Test 1', function () {
     await committeeProxy.changeMember(1, {from: candidate2});
     await committeeProxy.changeMember(2, {from: candidate3});
 
-    noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-    votingPeriod = await agendaManager.minimunVotingPeriodSeconds(); 
+    // noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
+    // votingPeriod = await agendaManager.minimunVotingPeriodSeconds(); 
     
   });
 
@@ -357,11 +360,10 @@ describe('Test 1', function () {
       rSeigRate =  await seigManager.relativeSeigRate();
       rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE_2.toFixed(WTON_UNIT))); 
      
-
-      // --  
-      
-        params = [POWERTON_SEIG_RATE.toFixed(WTON_UNIT)] ;
-       functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTONSeigRate,params); 
+      /* 
+      // --   
+      params = [POWERTON_SEIG_RATE.toFixed(WTON_UNIT)] ;
+      functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTONSeigRate,params); 
       await executeAgenda(seigManager.address, functionBytecode);  
       powerTonRate =  await seigManager.powerTONSeigRate();
       powerTonRate.should.be.bignumber.equal(toBN(POWERTON_SEIG_RATE.toFixed(WTON_UNIT))); 
@@ -377,7 +379,7 @@ describe('Test 1', function () {
       await executeAgenda(seigManager.address, functionBytecode); 
       rSeigRate =  await seigManager.relativeSeigRate(); 
       rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE.toFixed(WTON_UNIT))); 
-    
+      */
     });
 
     /*   

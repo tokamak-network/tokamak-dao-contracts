@@ -77,8 +77,8 @@ contract DAOAgendaManager is Ownable {
         createAgendaFees = _createAgendaFees;
     }
 
-    function setMinimumNoticePeriodSeconds(uint256 _minimunNoticePeriodSeconds) public onlyOwner {
-        minimumNoticePeriodSeconds = _minimunNoticePeriodSeconds;
+    function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) public onlyOwner {
+        minimumNoticePeriodSeconds = _minimumNoticePeriodSeconds;
     }
 
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) public onlyOwner {
