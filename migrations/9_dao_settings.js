@@ -19,11 +19,10 @@ module.exports = async function (deployer, network) {
     const committeeProxy = await DAOCommittee.at(committeeProxyAddress);
     const committee = await DAOCommittee.at(committeeAddress);
 
-    await committeeProxy.setMaxMember(3);
-    await daoVault2.setDaoCommittee(committeeProxy.address);
+    await committeeProxy.increaseMaxMember(3, 2);
     await daoVault2.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
-    await committee.transferOwnership(committeeProxy.address);
+    //await committee.transferOwnership(committeeProxy.address);
   }
 };

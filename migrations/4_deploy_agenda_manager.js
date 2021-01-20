@@ -11,8 +11,7 @@ module.exports = async function (deployer, network) {
 
     let agendaManager;
     await deployer.deploy(
-      DAOAgendaManager,
-      tonAddress
+      DAOAgendaManager
     ).then((_agendaManager) => {
       agendaManager = _agendaManager
     });
