@@ -35494,7 +35494,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-19T05:02:49.319Z",
+  "updatedAt": "2021-01-20T00:11:13.878Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "DepositManager manages WTON deposit and withdrawal from operator and WTON holders.",
