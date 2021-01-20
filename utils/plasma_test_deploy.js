@@ -229,7 +229,7 @@ class DaoContracts {
     initializeDaoContracts  = async function (owner ) {
       //this = self;
       this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
-      this.agendaManager = await DAOAgendaManager.new(this.ton.address,{from:owner});
+      this.agendaManager = await DAOAgendaManager.new({from:owner});
       this.candidateFactory = await CandidateFactory.new({from:owner});
       this.committee = await DAOCommittee.new({from:owner});
       this.daoCommitteeProxy = await DAOCommitteeProxy.new(
@@ -246,13 +246,13 @@ class DaoContracts {
   
       this.committeeProxy = await DAOCommittee.at(this.daoCommitteeProxy.address,{from:owner}); 
         
-      await this.committeeProxy.setMaxMember(3,{from:owner});
+      await this.committeeProxy.increaseMaxMember(3, 2, {from:owner});
   
       ////////////////////////////////////////////////////////////////////////
       // test setting
       await this.committeeProxy.setActivityRewardPerSecond(toBN("1"),{from:owner});
-      await this.agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"),{from:owner});
-      await this.agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"),{from:owner});
+      await this.agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"),{from:owner});
+      await this.agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"),{from:owner});
   
       ////////////////////////////////////////////////////////////////////////
   
@@ -494,8 +494,8 @@ objectMapping = async ( abi ) => {
   createAgenda = async function(_target, _functionBytecode){ 
       let agendaFee = await this.agendaManager.createAgendaFees();
 
-      let noticePeriod = await this.agendaManager.minimunNoticePeriodSeconds();
-      let votingPeriod = await this.agendaManager.minimunVotingPeriodSeconds();
+      let noticePeriod = await this.agendaManager.minimumNoticePeriodSeconds();
+      let votingPeriod = await this.agendaManager.minimumVotingPeriodSeconds();
       
       const param = web3.eth.abi.encodeParameters(
         ["address[]", "uint256", "uint256", "bytes[]"],

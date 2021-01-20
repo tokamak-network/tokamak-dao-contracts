@@ -299,7 +299,7 @@ describe('Test 1', function () {
     daoVault2 = await DAOVault2.new(ton.address, wton.address);
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
     //===================================================
-    agendaManager = await DAOAgendaManager.new(ton.address);
+    agendaManager = await DAOAgendaManager.new();
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();
@@ -330,13 +330,13 @@ describe('Test 1', function () {
       console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
       console.log('daoCommitteeProxy implementation :', impl) ;
     }
-    await committeeProxy.setMaxMember(3);
+    await committeeProxy.increaseMaxMember(3, 2);
 
     ////////////////////////////////////////////////////////////////////////
     // test setting
     await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
     await ton.mint(daoVault2.address, toBN("99999999999999999999999999999999999"));
     await wton.mint(daoVault2.address, toBN("99999999999999999999999999999999999"));
 
@@ -677,27 +677,27 @@ describe('Test 1', function () {
           paramTypes: ["uint256"],
           params: ["12345"]
         }, {
-          sig: "setMaxMember(uint256)",
-          paramTypes: ["uint256"],
-          params: ["12"]
-        }, {
-          sig: "reduceMemberSlot(uint256)",
-          paramTypes: ["uint256"],
-          params: ["0"]
-        }, {
-          sig: "setQuorum(uint256,uint256)",
+          sig: "increaseMaxMember(uint256,uint256)",
           paramTypes: ["uint256", "uint256"],
-          params: ["3", "5"]
+          params: ["12", "8"]
+        }, {
+          sig: "reduceMemberSlot(uint256,uint256)",
+          paramTypes: ["uint256", "uint256"],
+          params: ["0", "1"]
+        }, {
+          sig: "setQuorum(uint256)",
+          paramTypes: ["uint256"],
+          params: ["3"]
         }, {
           sig: "setCreateAgendaFees(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
         }, {
-          sig: "setMinimunNoticePeriodSeconds(uint256)",
+          sig: "setMinimumNoticePeriodSeconds(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
         }, {
-          sig: "setMinimunVotingPeriodSeconds(uint256)",
+          sig: "setMinimumVotingPeriodSeconds(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
         }]
@@ -758,7 +758,7 @@ describe('Test 1', function () {
           params: ["12345"]
         }], [{
           name: "DAOCommittee",
-          sig: "setMinimunNoticePeriodSeconds(uint256)",
+          sig: "setMinimumNoticePeriodSeconds(uint256)",
           paramTypes: ["uint256"],
           params: ["12345"]
         }, {
@@ -823,8 +823,8 @@ describe('Test 1', function () {
             it(`agenda executing ${testCase.functions[j].sig}`, async function () {
               const testContract = instances[testCases[i].name];
 
-              const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-              const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+              const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+              const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
 
               const selector = web3.eth.abi.encodeFunctionSignature(testCase.functions[j].sig);
 
@@ -845,9 +845,6 @@ describe('Test 1', function () {
                 ))
               );
 
-              console.log(`testCase.functions[j].sig: ${JSON.stringify(testCase.functions[j].sig)}`);
-              console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
-
               const param = web3.eth.abi.encodeParameters(
                 ["address[]", "uint256", "uint256", "bytes[]"],
                 [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
@@ -860,8 +857,6 @@ describe('Test 1', function () {
                 param,
                 {from: user1}
               );
-
-              console.log(`param: ${JSON.stringify(param)}`);
 
               agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
               const agenda = await agendaManager.agendas(agendaID);  
@@ -877,9 +872,6 @@ describe('Test 1', function () {
               const agendaAfter = await agendaManager.agendas(agendaID);
               agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
 
-              const tmp = await agendaManager.getExecutionInfo(agendaID);
-              console.log(`tmp: ${JSON.stringify(tmp)}`);
-
               await committeeProxy.executeAgenda(agendaID);
             });
           }
@@ -892,8 +884,8 @@ describe('Test 1', function () {
 
           it(`agenda executing #${i}`, async function () {
             this.timeout(1000000);
-            const noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-            const votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+            const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+            const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
 
             function getParam(param) {
               if (typeof param === "string" && param[0] === "$") {
@@ -906,8 +898,6 @@ describe('Test 1', function () {
             let targets = [];
             let functionBytecode = [];
             for (let j = 0; j < testCase.length; j++) {
-              //console.log(`target name: ${testCase[j].name}`);
-              //console.log(`target: ${instances[testCase[j].name].address}`);
               targets.push(instances[testCase[j].name].address)
               const selector = web3.eth.abi.encodeFunctionSignature(testCase[j].sig);
 
@@ -919,8 +909,6 @@ describe('Test 1', function () {
                   params
                 )))
               );
-
-              //console.log(`functionBytecode: ${JSON.stringify(functionBytecode)}`);
             }
 
             const param = web3.eth.abi.encodeParameters(
@@ -936,8 +924,6 @@ describe('Test 1', function () {
               {from: user1}
             );
 
-            //console.log(`param: ${JSON.stringify(param)}`);
-
             agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
             const agenda = await agendaManager.agendas(agendaID);  
             const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
@@ -951,12 +937,6 @@ describe('Test 1', function () {
             // check status
             const agendaAfter = await agendaManager.agendas(agendaID);
             agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
-
-            /*const tmp = await agendaManager.getExecutionInfo(agendaID);
-            console.log(`tmp: ${JSON.stringify(tmp)}`);
-
-            const tmp2 = await agendaManager.getExecutionInfo1(agendaID, 0);
-            console.log(`tmp2: ${JSON.stringify(tmp2)}`);*/
 
             await committeeProxy.executeAgenda(agendaID);
           });

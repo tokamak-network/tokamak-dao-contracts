@@ -239,20 +239,24 @@ describe('Test 1', function () {
     layer2s.push(_layer2);
   } 
 
-  async function agendaVoteYesAll(agendaid){
-    const agenda = await agendaManager.agendas(agendaid);  
+  async function agendaVoteYesAll(agendaId){
+    let quorum = await committeeProxy.quorum();
+    let quorumInt = toBN(quorum).toNumber();
+    const agenda = await agendaManager.agendas(agendaId);  
     const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
     time.increaseTo(noticeEndTimestamp); 
-    await committeeProxy.castVote(agendaid,1,' candidate1 yes ', {from: candidate1});  
-    const agendaAfterStartVoting = await agendaManager.agendas(agendaid);   
-    const votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp; 
-    await committeeProxy.castVote(agendaid,1,' candidate2 yes ',{from:candidate2}); 
+    let agendaAfterStartVoting =0;
+    let votingEndTimestamp =0;
 
-    let maxnum = await committeeProxy.maxMember();
-    if(maxnum.gt(toBN("4")))  await committeeProxy.castVote(agendaid,1,' candidate3 yes ',{from:candidate3}); 
+    for(let i=0; i< candidates.length ; i++ ){
+      if(quorumInt >= (i+1)){
+        await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
+      }
+      if(i==0) agendaAfterStartVoting = await agendaManager.agendas(agendaId);   
+      if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
+    }
     
-    time.increaseTo(votingEndTimestamp);
-   
+    time.increaseTo(votingEndTimestamp); 
   }  
    
   async function executeAgenda(_target, _functionBytecode){ 
@@ -275,8 +279,8 @@ describe('Test 1', function () {
     await committeeProxy.changeMember(1, {from: candidate2});
     await committeeProxy.changeMember(2, {from: candidate3});
 
-    noticePeriod = await agendaManager.minimunNoticePeriodSeconds();
-    votingPeriod = await agendaManager.minimunVotingPeriodSeconds();
+    noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+    votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
     
     
   });
@@ -339,6 +343,7 @@ describe('Test 1', function () {
         
     }); 
     it('committeeProxy.setActivityRewardPerSecond', async function () {   
+      this.timeout(1000000); 
       let reward = await committeeProxy.activityRewardPerSecond();
       reward.should.be.bignumber.equal(toBN("1"));  
       let params = [2] ;
@@ -349,29 +354,31 @@ describe('Test 1', function () {
        
     }); 
      
-    it('committeeProxy.setMaxMember', async function () {  
-      let amxnum = await committeeProxy.maxMember();
-      amxnum.should.be.bignumber.equal(toBN("3"));  
-      let params = [5] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setMaxMember,params);
+    it('committeeProxy.increaseMaxMember', async function () {  
+      let maxNum = await committeeProxy.maxMember(); 
+      let params = [4,2] ;
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.increaseMaxMember,params);
       await executeAgenda(committeeProxy.address, functionBytecode);  
-      amxnum = await committeeProxy.maxMember();
-      amxnum.should.be.bignumber.equal(toBN("5"));  
+      maxNum = await committeeProxy.maxMember();
+      maxNum.should.be.bignumber.equal(toBN("4"));  
+      let quorum = await committeeProxy.quorum();
+      quorum.should.be.bignumber.equal(toBN("2"));  
        
     }); 
      
     it('committeeProxy.reduceMemberSlot', async function () {  
-      let amxnum = await committeeProxy.maxMember();
-      amxnum.should.be.bignumber.equal(toBN("5"));  
-      let params = [3] ;
+      this.timeout(1000000);  
+      let params = [3,2] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.reduceMemberSlot,params);
-      await executeAgenda(committeeProxy.address, functionBytecode);  
-      await executeAgenda(committeeProxy.address, functionBytecode);  
-      amxnum = await committeeProxy.maxMember();
-      amxnum.should.be.bignumber.equal(toBN("3"));  
+      await executeAgenda(committeeProxy.address, functionBytecode);   
+      let maxNum = await committeeProxy.maxMember(); 
+      maxNum.should.be.bignumber.equal(toBN("3"));  
+      let quorum = await committeeProxy.quorum();
+      quorum.should.be.bignumber.equal(toBN("2"));   
     }); 
 
     it('committeeProxy.setAgendaStatus', async function () {  
+      this.timeout(1000000); 
       //setTon
       let _newton =  await TON.new({from:owner}); 
       let params = [_newton.address] ;
@@ -389,6 +396,7 @@ describe('Test 1', function () {
     });
     
     it('committeeProxy.setCreateAgendaFees', async function () {  
+      this.timeout(1000000); 
       let fees = await agendaManager.createAgendaFees();
       fees.should.be.bignumber.equal(toBN("100000000000000000000")); 
   
@@ -406,27 +414,27 @@ describe('Test 1', function () {
 
   
     });
-    it('committeeProxy.setMinimunNoticePeriodSeconds', async function () {  
-      let minsec = 10000;
-      let min = await agendaManager.minimunNoticePeriodSeconds();
-      min.should.be.bignumber.equal(toBN(minsec));  
+    it('committeeProxy.setMinimumNoticePeriodSeconds', async function () {  
+      let minSec = 10000;
+      let min = await agendaManager.minimumNoticePeriodSeconds();
+      min.should.be.bignumber.equal(toBN(minSec));  
 
       let params = [120] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setMinimunNoticePeriodSeconds,params);
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setMinimumNoticePeriodSeconds,params);
       await executeAgenda(committeeProxy.address, functionBytecode);  
-      min = await agendaManager.minimunNoticePeriodSeconds();
+      min = await agendaManager.minimumNoticePeriodSeconds();
       min.should.be.bignumber.equal(toBN("120")); 
     });
 
-    it('committeeProxy.setMinimunVotingPeriodSeconds', async function () {  
-      let minsec = 10000;
-      let min = await agendaManager.minimunVotingPeriodSeconds();
-      min.should.be.bignumber.equal(toBN(minsec));  
+    it('committeeProxy.setMinimumVotingPeriodSeconds', async function () {  
+      let minSec = 10000;
+      let min = await agendaManager.minimumVotingPeriodSeconds();
+      min.should.be.bignumber.equal(toBN(minSec));  
 
       let params = [300] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setMinimunVotingPeriodSeconds,params);
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setMinimumVotingPeriodSeconds,params);
       await executeAgenda(committeeProxy.address, functionBytecode);  
-      min = await agendaManager.minimunVotingPeriodSeconds();
+      min = await agendaManager.minimumVotingPeriodSeconds();
       min.should.be.bignumber.equal(toBN("300")); 
     }); 
       

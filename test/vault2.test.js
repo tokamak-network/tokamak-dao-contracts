@@ -304,8 +304,8 @@ describe('DAOVault2', function () {
     ////////////////////////////////////////////////////////////////////////
     // test setting
     await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
 
     //await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
     //await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));

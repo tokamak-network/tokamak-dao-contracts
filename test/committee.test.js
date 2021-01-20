@@ -321,8 +321,8 @@ describe('DAOCommittee', function () {
     ////////////////////////////////////////////////////////////////////////
     // test setting
     await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimunNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimunVotingPeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
+    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
 
     ////////////////////////////////////////////////////////////////////////
 

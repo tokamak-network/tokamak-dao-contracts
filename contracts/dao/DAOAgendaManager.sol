@@ -14,24 +14,16 @@ contract DAOAgendaManager is Ownable {
 
     enum VoteChoice { ABSTAIN, YES, NO, MAX }
 
-    struct Ratio {
-        uint256 numerator;
-        uint256 denominator;
-    }
-    
-    address public ton;
     IDAOCommittee public committee;
     
     uint256 public createAgendaFees; // 아젠다생성비용(TON)
     
-    uint256 public minimunNoticePeriodSeconds;
-    uint256 public minimunVotingPeriodSeconds;
+    uint256 public minimumNoticePeriodSeconds;
+    uint256 public minimumVotingPeriodSeconds;
     
     LibAgenda.Agenda[] public agendas;
     mapping(uint256 => mapping(address => LibAgenda.Voter)) public voterInfos;
     mapping(uint256 => LibAgenda.AgendaExecutionInfo) internal executionInfos;
-    
-    Ratio public quorum;
     
     event AgendaStatusChanged(
         uint256 indexed agendaID,
@@ -49,14 +41,11 @@ contract DAOAgendaManager is Ownable {
         _;
     }
     
-    constructor(address _ton/*, address _activityRewardManager*/) {
-        minimunNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
-        minimunVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
+    constructor() {
+        minimumNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
+        minimumVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
         
         createAgendaFees = 100000000000000000000; // 100 TON
-        quorum = Ratio(2, 3);
-        ton = _ton;
-        //numAgendas = 0;
     }
 
     function getStatus(uint _status) public pure returns (LibAgenda.AgendaStatus emnustatus) {
@@ -88,19 +77,14 @@ contract DAOAgendaManager is Ownable {
         createAgendaFees = _createAgendaFees;
     }
 
-    function setMinimunNoticePeriodSeconds(uint256 _minimunNoticePeriodSeconds) public onlyOwner {
-        minimunNoticePeriodSeconds = _minimunNoticePeriodSeconds;
+    function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) public onlyOwner {
+        minimumNoticePeriodSeconds = _minimumNoticePeriodSeconds;
     }
 
-    function setMinimunVotingPeriodSeconds(uint256 _minimunVotingPeriodSeconds) public onlyOwner {
-        minimunVotingPeriodSeconds = _minimunVotingPeriodSeconds;
+    function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) public onlyOwner {
+        minimumVotingPeriodSeconds = _minimumVotingPeriodSeconds;
     }
       
-    function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) public onlyOwner {
-        require(quorumNumerator > 0 && quorumDenominator > 0 && quorumNumerator < quorumDenominator, "DAOAgendaManager: invalid quorum");
-        quorum = Ratio(quorumNumerator,quorumDenominator);
-    }
-    
     function hasVoted(uint256 _agendaID, address _user) public view returns (bool) {
         require(_agendaID < agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
         return voterInfos[_agendaID][_user].hasVoted;
@@ -170,7 +154,7 @@ contract DAOAgendaManager is Ownable {
         public
         returns (uint256 agendaID)
     {
-        require(_noticePeriodSeconds >= minimunNoticePeriodSeconds, "DAOAgendaManager: minimunNoticePeriod is short");
+        require(_noticePeriodSeconds >= minimumNoticePeriodSeconds, "DAOAgendaManager: minimumNoticePeriod is short");
         agendaID = agendas.length;
          
         LibAgenda.Agenda memory p;

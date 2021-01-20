@@ -37,6 +37,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
         daoVault = IDAOVault2(_daoVault);
         //maxMember = 3;
+        quorum = 2;
         activityRewardPerSecond = 1e18;
 
         _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
