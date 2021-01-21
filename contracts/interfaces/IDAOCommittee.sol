@@ -31,6 +31,9 @@ interface IDAOCommittee {
     function setMinimunVotingPeriodMin(uint256 _minimunVotingPeriod) external;
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) external;
     function setCreateAgendaFees(uint256 _fees) external;
+
+    function changeMember(uint256 _memberIndex, address _candidate) external returns (bool);
+    function retireMember() external returns (bool);
     
     function createAgenda(uint _group, address _target, uint _noticePeriodMin, bytes calldata functionBytecode, string calldata _description) external returns (uint256);
     function electCommiitteeForAgenda(uint256 _AgendaID) external;

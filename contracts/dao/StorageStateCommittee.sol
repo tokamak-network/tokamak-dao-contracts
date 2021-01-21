@@ -10,6 +10,7 @@ import { ISeigManager } from "../interfaces/ISeigManager.sol";
 //import { IDAOActivityRewardManager } from "../interfaces/IDAOActivityRewardManager.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
+import { ICandidate } from "../interfaces/ICandidate.sol";
 
 contract StorageStateCommittee {
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
@@ -72,16 +73,21 @@ contract StorageStateCommittee {
         _;
     }
 
-    modifier onlyMember(address _candidate) {
-        require(isMember(_candidate), "StorageStateCommittee: not a member");
+    modifier onlyMember(address _candidateContract) {
+        require(isMember(_candidateContract), "StorageStateCommittee: not a member");
         _;
     }
     
-    function isMember(address _candidate) public view returns (bool) {
-        return candidateInfos[_candidate].memberJoinedTime > 0;
+    function isMember(address _candidateContract) public view returns (bool) {
+        address candidate = ICandidate(_candidateContract).getCandidate();
+        return candidateInfos[candidate].memberJoinedTime > 0;
     }
 
     function candidateContract(address _candidate) public view returns (address) {
         return candidateInfos[_candidate].candidateContract;
     }
+
+    /*function getCandidate() public view returns (address) {
+        ILayer2(_candidateContract).
+    }*/
 }

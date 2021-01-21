@@ -206,9 +206,9 @@ contract DAOAgendaManager is Ownable {
         emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
     }*/
 
-    function isVoter(uint256 _agendaID, address _user) public view returns (bool) {
-        require(_user != address(0), "DAOAgendaManager: user address is zero");
-        return voterInfos[_agendaID][_user].isVoter;
+    function isVoter(uint256 _agendaID, address _candidateContract) public view returns (bool) {
+        require(_candidateContract != address(0), "DAOAgendaManager: user address is zero");
+        return voterInfos[_agendaID][_candidateContract].isVoter;
     }
     
     function castVote(
