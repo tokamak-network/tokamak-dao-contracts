@@ -351,6 +351,15 @@ describe('Test 1', function () {
       await executeAgenda(seigManager.address, functionBytecode); 
       (await seigManager.adjustCommissionDelay()).should.be.bignumber.equal(toBN("5"));  
     });
+    
+    it('seigManager.updateSeigniorage', async function () { 
+      this.timeout(1000000);  
+      let index=3;  
+      let layer2s = await DaoContractsDeployed.getLayer2s();  
+      await layer2s[index].updateSeigniorage();  
+     
+    });
+
     it('seigManager.setMinimumAmount', async function () {  
       const TON_MINIMUM_STAKE_AMOUNT2 = _TON('2000'); 
       (await seigManager.minimumAmount()).should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT));  
@@ -360,15 +369,14 @@ describe('Test 1', function () {
       await executeAgenda(seigManager.address, functionBytecode); 
       (await seigManager.minimumAmount()).should.be.bignumber.equal(toBN(TON_MINIMUM_STAKE_AMOUNT2.times(WTON_TON_RATIO).toFixed(WTON_UNIT)));  
     });  
-
+    
     it('seigManager.renounceWTONMinter', async function () {   
       expect(await wton.isMinter(seigManager.address)).to.equal(true);
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceWTONMinter,[]); 
       await executeAgenda(seigManager.address, functionBytecode); 
       expect(await wton.isMinter(seigManager.address)).to.equal(false);
       await wton.addMinter(seigManager.address,{from:owner}); 
-    });
-
+    }); 
     it('seigManager.transferOwnership(address)  ', async function () {   
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
       let params = [owner] ;
@@ -380,6 +388,7 @@ describe('Test 1', function () {
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
 
     }); 
+    
     it('seigManager.transferOwnership(address,address)  ', async function () {   
       this.timeout(1000000); 
 
@@ -394,24 +403,7 @@ describe('Test 1', function () {
       await powerton.transferOwnership(committeeProxy.address); 
       expect(await powerton.owner()).to.equal(committeeProxy.address);
 
-    }); 
-
-    it('seigManager.updateSeigniorage', async function () { 
-      let layer2s = await DaoContractsDeployed.getLayer2s();
-      let coinages = await DaoContractsDeployed.getCoinages();
-      for(let i=0 ; i< layer2s.length ; i++){  
-        try{
-          let isCandidate = await layer2s[i].isCandidateContract() ;
-          if(isCandidate){
-            console.log('ok candidate ',i); 
-            await layer2s[i].updateSeigniorage(); 
-          }
-        }catch(err){
-          console.log('err candidate ',i,err); 
-        } 
-      } 
-    });
-
+    });   
     it('seigManager.addPauser', async function () { 
       expect(await seigManager.isPauser(user1)).to.equal(false);
       expect(await seigManager.isPauser(committeeProxy.address)).to.equal(false);
@@ -442,23 +434,12 @@ describe('Test 1', function () {
 
     it('seigManager.unpause', async function () {   
       let pausedBlock = await seigManager.pausedBlock(); 
-      //let unpausedBlock = await seigManager.unpausedBlock(); 
-      //let lastSeigBlock = await seigManager.lastSeigBlock(); 
-
        let params = [] ;  
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.unpause,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
-      
-      //let pausedBlockAfter = await seigManager.pausedBlock(); 
+      await executeAgenda(seigManager.address, functionBytecode); 
       let unpausedBlockkAfter = await seigManager.unpausedBlock(); 
-      //let lastSeigBlockkAfter = await seigManager.lastSeigBlock(); 
-
       unpausedBlockkAfter.should.be.bignumber.gt(pausedBlock);
-      
-    });  
-
-    //addChallenger(address account)
-    //renounceChallenger 
+    });   
 
     it('seigManager.renouncePauser(address)', async function () {   
      
@@ -513,7 +494,8 @@ describe('Test 1', function () {
       expect(await seigManager.owner()).to.equal(ZERO_ADDRESS);
     });  
 
-
+    //addChallenger(address account)
+    //renounceChallenger 
 
     it('seigManager.transferCoinageOwnership - need to check ', async function () {  
 
@@ -524,20 +506,7 @@ describe('Test 1', function () {
       // DaoContractsDeployed.getLayer2s() 
       //transferCoinageOwnership(address newSeigManager, address[] calldata coinages)
 
-    });  
-    
-    it('seigManager.transferOwnership(address,address) - error types/values length mismatch  ', async function () {   
-      /* let coinages = await DaoContractsDeployed.getCoinages();
-      expect(coinages.length).to.gt(0);
-      expect(await coinages[0].owner()).to.equal(seigManager.address);
-      let params = [coinages[0].address, owner] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
-      expect(await coinages[0].owner()).to.equal(owner); 
-      */
     }); 
-
-
 
   });
  
