@@ -149,6 +149,9 @@ class DaoContracts {
     this.candidateFactory = null;
     this.committee = null;
     this.committeeProxy = null; 
+
+    this.layer2s = [];
+    this.coinages = [];
   }
 
   initializePlasmaEvmContracts= async function (owner) {
@@ -191,7 +194,7 @@ class DaoContracts {
       await this.seigManager.setDao(this.daoVault.address,{from:owner});
       await this.wton.addMinter(this.seigManager.address,{from:owner});
       await this.ton.addMinter(this.wton.address,{from:owner});
-      
+    
       await Promise.all([
         this.depositManager,
         this.wton,
@@ -338,6 +341,12 @@ class DaoContracts {
     const stakedAmount = await coinage.balanceOf(operator);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
     
+    if(this.layer2s==null) this.layer2s=[];
+    this.layer2s.push(layer2);
+
+    if(this.coinages==null) this.coinages=[];
+    this.coinages.push(coinage);
+    
     return layer2;
   }
 
@@ -387,6 +396,15 @@ class DaoContracts {
 
     const coinageAddress = await this.seigManager.coinages(candidateContractAddress);
     const coinage = await AutoRefactorCoinage.at(coinageAddress);
+
+    if(this.layer2s==null) this.layer2s=[];
+    let layer2 = await Candidate.at(candidateContractAddress);
+    this.layer2s.push(layer2);
+    
+    if(this.coinages==null) this.coinages=[];
+    this.coinages.push(coinage);
+
+
     const stakedAmount = await coinage.balanceOf(candidate);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
 
@@ -483,7 +501,16 @@ objectMapping = async ( abi ) => {
       //let inputs = abi[i].inputs; 
        
       if(abi[i].type=="function"){
-        objects[abi[i].name] =   abi[i] ; 
+        /* 
+        if(abi[i].name=='transferOwnership' || abi[i].name=='renouncePauser' 
+        || abi[i].name=='renounceOwnership' ) {
+          console.log('abi[i].name' , abi[i].name, abi[i].inputs  ) ;
+          console.log('objects[abi[i].name]' , objects[abi[i].name]  ) ; 
+        } */
+        
+        if(objects[abi[i].name] == undefined) objects[abi[i].name] = abi[i] ; 
+        else objects[abi[i].name+'2'] = abi[i] ; 
+         
       } 
     }
   } 
@@ -496,11 +523,20 @@ objectMapping = async ( abi ) => {
 
       let noticePeriod = await this.agendaManager.minimumNoticePeriodSeconds();
       let votingPeriod = await this.agendaManager.minimumVotingPeriodSeconds();
-      
-      const param = web3.eth.abi.encodeParameters(
-        ["address[]", "uint256", "uint256", "bytes[]"],
-        [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
-      );
+      let param = null;
+      if ( Array.isArray(_target)){
+        param = web3.eth.abi.encodeParameters(
+          ["address[]", "uint256", "uint256", "bytes[]"],
+          [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
+        );
+      } 
+      else {
+        param = web3.eth.abi.encodeParameters(
+          ["address[]", "uint256", "uint256", "bytes[]"],
+          [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
+        );
+      }
+     
       // create agenda
       await this.ton.approveAndCall(
         this.committeeProxy.address,
@@ -510,8 +546,15 @@ objectMapping = async ( abi ) => {
       );
       let agendaID = (await this.agendaManager.numAgendas()).sub(toBN("1")); 
       return agendaID;
+  } 
+
+  getLayer2s = function(){
+    return  this.layer2s; 
   }
 
+  getCoinages = function(){
+    return  this.coinages; 
+  }
 } 
  
  
