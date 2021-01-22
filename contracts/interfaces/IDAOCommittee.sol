@@ -32,7 +32,7 @@ interface IDAOCommittee {
     function setQuorum(uint256 quorumNumerator, uint256 quorumDenominator) external;
     function setCreateAgendaFees(uint256 _fees) external;
 
-    function changeMember(uint256 _memberIndex, address _candidate) external returns (bool);
+    function changeMember(uint256 _memberIndex) external returns (bool);
     function retireMember() external returns (bool);
     
     function createAgenda(uint _group, address _target, uint _noticePeriodMin, bytes calldata functionBytecode, string calldata _description) external returns (uint256);

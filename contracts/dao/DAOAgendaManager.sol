@@ -5,6 +5,7 @@ pragma abicoder v2;
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
+import { ICandidate } from "../interfaces/ICandidate.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
 import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
@@ -206,9 +207,9 @@ contract DAOAgendaManager is Ownable {
         emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
     }*/
 
-    function isVoter(uint256 _agendaID, address _candidateContract) public view returns (bool) {
-        require(_candidateContract != address(0), "DAOAgendaManager: user address is zero");
-        return voterInfos[_agendaID][_candidateContract].isVoter;
+    function isVoter(uint256 _agendaID, address _candidate) public view returns (bool) {
+        require(_candidate != address(0), "DAOAgendaManager: user address is zero");
+        return voterInfos[_agendaID][_candidate].isVoter;
     }
     
     function castVote(
@@ -220,7 +221,7 @@ contract DAOAgendaManager is Ownable {
         onlyOwner
         returns (bool)
     {
-        require(_vote < uint(VoteChoice.MAX), "DAOCommittee: invalid vote");
+        require(_vote < uint(VoteChoice.MAX), "DAOAgendaManager: invalid vote");
 
         require(
             isVotableStatus(_agendaID),
@@ -233,8 +234,8 @@ contract DAOAgendaManager is Ownable {
             _startVoting(_agendaID);
         }
 
-        require(isVoter(_agendaID, _voter), "DAOCommittee: not a voter");
-        require(!hasVoted(_agendaID, _voter), "DAOCommittee: already voted");
+        require(isVoter(_agendaID, _voter), "DAOAgendaManager: not a voter");
+        require(!hasVoted(_agendaID, _voter), "DAOAgendaManager: already voted");
 
         require(
             block.timestamp <= agenda.votingEndTimestamp,

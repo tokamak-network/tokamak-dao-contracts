@@ -179,10 +179,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         // Candidate
         address candidateContract = candidateFactory.deploy(
             msg.sender,
-            address(0),
+            false,
             _memo,
-            address(seigManager),
-            address(this)
+            address(this),
+            address(seigManager)
         );
 
         require(
@@ -231,14 +231,13 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     }
 
     function changeMember(
-        uint256 _memberIndex,
-        address _candidate
+        uint256 _memberIndex
     )
         public
         returns (bool)
     {
-        CandidateInfo storage candidateInfo = candidateInfos[_candidate];
-        // TODO: check msg.sender is candidate contract
+        address newMember = ICandidate(msg.sender).candidate();
+        CandidateInfo storage candidateInfo = candidateInfos[newMember];
         require(
             ICandidate(msg.sender).isCandidateContract(),
             "DAOCommittee: sender is not a candidate contract"
@@ -257,43 +256,44 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         );
         
         address prevMember = members[_memberIndex];
+        address prevMemberContract = candidateContract(prevMember);
 
         candidateInfo.memberJoinedTime = block.timestamp;
         candidateInfo.indexMembers = _memberIndex;
 
-        members[_memberIndex] = msg.sender;
+        members[_memberIndex] = newMember;
 
         if (prevMember == address(0)) {
-            emit ChangedMember(_memberIndex, prevMember, msg.sender);
+            emit ChangedMember(_memberIndex, prevMember, newMember);
             return true;
         }
 
         require(
-            ICandidate(msg.sender).totalStaked() > ICandidate(prevMember).totalStaked(),
+            ICandidate(msg.sender).totalStaked() > ICandidate(prevMemberContract).totalStaked(),
             "not enough amount"
         );
 
-        address candidate = ICandidate(prevMember).getCandidate();
-        CandidateInfo storage prevCandidate = candidateInfos[candidate];
-        prevCandidate.indexMembers = 0;
-        prevCandidate.rewardPeriod = prevCandidate.rewardPeriod.add(block.timestamp.sub(prevCandidate.memberJoinedTime));
-        prevCandidate.memberJoinedTime = 0;
+        CandidateInfo storage prevCandidateInfo = candidateInfos[prevMember];
+        prevCandidateInfo.indexMembers = 0;
+        prevCandidateInfo.rewardPeriod = prevCandidateInfo.rewardPeriod.add(block.timestamp.sub(prevCandidateInfo.memberJoinedTime));
+        prevCandidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(_memberIndex, prevMember, msg.sender);
+        emit ChangedMember(_memberIndex, prevMember, newMember);
 
         return true;
     }
     
-    function retireMember() onlyMember(msg.sender) public returns (bool) {
-        address candidate = ICandidate(msg.sender).getCandidate();
+    function retireMember() onlyMemberContract public returns (bool) {
+        address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = candidateInfos[candidate];
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(candidateInfo.indexMembers, msg.sender, address(0));
+        emit ChangedMember(candidateInfo.indexMembers, candidate, address(0));
 
         candidateInfo.indexMembers = 0;
+        return true;
     }
 
     function reduceMemberSlot(
@@ -400,10 +400,12 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     {
         uint256 requiredVotes = quorum;
         require(requiredVotes > 0, "DAOCommittee: requiredVotes is zero");
+
+        address candidate = ICandidate(msg.sender).candidate();
         
         agendaManager.castVote(
             _agendaID,
-            msg.sender,
+            candidate,
             _vote
         );
 
@@ -504,11 +506,11 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         );
 
         address candidateContract = candidateFactory.deploy(
-            _operator,
             _layer2,
+            true,
             _memo,
-            address(seigManager),
-            address(this)
+            address(this),
+            address(seigManager)
         );
 
         require(
@@ -526,7 +528,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
         candidates.push(_layer2);
        
-        emit OperatorRegistered(_layer2, _layer2, _memo);
+        emit OperatorRegistered(_layer2, candidateContract, _memo);
     }
 
     function fillMemberSlot() internal {
