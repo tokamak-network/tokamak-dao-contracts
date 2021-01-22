@@ -440,12 +440,12 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         
         (address[] memory target, bytes[] memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
        
+        agendaManager.setExecutedAgenda(_agendaID);
+
         for (uint256 i = 0; i < target.length; i++) {
             (bool success, ) = address(target[i]).call(functionBytecode[i]);
             require(success, "DAOCommittee: Failed to execute the agenda");
         }
-
-        agendaManager.setExecutedAgenda(_agendaID);
 
         emit AgendaExecuted(_agendaID, target);
     }
