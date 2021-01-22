@@ -229,7 +229,7 @@ const {
       let _layer2 = await DaoContractsDeployed.addOperator(operator);
       layer2s.push(_layer2);
     } 
-  
+    /*
     async function agendaVoteYesAll(agendaId){
       let quorum = await committeeProxy.quorum();
       let quorumInt = toBN(quorum).toNumber();
@@ -255,13 +255,13 @@ const {
       
       time.increaseTo(votingEndTimestamp); 
     }  
-  
+    */
     async function executeAgenda(_target, _functionBytecode){ 
       let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-      await agendaVoteYesAll(agendaID); 
+      await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
       await committeeProxy.executeAgenda(agendaID);   
     } 
-    
+
     before(async function () { 
         this.timeout(1000000); 
     

@@ -619,10 +619,37 @@ objectMapping = async ( abi ) => {
     const agenda = await this.agendaManager.agendas(_agendaID);
 
     if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
-      return (await this.committeeProxy.isMember(candidateContract.address));
+      return (await this.committeeProxy.isMember(voter));
     else
-      return (await this.agendaManager.isVoter(_agendaID, candidateContract.address));
+      return (await this.agendaManager.isVoter(_agendaID, voter));
   }
+
+
+  agendaVoteYesAll = async function (agendaId){
+    let quorum = await this.committeeProxy.quorum();
+    let quorumInt = toBN(quorum).toNumber();
+    let agenda = await this.agendaManager.agendas(agendaId);  
+    const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
+    time.increaseTo(noticeEndTimestamp); 
+    let agendaAfterStartVoting =0;
+    let votingEndTimestamp =0;
+
+    for(let i=0; i< candidates.length ; i++ ){
+      if(quorumInt >= (i+1)){
+        (await this.isVoter(agendaId, candidates[i])).should.be.equal(true);
+        const candidateContract = await this.getCandidateContract(candidates[i]);
+        await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
+ 
+      }
+      if(i==0) {
+        agendaAfterStartVoting = await this.agendaManager.agendas(agendaId);  
+      } 
+      if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
+    }
+    
+    time.increaseTo(votingEndTimestamp); 
+  }  
+
 } 
  
  

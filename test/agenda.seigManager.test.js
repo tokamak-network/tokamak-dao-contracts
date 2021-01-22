@@ -18,7 +18,8 @@ const DaoContracts = require('../utils/plasma_test_deploy.js');
 const DAOCommitteeAbi = require('../build/contracts/DAOCommittee.json').abi;
 const DepositManagerAbi = require('../build/contracts/DepositManager.json').abi;
 const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
-
+const WTONAbi = require('../build/contracts/WTON.json').abi;
+ 
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -146,7 +147,7 @@ let powerton;
 //
 let noticePeriod, votingPeriod , agendaFee; 
 let layer2s=[];
-let AbiObj, DaoContractsDeployed ; 
+let AbiObj, WTONAbiObj, DaoContractsDeployed ; 
 
 describe('Test 1', function () {
   before(async function () {
@@ -155,6 +156,7 @@ describe('Test 1', function () {
 
     DaoContractsDeployed = new DaoContracts(); 
     AbiObj = await DaoContractsDeployed.objectMapping(SeigManagerAbi);
+    WTONAbiObj = await DaoContractsDeployed.objectMapping(WTONAbi);
 
     let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
     ton = returnData.ton;
@@ -187,75 +189,16 @@ describe('Test 1', function () {
     await _powerton.start();  
 
     return _powerton;
-  } 
+  }  
 
-  async function NewSeigManager(){
-    var newSeigManager = await SeigManager.new(
-      ton.address,
-      wton.address,
-      registry.address,
-      depositManager.address,
-      SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-      factory.address
-    ); 
-
-    await newSeigManager.setPowerTON(powerton.address); 
-    await newSeigManager.setDao(daoVault2.address);
-    await wton.addMinter(newSeigManager.address);
-    //await ton.addMinter(wton.address);
-    
-    /* 
-    await Promise.all([
-      depositManager,
-      wton,
-    ].map(contract => contract.setSeigManager(newSeigManager.address)));
-    */ 
-
-    newSeigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-    newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-    newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-    await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-  
-    await wton.setSeigManager(newSeigManager.address);
-    await powerton.setSeigManager(newSeigManager.address);
- 
-    return newSeigManager;
-  }
-  
-  async function addlayer2s(operator){
+  async function addlayer2s(operator){   
     let _layer2 = await DaoContractsDeployed.addOperator(operator);
     layer2s.push(_layer2);
   } 
 
-  async function agendaVoteYesAll(agendaId){
-    let quorum = await committeeProxy.quorum();
-    let quorumInt = toBN(quorum).toNumber();
-    let agenda = await agendaManager.agendas(agendaId);  
-    const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
-    time.increaseTo(noticeEndTimestamp); 
-    let agendaAfterStartVoting =0;
-    let votingEndTimestamp =0;
-
-    for(let i=0; i< candidates.length ; i++ ){
-      if(quorumInt >= (i+1)){
-        (await DaoContractsDeployed.isVoter(agendaId, candidates[i])).should.be.equal(true);
-        const candidateContract = await DaoContractsDeployed.getCandidateContract(candidates[i]);
-        await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
-
-        //await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
-      }
-      if(i==0) {
-        agendaAfterStartVoting = await agendaManager.agendas(agendaId);  
-      } 
-      if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
-    }
-    
-    time.increaseTo(votingEndTimestamp); 
-  }  
-
   async function executeAgenda(_target, _functionBytecode){ 
     let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-    await agendaVoteYesAll(agendaID); 
+    await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   } 
 
@@ -277,25 +220,8 @@ describe('Test 1', function () {
   });
 
 
-  describe('Agenda - seigManager', function () { 
+  describe('Agenda - seigManager', function () {  
 
-    it('seigManager.transferOwnership to committeeProxy', async function () {  
-      await seigManager.transferOwnership(committeeProxy.address);
-      expect(await seigManager.owner()).to.equal(committeeProxy.address);
-    }); 
-    /* 
-    it('seigManager.transferCoinageOwnership', async function () {  
-      
-      let coinages = DaoContractsDeployed.getCoinages();
-      let _address =[coinages[2].address, coinages[3].address, coinages[4].address ];
-      let _newSeigManager = await NewSeigManager(); 
-      let params = [_newSeigManager.address, _address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferCoinageOwnership,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
-      
-    } );
-    */
-   
     it('seigManager.setPowerTON', async function () {  
       
       let _powerton = await NewPowerTON(); 
@@ -388,12 +314,18 @@ describe('Test 1', function () {
     });  
     
     it('seigManager.renounceWTONMinter', async function () {   
+      this.timeout(1000000);  
       expect(await wton.isMinter(seigManager.address)).to.equal(true);
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceWTONMinter,[]); 
       await executeAgenda(seigManager.address, functionBytecode); 
       expect(await wton.isMinter(seigManager.address)).to.equal(false);
-      await wton.addMinter(seigManager.address,{from:owner}); 
+
+      let params1 = [seigManager.address] ;
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(WTONAbiObj.addMinter,params1); 
+      await executeAgenda(wton.address, functionBytecode1); 
+      expect(await wton.isMinter(seigManager.address)).to.equal(true);  
     }); 
+
     it('seigManager.transferOwnership(address)  ', async function () {   
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
       let params = [owner] ;
@@ -422,11 +354,8 @@ describe('Test 1', function () {
 
     });   
     it('seigManager.addPauser', async function () { 
+     
       expect(await seigManager.isPauser(user1)).to.equal(false);
-      expect(await seigManager.isPauser(committeeProxy.address)).to.equal(false);
-      expect(await seigManager.isPauser(owner)).to.equal(true);
-      await seigManager.addPauser(committeeProxy.address);
-
       let params = [user1] ; 
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.addPauser,params); 
       await executeAgenda(seigManager.address, functionBytecode);  
@@ -436,8 +365,7 @@ describe('Test 1', function () {
     it('seigManager.pause', async function () {  
       expect(await seigManager.isPauser(committeeProxy.address)).to.equal(true); 
       let pausedBlock = await seigManager.pausedBlock(); 
-      //let unpausedBlock = await seigManager.unpausedBlock(); 
-      //let lastSeigBlock = await seigManager.lastSeigBlock(); 
+      
      
       let params = [] ;  
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.pause,params); 

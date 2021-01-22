@@ -17,7 +17,7 @@ chai.use(require('chai-bn')(BN)).should();
 
 const DaoContracts = require('../utils/plasma_test_deploy.js');
 const DAOCommitteeAbi = require('../build/contracts/DAOCommittee.json').abi;
-
+const WTONAbi = require('../build/contracts/WTON.json').abi;
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -145,7 +145,7 @@ let powerton;
 //
 let noticePeriod, votingPeriod , agendaFee; 
 let layer2s=[];
-let DAOCommitteeAbiObj, DaoContractsDeployed ; 
+let DAOCommitteeAbiObj, DaoContractsDeployed, WTONAbiObj ; 
 
 
 describe('Test 1', function () {
@@ -154,6 +154,9 @@ describe('Test 1', function () {
 
     DaoContractsDeployed = new DaoContracts(); 
     DAOCommitteeAbiObj = await DaoContractsDeployed.objectMapping(DAOCommitteeAbi);
+    WTONAbiObj = await DaoContractsDeployed.objectMapping(WTONAbi);
+
+    
     let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
     ton = returnData.ton;
     wton = returnData.wton;
@@ -187,7 +190,8 @@ describe('Test 1', function () {
 
     await newSeigManager.setPowerTON(powerton.address); 
     await newSeigManager.setDao(daoVault2.address);
-    await wton.addMinter(newSeigManager.address);
+    
+    //await wton.addMinter(newSeigManager.address);
     //await ton.addMinter(wton.address);
     
     /* 
@@ -208,7 +212,7 @@ describe('Test 1', function () {
    console.log('registry.owner', await registry.owner());
    console.log('committeeProxy.address',committeeProxy.address);
     */
-   
+   /* 
    //onlyOperatorOrSeigManager
    const _layer0 = await Layer2.at(layer2s[0].address);
    await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
@@ -231,6 +235,8 @@ describe('Test 1', function () {
     // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
   
     expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
+
+    */
     return newSeigManager;
   }
 
@@ -247,6 +253,7 @@ describe('Test 1', function () {
     else
       return (await agendaManager.isVoter(_agendaID, candidateContract.address));
   }
+  /*
   async function agendaVoteYesAll(agendaId){
     let quorum = await committeeProxy.quorum();
     let quorumInt = toBN(quorum).toNumber();
@@ -272,10 +279,10 @@ describe('Test 1', function () {
     
     time.increaseTo(votingEndTimestamp); 
   }  
-   
+   */
   async function executeAgenda(_target, _functionBytecode){ 
     let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-    await agendaVoteYesAll(agendaID); 
+    await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   }
 
@@ -306,10 +313,14 @@ describe('Test 1', function () {
     it('committeeProxy.setSeigManager', async function () {  
       this.timeout(1000000); 
       let _newSeigManager = await NewSeigManager(); 
-      let params = [_newSeigManager.address] ;
+      let params = [_newSeigManager.address] ; 
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setSeigManager,params);
+
+      let params1 = [_newSeigManager.address] ; 
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(WTONAbiObj.addMinter,params1);
+
      
-      await executeAgenda(committeeProxy.address, functionBytecode);  
+      await executeAgenda([committeeProxy.address, wton.address], [functionBytecode,functionBytecode1]);  
       expect(await committeeProxy.seigManager()).to.equal(_newSeigManager.address); 
     });
     it('committeeProxy.setDaoVault', async function () {  

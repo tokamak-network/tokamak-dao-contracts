@@ -220,7 +220,7 @@ describe('Test 1', function () {
 
     await newSeigManager.setPowerTON(powerton.address); 
     await newSeigManager.setDao(daoVault2.address);
-    await wton.addMinter(newSeigManager.address);
+   ///await wton.addMinter(newSeigManager.address);
     //await ton.addMinter(wton.address);
     
     /* 
@@ -241,7 +241,7 @@ describe('Test 1', function () {
    console.log('registry.owner', await registry.owner());
    console.log('committeeProxy.address',committeeProxy.address);
     */
-   
+    /* 
    //onlyOperatorOrSeigManager
    const _layer0 = await Layer2.at(layer2s[0].address);
    await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
@@ -264,6 +264,7 @@ describe('Test 1', function () {
     // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
   
     expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
+    */
     return newSeigManager;
   }
   
@@ -272,7 +273,7 @@ describe('Test 1', function () {
     layer2s.push(_layer2);
   } 
 
-
+  /*
   async function agendaVoteYesAll(agendaId){
     let quorum = await committeeProxy.quorum();
     let quorumInt = toBN(quorum).toNumber();
@@ -297,11 +298,11 @@ describe('Test 1', function () {
     }
     
     time.increaseTo(votingEndTimestamp); 
-  }  
+  }   */
 
   async function executeAgenda(_target, _functionBytecode){ 
     let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-    await agendaVoteYesAll(agendaID); 
+    await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
     await committeeProxy.executeAgenda(agendaID);   
   }
 
@@ -332,14 +333,17 @@ describe('Test 1', function () {
       let stakedAmountWTON = await DaoContractsDeployed.balanceOfAccountByLayer2(layer2s[0].address, user1);
       stakedAmountWTON.should.be.bignumber.equal(stakeAmountWTON);
       
-    });
+    });  
 
-    it('depositManager.transferOwnership to committeeProxy', async function () {  
-      await depositManager.transferOwnership(committeeProxy.address);
-      expect(await depositManager.owner()).to.equal(committeeProxy.address);
+    it('depositManager.setGlobalWithdrawalDelay', async function () {    
+      (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN(WITHDRAWAL_DELAY));  
+      let params = [15] ;
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setGlobalWithdrawalDelay,params);
+      await executeAgenda(depositManager.address, functionBytecode);   
+      (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN("15")); 
     });
-
-    it('depositManager.setSeigManager - by execute Agenda in committeeProxy', async function () {  
+      
+    it('depositManager.setSeigManager', async function () {  
         
       let _newSeigManager = await NewSeigManager(); 
       let params = [_newSeigManager.address] ;
@@ -382,15 +386,6 @@ describe('Test 1', function () {
       
     });
      
-
-    it('depositManager.setGlobalWithdrawalDelay', async function () {    
-      (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN(WITHDRAWAL_DELAY));  
-      let params = [15] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setGlobalWithdrawalDelay,params);
-      await executeAgenda(depositManager.address, functionBytecode);   
-      (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN("15")); 
-    });
-      
     it('depositManager.transferOwnership', async function () {    
       let params = [user1] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership, params);
