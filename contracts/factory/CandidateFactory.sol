@@ -7,10 +7,10 @@ import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 contract CandidateFactory is ICandidateFactory {
     function deploy(
         address _candidate,
-        address _layer2,
+        bool _isLayer2Candidate,
         string memory _name,
-        address _seigManager,
-        address _committee
+        address _committee,
+        address _seigManager
     )
         public
         override
@@ -18,10 +18,10 @@ contract CandidateFactory is ICandidateFactory {
     {
         Candidate c = new Candidate(
             _candidate,
-            _layer2,
+            _isLayer2Candidate,
+            _name,
             _committee,
-            _seigManager,
-            _name
+            _seigManager
         );
         c.transferOwnership(_committee);
         return address(c);

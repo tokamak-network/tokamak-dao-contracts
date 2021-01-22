@@ -73,14 +73,19 @@ contract StorageStateCommittee {
         _;
     }
 
-    modifier onlyMember(address _candidateContract) {
-        require(isMember(_candidateContract), "StorageStateCommittee: not a member");
+    modifier onlyMember() {
+        require(isMember(msg.sender), "StorageStateCommittee: not a member");
+        _;
+    }
+
+    modifier onlyMemberContract() {
+        address candidate = ICandidate(msg.sender).candidate();
+        require(isMember(candidate), "StorageStateCommittee: not a member");
         _;
     }
     
-    function isMember(address _candidateContract) public view returns (bool) {
-        address candidate = ICandidate(_candidateContract).getCandidate();
-        return candidateInfos[candidate].memberJoinedTime > 0;
+    function isMember(address _candidate) public view returns (bool) {
+        return candidateInfos[_candidate].memberJoinedTime > 0;
     }
 
     function candidateContract(address _candidate) public view returns (address) {

@@ -14,8 +14,7 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
-//const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
-//const deployPlasmaEvmContracts = require('./utils/deploy.js');
+const DaoContracts = require('../utils/plasma_test_deploy.js');
 
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
@@ -140,31 +139,33 @@ let daoVault;
 let seigManager;
 let powerton;
 
+let daoContractsDeployed ; 
+
 describe('Test 1', function () {
   before(async function () {
     this.timeout(1000000);
 
-    /*[
-      ton,
-      wton,
-      registry,
-      depositManager,
-      coinageFactory,
-      daoVault,
-      seigManager,
-      powerton
-    ] = await deployPlasmaEvmContracts(owner);*/
+    daoContractsDeployed = new DaoContracts(); 
 
-    /*[
-      daoVault2,
-      agendaManager,
-      candidateFactory,
-      committee,
-      committeeProxy
-    ] = await deployDaoContracts(owner);*/
+    const returnData = await daoContractsDeployed.initializePlasmaEvmContracts(owner);
+    ton = returnData.ton;
+    wton = returnData.wton;
+    registry = returnData.registry;
+    depositManager = returnData.depositManager;
+    factory = returnData.coinageFactory;
+    daoVault = returnData.daoVault;
+    seigManager = returnData.seigManager;
+    powerton = returnData.powerton; 
 
-    await initializePlasmaEvmContracts(); 
-    await initializeDaoContracts();
+    const returnData1 = await daoContractsDeployed.initializeDaoContracts(owner);
+    daoVault2 = returnData1.daoVault2;
+    agendaManager = returnData1.agendaManager;
+    candidateFactory = returnData1.candidateFactory;
+    committee = returnData1.committee;
+    committeeProxy= returnData1.committeeProxy; 
+
+    //await initializePlasmaEvmContracts(); 
+    //await initializeDaoContracts();
 
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
@@ -625,7 +626,7 @@ describe('Test 1', function () {
       (await committeeProxy.members(slotIndex)).should.be.equal(ZERO_ADDRESS);
       const candidateContract = await getCandidateContract(candidate1);
       await candidateContract.changeMember(slotIndex, {from: candidate1});
-      (await committeeProxy.members(slotIndex)).should.be.equal(candidateContract.address);
+      (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
     });
 
     it('should fail to challenge with lower balance', async function () {
@@ -636,7 +637,7 @@ describe('Test 1', function () {
 
       const slotIndex = 0;
       const candidateContract1 = await getCandidateContract(candidate1);
-      (await committeeProxy.members(slotIndex)).should.be.equal(candidateContract1.address);
+      (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
       const candidateContract2 = await getCandidateContract(candidate2);
       expectRevert(
         candidateContract2.changeMember(slotIndex, {from: candidate2}),
@@ -646,7 +647,7 @@ describe('Test 1', function () {
 
     it('should fail to own two slots', async function () {
       const candidateContract1 = await getCandidateContract(candidate1);
-      (await committeeProxy.members(0)).should.be.equal(candidateContract1.address);
+      (await committeeProxy.members(0)).should.be.equal(candidate1);
       (await committeeProxy.members(1)).should.be.equal(ZERO_ADDRESS);
       const candidateContract = await getCandidateContract(candidate1);
       expectRevert(
@@ -664,17 +665,17 @@ describe('Test 1', function () {
 
       const slotIndex = 0;
       const candidateContract1 = await getCandidateContract(candidate1);
-      (await committeeProxy.members(slotIndex)).should.be.equal(candidateContract1.address);
+      (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
       const candidateContract = await getCandidateContract(candidate2);
       await candidateContract.changeMember(slotIndex, {from: candidate2});
-      (await committeeProxy.members(slotIndex)).should.be.equal(candidateContract.address);
+      (await committeeProxy.members(slotIndex)).should.be.equal(candidate2);
     });
 
     it('retire', async function () {
       (await committeeProxy.isExistCandidate(candidate2)).should.be.equal(true);
       const slotIndex = 0;
       const candidateContract2 = await getCandidateContract(candidate2);
-      (await committeeProxy.members(slotIndex)).should.be.equal(candidateContract2.address);
+      (await committeeProxy.members(slotIndex)).should.be.equal(candidate2);
       await candidateContract2.retireMember({from: candidate2});
       (await committeeProxy.isExistCandidate(candidate2)).should.be.equal(true);
       (await committeeProxy.members(slotIndex)).should.be.equal(ZERO_ADDRESS);
@@ -694,9 +695,9 @@ describe('Test 1', function () {
         const candidateContract3 = await getCandidateContract(candidate3);
         await candidateContract3.changeMember(2, {from: candidate3});
 
-        (await committeeProxy.members(0)).should.be.equal(candidateContract1.address);
-        (await committeeProxy.members(1)).should.be.equal(candidateContract2.address);
-        (await committeeProxy.members(2)).should.be.equal(candidateContract3.address);
+        (await committeeProxy.members(0)).should.be.equal(candidate1);
+        (await committeeProxy.members(1)).should.be.equal(candidate2);
+        (await committeeProxy.members(2)).should.be.equal(candidate3);
       });
 
       it('can not exceed maximum', async function () {
@@ -727,7 +728,7 @@ describe('Test 1', function () {
   describe('Member - Behavior', function () {
     it('update seigniorage', async function () {
       const candidateContract1 = await getCandidateContract(candidate1);
-      (await committeeProxy.members(0)).should.be.equal(candidateContract1.address);
+      (await committeeProxy.members(0)).should.be.equal(candidate1);
       const beforeBalance = await totalBalanceOfCandidate(candidate1);
       await committeeProxy.updateSeigniorage(candidate1);
       const afterBalance = await totalBalanceOfCandidate(candidate1);
@@ -776,9 +777,9 @@ describe('Test 1', function () {
         const agenda = await agendaManager.agendas(_agendaID);
 
         if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
-          return (await committeeProxy.isMember(candidateContract.address));
+          return (await committeeProxy.isMember(voter));
         else
-          return (await agendaManager.isVoter(_agendaID, candidateContract.address));
+          return (await agendaManager.isVoter(_agendaID, voter));
       }
 
       async function castVote(_agendaID, voter, _vote) {
@@ -796,7 +797,7 @@ describe('Test 1', function () {
         const candidateContract = await getCandidateContract(voter);
         await candidateContract.castVote(_agendaID, _vote, "test comment", {from: voter});
 
-        const voterInfo2 = await agendaManager.voterInfos(_agendaID, candidateContract.address);
+        const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
         voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
         voterInfo2[VOTER_INFO_HAS_VOTED].should.be.equal(true);
         voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(_vote));
@@ -806,7 +807,7 @@ describe('Test 1', function () {
         agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
         agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
 
-        const result = await agendaManager.getVoteStatus(_agendaID, candidateContract.address);
+        const result = await agendaManager.getVoteStatus(_agendaID, voter);
         result[0].should.be.equal(true);
         result[1].should.be.bignumber.equal(toBN(_vote));
       }

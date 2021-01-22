@@ -10,7 +10,7 @@ interface ICandidate {
     //function isCommitteeLayer2() external view returns (bool);
     //function candidateAndOwner() external view returns (address, address);
     function isCandidateContract() external view returns (bool);
-    function getCandidate() external view returns (address);
+    function candidate() external view returns (address);
     function totalStaked() external view returns (uint256 totalsupply);
     function stakedOf(address _account) external view returns (uint256 amount);
 }

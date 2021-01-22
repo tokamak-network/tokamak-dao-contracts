@@ -13,58 +13,61 @@ import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
-contract Candidate is Ownable, ICandidate, ERC165 {
+contract Candidate is Ownable, ERC165 {
     using SafeMath for uint256;
+
+    bool isLayer2Candidate;
     address public candidate;
-    ISeigManager public seigManager;
     string public memo;
-    ILayer2 public layer2;
+
     IDAOCommittee public committee;
+    ISeigManager public seigManager;
 
     modifier onlyCandidate() {
-        if (address(layer2) != address(0)) {
-            require(layer2.isLayer2(), "Candidate: invalid layer2 contract");
-            require(layer2.operator() == msg.sender, "Candidate: invalid candidate");
+        if (isLayer2Candidate) {
+            ILayer2 layer2 = ILayer2(candidate);
+            require(layer2.operator() == msg.sender, "Candidate: sender is not the operator of this contract");
         } else {
-            require(msg.sender == candidate, "Candidate: sender is not ");
+            require(candidate == msg.sender, "Candidate: sender is not the candidate of this contract");
         }
         _;
     }
     
     constructor(
         address _candidate,
-        address _layer2,
+        bool _isLayer2Candidate,
+        string memory _memo,
         address _committee,
-        address _seigManager,
-        string memory _memo
+        address _seigManager
     ) 
     {
-        if (_layer2 != address(0)) {
-            layer2 = ILayer2(_layer2);
-            require(layer2.isLayer2(), "Candidate: invalid layer2 contract");
-            require(layer2.operator() == _candidate, "Candidate: invalid candidate");
+        candidate = _candidate;
+        isLayer2Candidate = _isLayer2Candidate;
+        if (isLayer2Candidate) {
+            require(
+                ILayer2(candidate).isLayer2(),
+                "Candidate: invalid layer2 contract"
+            );
         }
-
         committee = IDAOCommittee(_committee);
         seigManager = ISeigManager(_seigManager);
-        candidate = _candidate;
         memo = _memo;
 
         _registerInterface(ICandidate(address(this)).isCandidateContract.selector);
     }
     
-    function setSeigManager(address _seigManager) public onlyOwner override {
+    function setSeigManager(address _seigManager) public onlyOwner {
         seigManager = ISeigManager(_seigManager);
     }
 
-    function setCommittee(address _committee) public onlyOwner override {
+    function setCommittee(address _committee) public onlyOwner {
         committee = IDAOCommittee(_committee);
     }
 
-    function updateSeigniorage() public override returns (bool) {
+    function updateSeigniorage() public returns (bool) {
         require(address(seigManager) != address(0), "Candidate: SeigManager is zero");
         require(
-            address(layer2) == address(0),
+            isLayer2Candidate == false,
             "Candidate: you should update seigniorage from layer2 contract"
         );
 
@@ -76,7 +79,7 @@ contract Candidate is Ownable, ICandidate, ERC165 {
         onlyCandidate
         returns (bool)
     {
-        return committee.changeMember(_memberIndex, msg.sender);
+        return committee.changeMember(_memberIndex);
     }
 
     function retireMember() public onlyCandidate returns (bool) {
@@ -94,15 +97,15 @@ contract Candidate is Ownable, ICandidate, ERC165 {
         committee.castVote(_agendaID, _vote, _comment);
     }
 
-    /*function isCommitteeLayer2() public override view returns (bool) {
+    /*function isCommitteeLayer2() public view returns (bool) {
         return true;
     }*/
 
-    /*function candidateAndOwner() public override view returns (address, address) {
+    /*function candidateAndOwner() public view returns (address, address) {
         return (candidate, owner);
     }*/
 
-    function isCandidateContract() public override view returns (bool) {
+    function isCandidateContract() public view returns (bool) {
         return true;
     }
 
@@ -111,13 +114,9 @@ contract Candidate is Ownable, ICandidate, ERC165 {
     function currentFork() public view returns (uint) { return 1; }
     function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }
 
-    /*function isCandidate(address _account) public view {
-    }*/
-
     function totalStaked()
         public
         view
-        override
         returns (uint256 totalsupply)
     {
         address coinage = _getCoinageToken();
@@ -130,7 +129,6 @@ contract Candidate is Ownable, ICandidate, ERC165 {
     )
         public
         view
-        override
         returns (uint256 amount)
     {
         address coinage = _getCoinageToken();
@@ -138,23 +136,14 @@ contract Candidate is Ownable, ICandidate, ERC165 {
         return IERC20(coinage).balanceOf(_account);
     }
 
-    function getCandidate() public view override returns (address) {
-        if (address(layer2) != address(0)) {
-            return layer2.operator();
-        } else {
-            return candidate;
-        }
-    }
-
     function _getCoinageToken() internal view returns (address) {
         address c;
-        if (address(layer2) != address(0)) {
-            c = address(layer2);
+        if (isLayer2Candidate) {
+            c = candidate;
         } else {
             c = address(this);
         }
 
         return seigManager.coinages(c);
-
     }
 }

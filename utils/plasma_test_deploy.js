@@ -170,7 +170,6 @@ class DaoContracts {
       this.factory = await CoinageFactory.new({from:owner});
   
       let currentTime = await time.latest();
-      console.log(`currentTime1: ${currentTime}`);
       this.daoVault = await DAOVault.new(this.wton.address, currentTime,{from:owner});
       this.seigManager = await SeigManager.new(
         this.ton.address,
@@ -267,7 +266,19 @@ class DaoContracts {
      // let byteZERO = 0x0;
      // await this.committee.grantRole( byteZERO, this.committeeProxy.address,{from:owner});
         
-      console.log('\n\n');
+      await this.ton.addMinter(this.committeeProxy.address);
+      await this.ton.transferOwnership(this.committeeProxy.address);
+
+      await this.wton.addMinter(this.committeeProxy.address);
+      await this.wton.transferOwnership(this.committeeProxy.address);
+
+      await this.seigManager.addPauser(this.committeeProxy.address);
+
+      await this.seigManager.transferOwnership(this.committeeProxy.address);
+      await this.depositManager.transferOwnership(this.committeeProxy.address);
+
+      await this.ton.renounceMinter();
+      await this.wton.renounceMinter();
     
       let returnData ={
         daoVault2: this.daoVault2, 
@@ -341,10 +352,10 @@ class DaoContracts {
     const stakedAmount = await coinage.balanceOf(operator);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
     
-    if(this.layer2s==null) this.layer2s=[];
+    if (this.layer2s == null) this.layer2s = [];
     this.layer2s.push(layer2);
 
-    if(this.coinages==null) this.coinages=[];
+    if (this.coinages == null) this.coinages = [];
     this.coinages.push(coinage);
     
     return layer2;
@@ -371,21 +382,16 @@ class DaoContracts {
     return true;
   }
 
-  addCandidate = async function (candidate) { 
+  addCandidate = async function (candidate) {
     const minimum = await this.seigManager.minimumAmount();
     const beforeTonBalance = await this.ton.balanceOf(candidate);
 
     const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
     const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-    //await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
-    //tmp = await ton.allowance(candidate, committeeProxy.address);
-    //tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
-    await this.committeeProxy.createCandidate(candidate, {from: candidate});
+    const testMemo = candidate + " memo string";
+    await this.committeeProxy.createCandidate(testMemo, {from: candidate});
 
     const candidateContractAddress = await this.committeeProxy.candidateContract(candidate);
-
-    //const testMemo = "candidate memo string";
-    //const data = web3.eth.abi.encodeParameter("string", testMemo);
 
     (await this.registry.layer2s(candidateContractAddress)).should.be.equal(true);
 
@@ -397,13 +403,12 @@ class DaoContracts {
     const coinageAddress = await this.seigManager.coinages(candidateContractAddress);
     const coinage = await AutoRefactorCoinage.at(coinageAddress);
 
-    if(this.layer2s==null) this.layer2s=[];
+    if (this.layer2s == null) this.layer2s = [];
     let layer2 = await Candidate.at(candidateContractAddress);
     this.layer2s.push(layer2);
     
-    if(this.coinages==null) this.coinages=[];
+    if (this.coinages == null) this.coinages = [];
     this.coinages.push(coinage);
-
 
     const stakedAmount = await coinage.balanceOf(candidate);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
@@ -418,10 +423,52 @@ class DaoContracts {
       }
     }
     foundCandidate.should.be.equal(true);
-
   }
 
-  newSeigManager = async function (layer2s,operator1,operator2){
+  addCandidateForOperator = async function (operator, layer2Address) {
+    const minimum = await this.seigManager.minimumAmount();
+    const beforeTonBalance = await this.ton.balanceOf(operator);
+
+    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+    const testMemo = operator + " memo string";
+    await this.committeeProxy.registerOperator(layer2Address, testMemo, {from: operator});
+
+    const candidateContractAddress = await this.committeeProxy.candidateContract(operator);
+
+    (await this.registry.layer2s(layer2Address)).should.be.equal(true);
+
+    //await this.deposit(layer2Address, operator, stakeAmountTON);
+     
+    //const afterTonBalance = await this.ton.balanceOf(operator);
+    //beforeTonBalance.sub(afterTonBalance).should.be.bignumber.equal(stakeAmountTON);
+
+    //const coinageAddress = await this.seigManager.coinages(layer2Address);
+    //const coinage = await AutoRefactorCoinage.at(coinageAddress);
+
+    /*if (this.layer2s == null) this.layer2s = [];
+    let layer2 = await Candidate.at(candidateContractAddress);
+    this.layer2s.push(layer2);
+    
+    if (this.coinages == null) this.coinages = [];
+    this.coinages.push(coinage);*/
+
+    //const stakedAmount = await coinage.balanceOf(operator);
+    //stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
+
+    const candidatesLength = await this.committeeProxy.candidatesLength();
+    let foundCandidate = false;
+    for (let i = 0; i < candidatesLength; i++) {
+      const address = await this.committeeProxy.candidates(i);
+      if (address === layer2Address) {
+        foundCandidate = true;
+        break;
+      }
+    }
+    foundCandidate.should.be.equal(true);
+  }
+
+  newSeigManager = async function (layer2s, operator1, operator2){
     var newSeigManager = await SeigManager.new(
       this.ton.address,
       this.wton.address,
@@ -546,7 +593,12 @@ objectMapping = async ( abi ) => {
       );
       let agendaID = (await this.agendaManager.numAgendas()).sub(toBN("1")); 
       return agendaID;
-  } 
+  }
+
+  getCandidateContract = async function(candidate) {
+    const contractAddress = await this.committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
 
   getLayer2s = function(){
     return  this.layer2s; 
