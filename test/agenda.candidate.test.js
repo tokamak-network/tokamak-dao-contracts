@@ -230,44 +230,52 @@ const {
     } 
   
     async function agendaVoteYesAll(agendaId){
-      let quorum = await committeeProxy.quorum();
-      let quorumInt = toBN(quorum).toNumber();
-      const agenda = await agendaManager.agendas(agendaId);  
-      const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
-      time.increaseTo(noticeEndTimestamp); 
-      let agendaAfterStartVoting =0;
-      let votingEndTimestamp =0;
-  
-      for(let i=0; i< candidates.length ; i++ ){
-        if(quorumInt >= (i+1)){
-          await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
+        let quorum = await committeeProxy.quorum();
+        let quorumInt = toBN(quorum).toNumber();
+        let agenda = await agendaManager.agendas(agendaId);  
+        const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
+        time.increaseTo(noticeEndTimestamp); 
+        let agendaAfterStartVoting =0;
+        let votingEndTimestamp =0;
+    
+        for(let i=0; i< candidates.length ; i++ ){
+          if(quorumInt >= (i+1)){
+            (await DaoContractsDeployed.isVoter(agendaId, candidates[i])).should.be.equal(true);
+            const candidateContract = await DaoContractsDeployed.getCandidateContract(candidates[i]);
+            await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
+    
+            //await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
+          }
+          if(i==0) {
+            agendaAfterStartVoting = await agendaManager.agendas(agendaId);  
+          } 
+          if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
         }
-        if(i==0) agendaAfterStartVoting = await agendaManager.agendas(agendaId);   
-        if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
-      }
-      
-      time.increaseTo(votingEndTimestamp); 
-    }  
+        
+        time.increaseTo(votingEndTimestamp); 
+      }  
   
     async function executeAgenda(_target, _functionBytecode){ 
       let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
       await agendaVoteYesAll(agendaID); 
       await committeeProxy.executeAgenda(agendaID);   
     } 
-    before(async function () { 
-      this.timeout(1000000); 
-  
-      await addlayer2s(operator1);
-      await addlayer2s(operator2);
-  
-      await DaoContractsDeployed.addCandidate(candidate1);
-      await DaoContractsDeployed.addCandidate(candidate2);
-      await DaoContractsDeployed.addCandidate(candidate3); 
-  
-      await committeeProxy.changeMember(0, {from: candidate1});
-      await committeeProxy.changeMember(1, {from: candidate2});
-      await committeeProxy.changeMember(2, {from: candidate3}); 
 
+    before(async function () { 
+        this.timeout(1000000); 
+    
+        await addlayer2s(operator1);
+        await addlayer2s(operator2);
+    
+        await DaoContractsDeployed.addCandidate(candidate1);
+        await DaoContractsDeployed.addCandidate(candidate2);
+        await DaoContractsDeployed.addCandidate(candidate3); 
+    
+        let layer2s = DaoContractsDeployed.getLayer2s();
+
+        await layer2s[2].changeMember(0, {from: candidate1});
+        await layer2s[3].changeMember(1, {from: candidate2});
+        await layer2s[4].changeMember(2, {from: candidate3});
     });
   
   
@@ -278,8 +286,8 @@ const {
             let index=4;  
 
             let layer2s = await DaoContractsDeployed.getLayer2s();  
-            expect(await layer2s[index].owner()).to.equal(candidate3); 
-            await layer2s[index].transferOwnership(committeeProxy.address, {from:candidate3}); 
+           // expect(await layer2s[index].owner()).to.equal(candidate3); 
+           // await layer2s[index].transferOwnership(committeeProxy.address, {from:candidate3}); 
             expect(await layer2s[index].owner()).to.equal(committeeProxy.address);
         });
 

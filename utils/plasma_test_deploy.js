@@ -555,6 +555,22 @@ objectMapping = async ( abi ) => {
   getCoinages = function(){
     return  this.coinages; 
   }
+
+
+  getCandidateContract = async function (candidate) {
+    const contractAddress = await this.committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
+
+  isVoter = async function (_agendaID, voter) {
+    const candidateContract = await this.getCandidateContract(voter);
+    const agenda = await this.agendaManager.agendas(_agendaID);
+
+    if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
+      return (await this.committeeProxy.isMember(candidateContract.address));
+    else
+      return (await this.agendaManager.isVoter(_agendaID, candidateContract.address));
+  }
 } 
  
  

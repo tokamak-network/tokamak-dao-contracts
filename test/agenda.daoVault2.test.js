@@ -20,6 +20,8 @@ const {
   const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
   const CandidateAbi = require('../build/contracts/Candidate.json').abi; 
   const DAOCommitteeProxyAbi = require('../build/contracts/DAOCommitteeProxy.json').abi;
+  const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
+
 
   // dao-contracts
   const DAOVault2 = contract.fromArtifact('DAOVault2');
@@ -149,7 +151,7 @@ const {
   let noticePeriod, votingPeriod , agendaFee; 
   let layer2s=[];
   let AbiObj, DaoContractsDeployed ; 
-  let _committeeProxy;
+  let _committeeProxy,_newton , _newWton ;
 
   describe('Test 1', function () {
     before(async function () {
@@ -157,7 +159,7 @@ const {
   
   
       DaoContractsDeployed = new DaoContracts(); 
-      AbiObj = await DaoContractsDeployed.objectMapping(DAOCommitteeProxyAbi);
+      AbiObj = await DaoContractsDeployed.objectMapping(DAOVault2Abi);
   
       let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
       ton = returnData.ton;
@@ -277,50 +279,53 @@ const {
         await layer2s[2].changeMember(0, {from: candidate1});
         await layer2s[3].changeMember(1, {from: candidate2});
         await layer2s[4].changeMember(2, {from: candidate3});
-        _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
+      //  _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
     });
   
   
-    describe('Agenda - DAOCommitteeProxy', function () { 
+    describe('Agenda - DAOVault2', function () { 
         
-      it('DAOCommitteeProxy.upgradeTo ', async function () {  
-        this.timeout(1000000);   
-        let _newImp =  await DAOCommittee.new({from:owner});  
-        let oldImp = await _committeeProxy.implementation();
+      it('DAOVault2.setTON ', async function () {  
+            this.timeout(1000000);    
+            expect(await daoVault2.owner()).to.equal(committeeProxy.address);   
+            
+            _newton = await TON.new({from:owner});   
+            let params = [_newton.address] ; 
+            let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setTON,params);
+            await executeAgenda(daoVault2.address, functionBytecode);   
+            expect(await daoVault2.ton()).to.equal(_newton.address);   
 
-        expect(oldImp).to.not.equal(_newImp.address); 
-        
-        let params = [_newImp.address] ;
-        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.upgradeTo,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
-        expect(await _committeeProxy._implementation()).to.equal(_newImp.address);  
-
-        params = [oldImp] ;
-        functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.upgradeTo,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
-        expect(await _committeeProxy._implementation()).to.equal(oldImp);  
+            params = [ton.address] ; 
+            functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setTON,params);
+            await executeAgenda(daoVault2.address, functionBytecode); 
 
       });  
-      it('DAOCommitteeProxy.setProxyPause - true ', async function () {  
-          this.timeout(1000000);   
 
-          expect(await _committeeProxy.pauseProxy()).to.equal(false); 
-          let params = [true] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setProxyPause,params);
-          await executeAgenda(_committeeProxy.address, functionBytecode);   
-          expect(await _committeeProxy.pauseProxy()).to.equal(true);  
-      }); 
-      
-      it('DAOCommitteeProxy.setProxyPause - false ', async function () {  
-        this.timeout(1000000);   
-
-        expect(await _committeeProxy.pauseProxy()).to.equal(true); 
-        let params = [false] ;
-        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setProxyPause,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
-        expect(await _committeeProxy.pauseProxy()).to.equal(false);  
-    }); 
+      it('DAOVault2.setWTON  ', async function () {  
+            this.timeout(1000000);   
+            _newWton = await WTON.new(_newton.address,{from:owner});
     
+            let params = [_newWton.address] ;
+            let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setWTON,params);
+            await executeAgenda(daoVault2.address, functionBytecode);   
+            expect(await daoVault2.wton()).to.equal(_newWton.address);  
+
+            params = [wton.address] ;
+            functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setWTON,params);
+            await executeAgenda(daoVault2.address, functionBytecode);   
+
+      }); 
+   
+      it('DAOVault2.approveTON  ', async function () {  
+        this.timeout(1000000);   
+        await ton.transfer(daoVault2.address, TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT),{from:user1});
+
+        expect(await ton.balanceOf(daoVault2.address)).should.be.bignumber.equal(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT))); 
+        let params = [user2, TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)] ;
+        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.approveTON,params);
+        await executeAgenda(daoVault2.address, functionBytecode);   
+        expect(await ton.allowance(user2, daoVault2.address)).should.be.bignumber.equal(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)));  
+    }); 
  
     });
    

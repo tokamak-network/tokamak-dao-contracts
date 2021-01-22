@@ -238,11 +238,19 @@ describe('Test 1', function () {
     let _layer2 = await DaoContractsDeployed.addOperator(operator);
     layer2s.push(_layer2);
   } 
+  async function isVoter(_agendaID, voter) {
+    const candidateContract = await getCandidateContract(voter);
+    const agenda = await agendaManager.agendas(_agendaID);
 
+    if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
+      return (await committeeProxy.isMember(candidateContract.address));
+    else
+      return (await agendaManager.isVoter(_agendaID, candidateContract.address));
+  }
   async function agendaVoteYesAll(agendaId){
     let quorum = await committeeProxy.quorum();
     let quorumInt = toBN(quorum).toNumber();
-    const agenda = await agendaManager.agendas(agendaId);  
+    let agenda = await agendaManager.agendas(agendaId);  
     const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
     time.increaseTo(noticeEndTimestamp); 
     let agendaAfterStartVoting =0;
@@ -250,9 +258,15 @@ describe('Test 1', function () {
 
     for(let i=0; i< candidates.length ; i++ ){
       if(quorumInt >= (i+1)){
-        await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
+        (await DaoContractsDeployed.isVoter(agendaId, candidates[i])).should.be.equal(true);
+        const candidateContract = await DaoContractsDeployed.getCandidateContract(candidates[i]);
+        await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
+
+        //await committeeProxy.castVote(agendaId,1,' candidate'+i+' yes ', {from: candidates[i]}); 
       }
-      if(i==0) agendaAfterStartVoting = await agendaManager.agendas(agendaId);   
+      if(i==0) {
+        agendaAfterStartVoting = await agendaManager.agendas(agendaId);  
+      } 
       if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
     }
     
@@ -274,14 +288,11 @@ describe('Test 1', function () {
     await DaoContractsDeployed.addCandidate(candidate1);
     await DaoContractsDeployed.addCandidate(candidate2);
     await DaoContractsDeployed.addCandidate(candidate3); 
+    let layer2s = DaoContractsDeployed.getLayer2s();
 
-    await committeeProxy.changeMember(0, {from: candidate1});
-    await committeeProxy.changeMember(1, {from: candidate2});
-    await committeeProxy.changeMember(2, {from: candidate3});
-
-    noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
-    votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
-    
+    await layer2s[2].changeMember(0, {from: candidate1});
+    await layer2s[3].changeMember(1, {from: candidate2});
+    await layer2s[4].changeMember(2, {from: candidate3});
     
   });
   
@@ -293,6 +304,7 @@ describe('Test 1', function () {
     }); 
     */
     it('committeeProxy.setSeigManager', async function () {  
+      this.timeout(1000000); 
       let _newSeigManager = await NewSeigManager(); 
       let params = [_newSeigManager.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setSeigManager,params);
@@ -301,6 +313,7 @@ describe('Test 1', function () {
       expect(await committeeProxy.seigManager()).to.equal(_newSeigManager.address); 
     });
     it('committeeProxy.setDaoVault', async function () {  
+      this.timeout(1000000); 
       let _daoVault2 = await DAOVault2.new(ton.address, wton.address,{from:owner});
       let params = [_daoVault2.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setDaoVault,params);
@@ -309,6 +322,7 @@ describe('Test 1', function () {
       expect(await committeeProxy.daoVault()).to.equal(_daoVault2.address); 
     });
     it('committeeProxy.setLayer2Registry', async function () {  
+      this.timeout(1000000); 
       let _registry = await Layer2Registry.new({from:owner});
       let params = [_registry.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setLayer2Registry,params);
@@ -317,6 +331,7 @@ describe('Test 1', function () {
       expect(await committeeProxy.layer2Registry()).to.equal(_registry.address); 
     });
     it('committeeProxy.setCandidateFactory', async function () {  
+      this.timeout(1000000); 
       let _factory =  await CandidateFactory.new({from:owner});
       let params = [_factory.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.setCandidateFactory,params);
@@ -327,12 +342,12 @@ describe('Test 1', function () {
     });
     it('committeeProxy.registerOperatorByOwner', async function () {  
       this.timeout(1000000); 
-
-      expect(await committeeProxy.isCandidate(operator1)).to.equal(false);  
+      (await layer2s[0].operator()).should.be.equal(operator1);
+     // expect(await committeeProxy.isCandidate(operator1)).to.equal(false);  
       let params = [operator1 , layer2s[0].address, 'operator1'] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.registerOperatorByOwner,params);
       await executeAgenda(committeeProxy.address, functionBytecode);  
-      expect(await committeeProxy.isExistCandidate(operator1)).to.equal(true); 
+      expect(await committeeProxy.isExistCandidate(layer2s[0].address)).to.equal(true); 
       
 
       params = [user2 , layer2s[1].address, 'user2'] ;
