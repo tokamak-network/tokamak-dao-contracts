@@ -227,7 +227,7 @@ class DaoContracts {
       return  returnData;
       
     }
-
+ 
     initializeDaoContracts  = async function (owner ) {
       //this = self;
       this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
@@ -468,7 +468,7 @@ class DaoContracts {
     foundCandidate.should.be.equal(true);
   }
 
-  newSeigManager = async function (layer2s, operator1, operator2){
+  newSeigManager = async function (){
     var newSeigManager = await SeigManager.new(
       this.ton.address,
       this.wton.address,
@@ -480,7 +480,7 @@ class DaoContracts {
 
     await newSeigManager.setPowerTON(this.powerton.address); 
     await newSeigManager.setDao(this.daoVault2.address);
-    await this.wton.addMinter(newSeigManager.address);
+    //await this.wton.addMinter(newSeigManager.address);
     //await ton.addMinter(wton.address);
     
     /* 
@@ -494,7 +494,7 @@ class DaoContracts {
     newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
     newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-     
+     /* 
    //onlyOperatorOrSeigManager
    const _layer0 = await Layer2.at(layer2s[0].address);
    await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
@@ -517,6 +517,7 @@ class DaoContracts {
     // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
   
     expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
+    */
     return newSeigManager;
   } 
   
@@ -529,6 +530,12 @@ class DaoContracts {
       if(data.registry!=null)  this.registry = data.registry ;
       if(data.depositManager!=null)  this.depositManager = data.depositManager ;
       if(data.factory!=null)  this.factory = data.factory ; 
+
+      if(data.agendaManager!=null)  this.agendaManager = data.agendaManager ; 
+      if(data.candidateFactory!=null)  this.candidateFactory = data.candidateFactory ; 
+      if(data.committee!=null)  this.committee = data.committee ; 
+      if(data.committeeProxy!=null)  this.committeeProxy = data.committeeProxy ; 
+      if(data.daoVault2!=null)  this.daoVault2 = data.daoVault2 ; 
     } 
     
   }
@@ -608,13 +615,8 @@ objectMapping = async ( abi ) => {
     return  this.coinages; 
   }
 
+  isVoter = async function (_agendaID, voter) { 
 
-  getCandidateContract = async function (candidate) {
-    const contractAddress = await this.committeeProxy.candidateContract(candidate);
-    return await Candidate.at(contractAddress);
-  }
-
-  isVoter = async function (_agendaID, voter) {
     const candidateContract = await this.getCandidateContract(voter);
     const agenda = await this.agendaManager.agendas(_agendaID);
 
@@ -632,10 +634,11 @@ objectMapping = async ( abi ) => {
     const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
     time.increaseTo(noticeEndTimestamp); 
     let agendaAfterStartVoting =0;
-    let votingEndTimestamp =0;
+    let votingEndTimestamp =0; 
 
     for(let i=0; i< candidates.length ; i++ ){
-      if(quorumInt >= (i+1)){
+      if(quorumInt >= (i+1)){ 
+        
         (await this.isVoter(agendaId, candidates[i])).should.be.equal(true);
         const candidateContract = await this.getCandidateContract(candidates[i]);
         await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
@@ -649,6 +652,11 @@ objectMapping = async ( abi ) => {
     
     time.increaseTo(votingEndTimestamp); 
   }  
+
+  clearLayers = async function (){
+    this.layers = []; 
+    this.coinages = [];
+  }
 
 } 
  
