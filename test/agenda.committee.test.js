@@ -338,7 +338,7 @@ describe('Test 1', function () {
       params = [user2 , layer2s[1].address, 'user2'] ;
       functionBytecode =  web3.eth.abi.encodeFunctionCall(DAOCommitteeAbiObj.registerOperatorByOwner,params);
       let agendaID = await DaoContractsDeployed.createAgenda(committeeProxy.address, functionBytecode); 
-      await agendaVoteYesAll(agendaID);  
+      await DaoContractsDeployed.agendaVoteYesAll(agendaID);  
       await expectRevert.unspecified(committeeProxy.executeAgenda(agendaID) ); 
         
     }); 

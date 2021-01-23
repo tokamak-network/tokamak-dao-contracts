@@ -17,6 +17,16 @@ chai.use(require('chai-bn')(BN)).should();
 //const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
 //const deployPlasmaEvmContracts = require('./utils/deploy.js');
 
+const DAOCommitteeAbi = require('../build/contracts/DAOCommittee.json').abi;
+const DepositManagerAbi = require('../build/contracts/DepositManager.json').abi;
+const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
+const CandidateAbi = require('../build/contracts/Candidate.json').abi;
+const DAOAgendaManagerAbi = require('../build/contracts/DAOAgendaManager.json').abi;
+const Layer2RegistryAbi = require('../build/contracts/Layer2Registry.json').abi;
+const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
+const TONAbi = require('../build/contracts/TON.json').abi;
+const WTONAbi = require('../build/contracts/WTON.json').abi;
+
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -152,6 +162,19 @@ class DaoContracts {
 
     this.layer2s = [];
     this.coinages = [];
+
+    this.AbiObject={
+      TON: null,
+      WTON: null,
+      DepositManager: null,
+      SeigManager: null,
+      Layer2Registry: null,
+      DAOVault2: null,
+      Committee: null,
+      Agenda: null,
+      Candidate: null 
+    } 
+     
   }
 
   initializePlasmaEvmContracts= async function (owner) {
@@ -652,6 +675,25 @@ objectMapping = async ( abi ) => {
     
     time.increaseTo(votingEndTimestamp); 
   }  
+
+  executeAgenda = async function (_target, _functionBytecode){ 
+    let agendaID = await this.createAgenda(_target, _functionBytecode); 
+    await this.agendaVoteYesAll(agendaID); 
+    await this.committeeProxy.executeAgenda(agendaID);   
+  } 
+  
+  setAbiObject = async function (){  
+    this.AbiObject.TON =  await this.objectMapping(TONAbi);
+    this.AbiObject.WTON =  await this.objectMapping(WTONAbi);
+    this.AbiObject.DepositManager =  await this.objectMapping(DAOAgendaManagerAbi);
+    this.AbiObject.SeigManager =  await this.objectMapping(SeigManagerAbi);
+    this.AbiObject.Layer2Registry =  await this.objectMapping(Layer2RegistryAbi);
+    this.AbiObject.DAOVault2 =  await this.objectMapping(DAOVault2Abi);
+    this.AbiObject.Committee =  await this.objectMapping(DAOCommitteeAbi);
+    this.AbiObject.Agenda =  await this.objectMapping(DAOAgendaManagerAbi);
+    this.AbiObject.Candidate =  await this.objectMapping(CandidateAbi);
+    return  this.AbiObject;
+  }
 
   clearLayers = async function (){
     this.layers = []; 
