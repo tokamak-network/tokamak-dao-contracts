@@ -398,9 +398,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         public 
         validAgendaManager
     {
-        uint256 requiredVotes = quorum;
-        require(requiredVotes > 0, "DAOCommittee: requiredVotes is zero");
-
         address candidate = ICandidate(msg.sender).candidate();
         
         agendaManager.castVote(
@@ -411,15 +408,15 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
         (uint256 yes, uint256 no, uint256 abstain) = agendaManager.getVotingCount(_agendaID);
 
-        if (requiredVotes <= yes) {
+        if (quorum <= yes) {
             // yes
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.ACCEPT);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.WAITING_EXEC);
-        } else if (requiredVotes <= no) {
+        } else if (quorum <= no) {
             // no
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.REJECT);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
-        } else if (requiredVotes <= abstain.add(no) ) {
+        } else if (quorum <= abstain.add(no) ) {
             // dismiss
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
