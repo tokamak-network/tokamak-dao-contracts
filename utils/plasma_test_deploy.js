@@ -26,6 +26,8 @@ const Layer2RegistryAbi = require('../build/contracts/Layer2Registry.json').abi;
 const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
 const TONAbi = require('../build/contracts/TON.json').abi;
 const WTONAbi = require('../build/contracts/WTON.json').abi;
+const DAOCommitteeProxyAbi = require('../build/contracts/DAOCommitteeProxy.json').abi;
+
 
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
@@ -172,7 +174,8 @@ class DaoContracts {
       DAOVault2: null,
       Committee: null,
       Agenda: null,
-      Candidate: null 
+      Candidate: null ,
+      CommitteeProxy: null,
     } 
      
   }
@@ -685,13 +688,15 @@ objectMapping = async ( abi ) => {
   setAbiObject = async function (){  
     this.AbiObject.TON =  await this.objectMapping(TONAbi);
     this.AbiObject.WTON =  await this.objectMapping(WTONAbi);
-    this.AbiObject.DepositManager =  await this.objectMapping(DAOAgendaManagerAbi);
+    this.AbiObject.DepositManager =  await this.objectMapping(DepositManagerAbi);
     this.AbiObject.SeigManager =  await this.objectMapping(SeigManagerAbi);
     this.AbiObject.Layer2Registry =  await this.objectMapping(Layer2RegistryAbi);
     this.AbiObject.DAOVault2 =  await this.objectMapping(DAOVault2Abi);
     this.AbiObject.Committee =  await this.objectMapping(DAOCommitteeAbi);
     this.AbiObject.Agenda =  await this.objectMapping(DAOAgendaManagerAbi);
     this.AbiObject.Candidate =  await this.objectMapping(CandidateAbi);
+    this.AbiObject.CommitteeProxy =  await this.objectMapping(DAOCommitteeProxyAbi); 
+
     return  this.AbiObject;
   }
 

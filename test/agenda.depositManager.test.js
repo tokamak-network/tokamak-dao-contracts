@@ -336,7 +336,7 @@ describe('Test 1', function () {
       await DaoContractsDeployed.setDaoContract(data);
     });
       
-    it('depositManager.deposit by new user after setSeigManager ', async function () {  
+    it('depositManager.deposit by new user after setSeigManager - fail ', async function () {  
 
       let stakeAmountTON = TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT);
       let stakeAmountWTON = TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
@@ -346,7 +346,7 @@ describe('Test 1', function () {
        
     });
     
-    it('depositManager.deposit by staked user after setSeigManager ', async function () {  
+    it('depositManager.deposit by staked user after setSeigManager - fail ', async function () {  
    
       const TON_USER_STAKE_AMOUNT2 = _TON('20');
       let stakeAmountTON = TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT);
