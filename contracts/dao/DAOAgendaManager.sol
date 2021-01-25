@@ -122,12 +122,8 @@ contract DAOAgendaManager is Ownable {
 
         return agenda.status == LibAgenda.AgendaStatus.WAITING_EXEC &&
             agenda.result == LibAgenda.AgendaResult.ACCEPT &&
+            agenda.votingEndTimestamp <= block.timestamp &&
             agenda.executed == false;
-
-        /*require(agenda.status == uint(LibAgenda.AgendaStatus.WAITING_EXEC), "DAOAgendaManager: agenda status must be WAITING_EXEC.");
-        //require(agenda.votingEndTimestamp < block.timestamp, "DAOAgendaManager: for this agenda, the voting time is not expired");
-        require(agenda.result == LibAgenda.AgendaResult.ACCEPT, "DAOAgendaManager: for this agenda, not accept");
-        require(agenda.executed == false, "DAOAgendaManager: already executed agenda");*/
     }
     
     function getAgendaStatus(uint256 _agendaID) public view returns (uint status) {
@@ -357,11 +353,10 @@ contract DAOAgendaManager is Ownable {
 
     function isVotableStatus(uint256 _agendaID) public view returns (bool) {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
-        return (agenda.status == LibAgenda.AgendaStatus.VOTING &&
-                agenda.votingEndTimestamp >= block.timestamp) ||
+
+        return block.timestamp <= agenda.votingEndTimestamp ||
             (agenda.status == LibAgenda.AgendaStatus.NOTICE &&
                 agenda.noticeEndTimestamp <= block.timestamp);
-
     }
 
     function getVotingCount(uint256 _agendaID)

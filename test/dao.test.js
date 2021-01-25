@@ -741,7 +741,7 @@ describe('Test 1', function () {
     describe('Create', function () {
       const votesList = [
         {
-          "votes": [VOTE_ABSTAIN, VOTE_ABSTAIN],
+          "votes": [VOTE_ABSTAIN, VOTE_ABSTAIN, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
@@ -753,11 +753,11 @@ describe('Test 1', function () {
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_ABSTAIN, VOTE_NO],
+          "votes": [VOTE_ABSTAIN, VOTE_NO, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_YES, VOTE_YES],
+          "votes": [VOTE_YES, VOTE_YES, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_ACCEPTED,
           "expected_status": AGENDA_STATUS_WAITING_EXEC
         }, {
@@ -765,7 +765,7 @@ describe('Test 1', function () {
           "expected_result": AGENDA_RESULT_REJECTED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_NO, VOTE_NO],
+          "votes": [VOTE_NO, VOTE_NO, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_REJECTED,
           "expected_status": AGENDA_STATUS_ENDED
         }
@@ -880,6 +880,15 @@ describe('Test 1', function () {
               const agenda = await agendaManager.agendas(agendaID);
               agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(votesList[i].expected_result));
               agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(votesList[i].expected_status));
+
+              if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_WAITING_EXEC) {
+                const votingEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+                const currentTime = await time.latest();
+                if (currentTime < votingEndTimestamp) {
+                  await time.increaseTo(votingEndTimestamp);
+                }
+                (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
+              }
             });
 
             it("execute", async function () {
