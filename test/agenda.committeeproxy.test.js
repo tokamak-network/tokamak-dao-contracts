@@ -155,10 +155,13 @@ const {
     before(async function () {
       this.timeout(1000000);
   
+    }); 
+
+    async function initializeContracts(){ 
   
       DaoContractsDeployed = new DaoContracts(); 
-      AbiObj = await DaoContractsDeployed.objectMapping(DAOCommitteeProxyAbi);
-  
+      AbiObject = await DaoContractsDeployed.setAbiObject();   
+       
       let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
       ton = returnData.ton;
       wton = returnData.wton;
@@ -178,67 +181,20 @@ const {
   
       await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
       await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    });
-           
-    async function NewPowerTON(){
-      let _powerton = await PowerTON.new(
-        seigManager.address,
-        wton.address,
-        ROUND_DURATION, 
-      );
-      await _powerton.init();  
-      await _powerton.start();  
-  
-      return _powerton;
-    } 
-  
-    async function NewSeigManager(){
-      var newSeigManager = await SeigManager.new(
-        ton.address,
-        wton.address,
-        registry.address,
-        depositManager.address,
-        SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-        factory.address
-      ); 
-  
-      await newSeigManager.setPowerTON(powerton.address); 
-      await newSeigManager.setDao(daoVault2.address);
-      await wton.addMinter(newSeigManager.address);
-      //await ton.addMinter(wton.address);
-      
-      /* 
-      await Promise.all([
-        depositManager,
-        wton,
-      ].map(contract => contract.setSeigManager(newSeigManager.address)));
-      */ 
-  
-      newSeigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-      newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-      newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-      await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-    
-      await wton.setSeigManager(newSeigManager.address);
-      await powerton.setSeigManager(newSeigManager.address);
-   
-      return newSeigManager;
-    }
+    }    
     
     async function addlayer2s(operator){
       let _layer2 = await DaoContractsDeployed.addOperator(operator);
       layer2s.push(_layer2);
-    } 
-    
-    async function executeAgenda(_target, _functionBytecode){ 
-      let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-      await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
-      await committeeProxy.executeAgenda(agendaID);   
-    } 
-
-    before(async function () { 
+    }  
+  
+    describe('Agenda - DAOCommitteeProxy', function () { 
+       
+      before(async function () {  
         this.timeout(1000000); 
-    
+
+        await initializeContracts();
+
         await addlayer2s(operator1);
         await addlayer2s(operator2);
     
@@ -251,13 +207,11 @@ const {
         await layer2s[2].changeMember(0, {from: candidate1});
         await layer2s[3].changeMember(1, {from: candidate2});
         await layer2s[4].changeMember(2, {from: candidate3});
-        _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
-    });
-  
-  
-    describe('Agenda - DAOCommitteeProxy', function () { 
         
-      it('DAOCommitteeProxy.upgradeTo ', async function () {  
+        _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
+     });  
+
+    it('DAOCommitteeProxy.upgradeTo ', async function () {  
         this.timeout(1000000);   
         let _newImp =  await DAOCommittee.new({from:owner});  
         let oldImp = await _committeeProxy.implementation();
@@ -265,23 +219,24 @@ const {
         expect(oldImp).to.not.equal(_newImp.address); 
         
         let params = [_newImp.address] ;
-        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.upgradeTo,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
+        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.CommitteeProxy.upgradeTo,params);
+        await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
         expect(await _committeeProxy._implementation()).to.equal(_newImp.address);  
 
         params = [oldImp] ;
-        functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.upgradeTo,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
+        functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.CommitteeProxy.upgradeTo,params);
+        await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
         expect(await _committeeProxy._implementation()).to.equal(oldImp);  
 
       });  
+      
       it('DAOCommitteeProxy.setProxyPause - true ', async function () {  
           this.timeout(1000000);   
 
           expect(await _committeeProxy.pauseProxy()).to.equal(false); 
           let params = [true] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setProxyPause,params);
-          await executeAgenda(_committeeProxy.address, functionBytecode);   
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.CommitteeProxy.setProxyPause,params);
+          await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
           expect(await _committeeProxy.pauseProxy()).to.equal(true);  
       }); 
       
@@ -290,8 +245,8 @@ const {
 
         expect(await _committeeProxy.pauseProxy()).to.equal(true); 
         let params = [false] ;
-        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setProxyPause,params);
-        await executeAgenda(_committeeProxy.address, functionBytecode);   
+        let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.CommitteeProxy.setProxyPause,params);
+        await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
         expect(await _committeeProxy.pauseProxy()).to.equal(false);  
     }); 
     

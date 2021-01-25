@@ -152,33 +152,33 @@ let AbiObj, WTONAbiObj, DaoContractsDeployed ;
 describe('Test 1', function () {
   before(async function () {
     this.timeout(1000000);
-
-
-    DaoContractsDeployed = new DaoContracts(); 
-    AbiObj = await DaoContractsDeployed.objectMapping(SeigManagerAbi);
-    WTONAbiObj = await DaoContractsDeployed.objectMapping(WTONAbi);
-
-    let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-    ton = returnData.ton;
-    wton = returnData.wton;
-    registry = returnData.registry;
-    depositManager = returnData.depositManager;
-    factory = returnData.coinageFactory;
-    daoVault = returnData.daoVault;
-    seigManager = returnData.seigManager;
-    powerton = returnData.powerton; 
-
-    let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-    daoVault2 = returnData1.daoVault2;
-    agendaManager = returnData1.agendaManager;
-    candidateFactory = returnData1.candidateFactory;
-    committee = returnData1.committee;
-    committeeProxy= returnData1.committeeProxy; 
-
-    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
   });
-         
+  
+  async function initializeContracts(){ 
+  
+      DaoContractsDeployed = new DaoContracts(); 
+      AbiObject = await DaoContractsDeployed.setAbiObject();   
+      
+      let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+      ton = returnData.ton;
+      wton = returnData.wton;
+      registry = returnData.registry;
+      depositManager = returnData.depositManager;
+      factory = returnData.coinageFactory;
+      daoVault = returnData.daoVault;
+      seigManager = returnData.seigManager;
+      powerton = returnData.powerton; 
+
+      let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+      daoVault2 = returnData1.daoVault2;
+      agendaManager = returnData1.agendaManager;
+      candidateFactory = returnData1.candidateFactory;
+      committee = returnData1.committee;
+      committeeProxy= returnData1.committeeProxy; 
+
+      await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+      await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+  }          
   async function NewPowerTON(){
     let _powerton = await PowerTON.new(
       seigManager.address,
@@ -194,40 +194,36 @@ describe('Test 1', function () {
   async function addlayer2s(operator){   
     let _layer2 = await DaoContractsDeployed.addOperator(operator);
     layer2s.push(_layer2);
-  } 
-
-  async function executeAgenda(_target, _functionBytecode){ 
-    let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-    await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
-    await committeeProxy.executeAgenda(agendaID);   
-  } 
-
-  before(async function () { 
-    this.timeout(1000000); 
-
-    await addlayer2s(operator1);
-    await addlayer2s(operator2);
-
-    await DaoContractsDeployed.addCandidate(candidate1);
-    await DaoContractsDeployed.addCandidate(candidate2);
-    await DaoContractsDeployed.addCandidate(candidate3); 
-
-    let layer2s = DaoContractsDeployed.getLayer2s();
-
-    await layer2s[2].changeMember(0, {from: candidate1});
-    await layer2s[3].changeMember(1, {from: candidate2});
-    await layer2s[4].changeMember(2, {from: candidate3});
-  });
-
+  }  
 
   describe('Agenda - seigManager', function () {  
 
+    before(async function () {  
+        this.timeout(1000000); 
+
+        await initializeContracts();
+
+        await addlayer2s(operator1);
+        await addlayer2s(operator2);
+    
+        await DaoContractsDeployed.addCandidate(candidate1);
+        await DaoContractsDeployed.addCandidate(candidate2);
+        await DaoContractsDeployed.addCandidate(candidate3); 
+    
+        let layer2s = DaoContractsDeployed.getLayer2s();
+
+        await layer2s[2].changeMember(0, {from: candidate1});
+        await layer2s[3].changeMember(1, {from: candidate2});
+        await layer2s[4].changeMember(2, {from: candidate3});
+      
+    }); 
+    
     it('seigManager.setPowerTON', async function () {  
       
       let _powerton = await NewPowerTON(); 
       let params = [_powerton.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTON,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setPowerTON,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await seigManager.powerton()).to.equal(_powerton.address); 
 
       let data = {
@@ -246,8 +242,8 @@ describe('Test 1', function () {
     it('seigManager.setDao', async function () { 
       let _daoVault2 = await DAOVault2.new(ton.address, wton.address,{from:owner}); 
       let params = [_daoVault2.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setDao,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setDao,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await seigManager.dao()).to.equal(_daoVault2.address); 
 
     });
@@ -260,13 +256,13 @@ describe('Test 1', function () {
       const PSEIG_RATE_2 = _WTON('0.3');  
        
       let params1 = [POWERTON_SEIG_RATE_2.toFixed(WTON_UNIT)] ;
-      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObj.setPowerTONSeigRate,params1); 
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setPowerTONSeigRate,params1); 
       let params2 = [DAO_SEIG_RATE_2.toFixed(WTON_UNIT)] ;
-      let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObj.setDaoSeigRate,params2); 
+      let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setDaoSeigRate,params2); 
       let params3 = [PSEIG_RATE_2.toFixed(WTON_UNIT)] ;
-      let functionBytecode3 =  web3.eth.abi.encodeFunctionCall(AbiObj.setPseigRate,params3); 
+      let functionBytecode3 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setPseigRate,params3); 
         
-      await executeAgenda(
+      await DaoContractsDeployed.executeAgenda(
         [seigManager.address,seigManager.address,seigManager.address],
         [functionBytecode1, functionBytecode2, functionBytecode3] );  
       
@@ -283,15 +279,15 @@ describe('Test 1', function () {
     it('seigManager.setCoinageFactory', async function () {  
       let _factory = await CoinageFactory.new({from:owner});
       let params = [_factory.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setCoinageFactory,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setCoinageFactory,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await seigManager.factory()).to.equal(_factory.address); 
     });
 
     it('seigManager.setAdjustDelay', async function () {  
       let params = [5] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setAdjustDelay,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setAdjustDelay,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       (await seigManager.adjustCommissionDelay()).should.be.bignumber.equal(toBN("5"));  
     });
     
@@ -308,29 +304,29 @@ describe('Test 1', function () {
       (await seigManager.minimumAmount()).should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT));  
 
       let params = [TON_MINIMUM_STAKE_AMOUNT2.times(WTON_TON_RATIO).toFixed(WTON_UNIT)] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setMinimumAmount,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setMinimumAmount,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       (await seigManager.minimumAmount()).should.be.bignumber.equal(toBN(TON_MINIMUM_STAKE_AMOUNT2.times(WTON_TON_RATIO).toFixed(WTON_UNIT)));  
     });  
     
     it('seigManager.renounceWTONMinter', async function () {   
       this.timeout(1000000);  
       expect(await wton.isMinter(seigManager.address)).to.equal(true);
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceWTONMinter,[]); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renounceWTONMinter,[]); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await wton.isMinter(seigManager.address)).to.equal(false);
 
       let params1 = [seigManager.address] ;
-      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(WTONAbiObj.addMinter,params1); 
-      await executeAgenda(wton.address, functionBytecode1); 
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.addMinter,params1); 
+      await DaoContractsDeployed.executeAgenda(wton.address, functionBytecode1); 
       expect(await wton.isMinter(seigManager.address)).to.equal(true);  
     }); 
 
     it('seigManager.transferOwnership(address)  ', async function () {   
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
       let params = [owner] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership2,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership2,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await seigManager.owner()).to.equal(owner);
 
       await seigManager.transferOwnership(committeeProxy.address); 
@@ -345,8 +341,8 @@ describe('Test 1', function () {
       await powerton.transferOwnership(seigManager.address); 
 
       let params = [powerton.address, owner] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await powerton.owner()).to.equal(owner);
 
       await powerton.transferOwnership(committeeProxy.address); 
@@ -357,8 +353,8 @@ describe('Test 1', function () {
      
       expect(await seigManager.isPauser(user1)).to.equal(false);
       let params = [user1] ; 
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.addPauser,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.addPauser,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       expect(await seigManager.isPauser(user1)).to.equal(true);
     });  
 
@@ -368,8 +364,8 @@ describe('Test 1', function () {
       
      
       let params = [] ;  
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.pause,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.pause,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       let layer2s = await DaoContractsDeployed.getLayer2s();
       expect(layer2s.length).to.gt(0);
       await layer2s[layer2s.length-1].updateSeigniorage(); 
@@ -380,8 +376,8 @@ describe('Test 1', function () {
     it('seigManager.unpause', async function () {   
       let pausedBlock = await seigManager.pausedBlock(); 
        let params = [] ;  
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.unpause,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.unpause,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       let unpausedBlockkAfter = await seigManager.unpausedBlock(); 
       unpausedBlockkAfter.should.be.bignumber.gt(pausedBlock);
     });   
@@ -392,8 +388,8 @@ describe('Test 1', function () {
       expect(await powerton.isPauser(seigManager.address)).to.equal(true); 
 
       let params = [powerton.address] ; 
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renouncePauser,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renouncePauser,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       expect(await powerton.isPauser(seigManager.address)).to.equal(false);
     }); 
  
@@ -402,8 +398,8 @@ describe('Test 1', function () {
       expect(await seigManager.isPauser(committeeProxy.address)).to.equal(true);
         
       let params = [] ; 
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renouncePauser2,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renouncePauser2,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       expect(await seigManager.isPauser(committeeProxy.address)).to.equal(false);
     }); 
  
@@ -411,22 +407,22 @@ describe('Test 1', function () {
     it('seigManager.renounceMinter', async function () { 
       expect(await wton.isMinter(seigManager.address)).to.equal(true);
       let params = [wton.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceMinter,params); 
-      await executeAgenda(seigManager.address, functionBytecode);  
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renounceMinter,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       expect(await wton.isMinter(seigManager.address)).to.equal(false);
      });
  
 
     it('seigManager.renounceOwnership(address)', async function () {    
       let params1 = [seigManager.address] ;
-      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership2,params1); 
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership2,params1); 
  
       let params = [powerton.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceOwnership,params); 
-      await executeAgenda(
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renounceOwnership,params); 
+      await DaoContractsDeployed.executeAgenda(
         [powerton.address, seigManager.address], [functionBytecode1,functionBytecode]); 
       
-        expect(await powerton.owner()).to.equal(ZERO_ADDRESS);
+      expect(await powerton.owner()).to.equal(ZERO_ADDRESS);
 
     });  
 
@@ -434,8 +430,8 @@ describe('Test 1', function () {
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
 
       let params = [] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceOwnership2,params); 
-      await executeAgenda(seigManager.address, functionBytecode); 
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renounceOwnership2,params); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       expect(await seigManager.owner()).to.equal(ZERO_ADDRESS);
     });  
 

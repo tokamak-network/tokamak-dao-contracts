@@ -149,65 +149,35 @@ let AbiObj, DaoContractsDeployed ;
 
 describe('Test 1', function () {
   before(async function () {
-    this.timeout(1000000);
+    this.timeout(1000000); 
+  }); 
 
+  async function initializeContracts(){ 
+  
+      DaoContractsDeployed = new DaoContracts(); 
+      AbiObject = await DaoContractsDeployed.setAbiObject();   
+      
+      let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+      ton = returnData.ton;
+      wton = returnData.wton;
+      registry = returnData.registry;
+      depositManager = returnData.depositManager;
+      factory = returnData.coinageFactory;
+      daoVault = returnData.daoVault;
+      seigManager = returnData.seigManager;
+      powerton = returnData.powerton; 
 
-    DaoContractsDeployed = new DaoContracts(); 
-    AbiObj = await DaoContractsDeployed.objectMapping(DepositManagerAbi);
+      let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+      daoVault2 = returnData1.daoVault2;
+      agendaManager = returnData1.agendaManager;
+      candidateFactory = returnData1.candidateFactory;
+      committee = returnData1.committee;
+      committeeProxy= returnData1.committeeProxy; 
 
-    let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-    ton = returnData.ton;
-    wton = returnData.wton;
-    registry = returnData.registry;
-    depositManager = returnData.depositManager;
-    factory = returnData.coinageFactory;
-    daoVault = returnData.daoVault;
-    seigManager = returnData.seigManager;
-    powerton = returnData.powerton; 
+      await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+      await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+  } 
 
-    let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-    daoVault2 = returnData1.daoVault2;
-    agendaManager = returnData1.agendaManager;
-    candidateFactory = returnData1.candidateFactory;
-    committee = returnData1.committee;
-    committeeProxy= returnData1.committeeProxy; 
-
-    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-  });
-        
-  async function addCandidateWithoutDeposit(candidate) {
-    //const minimum = await seigManager.minimumAmount();
-    const minimum = await seigManager.minimumAmount();
-    const beforeTonBalance = await ton.balanceOf(candidate);
-
-    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
-    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-    //await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
-    //tmp = await ton.allowance(candidate, committeeProxy.address);
-    //tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
-    await committeeProxy.createCandidate(candidate, {from: candidate});
-
-    const candidateContractAddress = await committeeProxy.candidateContract(candidate);
-
-    //const testMemo = "candidate memo string";
-    //const data = web3.eth.abi.encodeParameter("string", testMemo);
-
-    (await registry.layer2s(candidateContractAddress)).should.be.equal(true);
- 
-    const candidatesLength = await committeeProxy.candidatesLength();
- 
-    let foundCandidate = false;
-    for (let i = 0; i < candidatesLength; i++) {
-      const address = await committeeProxy.candidates(i);
-      if (address === candidate) {
-        foundCandidate = true;
-        break;
-      }
-    }
-    foundCandidate.should.be.equal(true);
-  }
- 
   async function NewSeigManager(){
     var newSeigManager = await SeigManager.new(
       ton.address,
@@ -235,69 +205,37 @@ describe('Test 1', function () {
     newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
     
-    /* 
-   console.log('layer2s[0].address', layer2s[0].address);
-   console.log('seigManager', seigManager.address);
-   console.log('registry.owner', await registry.owner());
-   console.log('committeeProxy.address',committeeProxy.address);
-    */
-    /* 
-   //onlyOperatorOrSeigManager
-   const _layer0 = await Layer2.at(layer2s[0].address);
-   await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
-   const _layer1 = await Layer2.at(layer2s[1].address);
-   await _layer1.setSeigManager(newSeigManager.address,{from: operator2});
-
-   //onlyOwnerOrOperator : committeeProxy 에서 실행하거나, 
-   await registry.deployCoinage(layer2s[0].address, newSeigManager.address, {from: operator1});
-   await registry.deployCoinage(layer2s[1].address, newSeigManager.address, {from: operator2});
-
-   await wton.setSeigManager(newSeigManager.address);
-   await powerton.setSeigManager(newSeigManager.address);
- 
-   const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
-   const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-
-   const coinageAddress = await newSeigManager.coinages(_layer1.address); 
-   const coinage = await AutoRefactorCoinage.at(coinageAddress);
-    // const stakedAmount = await coinage.balanceOf(operator2);
-    // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
-  
-    expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
-    */
+     
     return newSeigManager;
   }
   
   async function addlayer2s(operator){
     let _layer2 = await DaoContractsDeployed.addOperator(operator);
     layer2s.push(_layer2);
-  }  
-
-  async function executeAgenda(_target, _functionBytecode){ 
-    let agendaID = await DaoContractsDeployed.createAgenda(_target, _functionBytecode); 
-    await DaoContractsDeployed.agendaVoteYesAll(agendaID); 
-    await committeeProxy.executeAgenda(agendaID);   
-  }
-
-  before(async function () { 
-    this.timeout(1000000); 
-
-    await addlayer2s(operator1);
-    await addlayer2s(operator2);
-
-    await DaoContractsDeployed.addCandidate(candidate1);
-    await DaoContractsDeployed.addCandidate(candidate2);
-    await DaoContractsDeployed.addCandidate(candidate3); 
-
-    let layer2s = DaoContractsDeployed.getLayer2s();
-
-    await layer2s[2].changeMember(0, {from: candidate1});
-    await layer2s[3].changeMember(1, {from: candidate2});
-    await layer2s[4].changeMember(2, {from: candidate3});
-  });
-
+  }   
+ 
 
   describe('Agenda - depositManager', function () { 
+      before(async function () {  
+        this.timeout(1000000); 
+
+        await initializeContracts();
+
+        await addlayer2s(operator1);
+        await addlayer2s(operator2);
+    
+        await DaoContractsDeployed.addCandidate(candidate1);
+        await DaoContractsDeployed.addCandidate(candidate2);
+        await DaoContractsDeployed.addCandidate(candidate3); 
+    
+        let layer2s = DaoContractsDeployed.getLayer2s();
+
+        await layer2s[2].changeMember(0, {from: candidate1});
+        await layer2s[3].changeMember(1, {from: candidate2});
+        await layer2s[4].changeMember(2, {from: candidate3});
+      
+    }); 
+    
     it('depositManager.deposit ', async function () {  
       const stakeAmountTON = TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT);
       const stakeAmountWTON = TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
@@ -311,8 +249,8 @@ describe('Test 1', function () {
     it('depositManager.setGlobalWithdrawalDelay', async function () {    
       (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN(WITHDRAWAL_DELAY));  
       let params = [15] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setGlobalWithdrawalDelay,params);
-      await executeAgenda(depositManager.address, functionBytecode);   
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DepositManager.setGlobalWithdrawalDelay,params);
+      await DaoContractsDeployed.executeAgenda(depositManager.address, functionBytecode);   
       (await depositManager.globalWithdrawalDelay()).should.be.bignumber.equal(toBN("15")); 
     });
       
@@ -320,9 +258,9 @@ describe('Test 1', function () {
         
       let _newSeigManager = await NewSeigManager(); 
       let params = [_newSeigManager.address] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.setSeigManager,params);
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DepositManager.setSeigManager,params);
      
-      await executeAgenda(depositManager.address, functionBytecode);   
+      await DaoContractsDeployed.executeAgenda(depositManager.address, functionBytecode);   
       (await depositManager.seigManager()).should.be.equal(_newSeigManager.address); 
       let data = {
         seigManager: _newSeigManager,
@@ -361,16 +299,16 @@ describe('Test 1', function () {
      
     it('depositManager.transferOwnership', async function () {    
       let params = [user1] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.transferOwnership, params);
-      await executeAgenda(depositManager.address, functionBytecode);    
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DepositManager.transferOwnership, params);
+      await DaoContractsDeployed.executeAgenda(depositManager.address, functionBytecode);    
       expect(await depositManager.owner()).to.equal(user1); 
 
       await depositManager.transferOwnership(committeeProxy.address, {from:user1} );
 
     });
-    it('committeeProxy.renounceOwnership', async function () {   
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObj.renounceOwnership, []);
-      await executeAgenda(depositManager.address, functionBytecode);    
+    it('depositManager.renounceOwnership', async function () {   
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DepositManager.renounceOwnership, []);
+      await DaoContractsDeployed.executeAgenda(depositManager.address, functionBytecode);    
       expect(await depositManager.owner()).to.equal(ZERO_ADDRESS); 
     });
   });

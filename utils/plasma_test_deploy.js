@@ -326,7 +326,8 @@ class DaoContracts {
         daoVault: this.daoVault,
         seigManager: this.seigManager,
         powerton: this.powerton };
-    } 
+    }
+     
     getDaoContracts  = function () {
       return { 
         daoVault2 : this.daoVault2,
@@ -335,8 +336,7 @@ class DaoContracts {
         committee: this.committee,
         committeeProxy: this.committeeProxy
       };
-    }  
-
+    }
 
   addOperator = async function(operator) {
     const etherToken = await EtherToken.new(true, this.ton.address, true, {from: operator});

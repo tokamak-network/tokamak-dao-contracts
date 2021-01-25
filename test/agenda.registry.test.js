@@ -175,19 +175,7 @@ const {
     
         await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
         await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    }
-
-    async function NewPowerTON(){
-        let _powerton = await PowerTON.new(
-          seigManager.address,
-          wton.address,
-          ROUND_DURATION, 
-        );
-        await _powerton.init();  
-        await _powerton.start();  
-    
-        return _powerton;
-      }  
+    } 
     
     async function addlayer2s(operator){
       let _layer2 = await DaoContractsDeployed.addOperator(operator);
