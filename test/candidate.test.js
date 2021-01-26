@@ -415,6 +415,7 @@ describe('Candidate', function () {
     describe('Voting', function () {
       let agendaID;
       beforeEach(async function () {
+        this.timeout(1000000);
         const candidateContract1 = await daoContractsDeployed.getCandidateContract(candidates[0]);
         await candidateContract1.changeMember(0, {from: candidates[0]});
         (await committeeProxy.members(0)).should.be.equal(candidates[0]);

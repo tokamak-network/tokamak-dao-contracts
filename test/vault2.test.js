@@ -273,7 +273,7 @@ describe('DAOVault2', function () {
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
 
     //===================================================
-    agendaManager = await DAOAgendaManager.new(ton.address);
+    agendaManager = await DAOAgendaManager.new();
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();
@@ -299,7 +299,7 @@ describe('DAOVault2', function () {
     committeeProxy = await DAOCommittee.at(daoCommitteeProxy.address);
     if(debugLog)  console.log('committeeProxy :', committeeProxy.address ) ;
 
-    await committeeProxy.setMaxMember(3);
+    await committeeProxy.increaseMaxMember(3, 2);
 
     ////////////////////////////////////////////////////////////////////////
     // test setting
@@ -316,7 +316,7 @@ describe('DAOVault2', function () {
     //await daoVault2.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
-    await committee.transferOwnership(committeeProxy.address);
+    //await committee.transferOwnership(committeeProxy.address);
   } 
 
   async function totalBalanceOfCandidate(candidate) {
