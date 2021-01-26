@@ -34,9 +34,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         layer2Registry = ILayer2Registry(_layer2Registry);
         agendaManager = IDAOAgendaManager(_agendaManager);
         candidateFactory = ICandidateFactory(_candidateFactory);
-        //activityRewardManager = IDAOActivityRewardManager(_activityRewardManager);
         daoVault = IDAOVault2(_daoVault);
-        //maxMember = 3;
         quorum = 2;
         activityRewardPerSecond = 1e18;
 
@@ -45,52 +43,14 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         _setupRole(DEFAULT_ADMIN_ROLE, address(this));
     }
 
+    /// @notice Set pause state
+    /// @param _pause true:pause or false:resume
     function setProxyPause(bool _pause) onlyOwner public {
         pauseProxy = _pause;
     }
 
-    /*function setProxyStore(address payable _storeAddress) onlyOwner public {
-        require(_storeAddress != address(0), "DAOCommitteeProxy: store address is zero");
-        store = DAOCommitteeStore(_storeAddress);
-    }
-
-    function setProxyAgendaManager(address _addr) onlyOwner validStore public {
-        require(_addr != address(0), "DAOCommitteeProxy: agendamanager address is zero");
-        agendaManager = DAOAgendaManager(_addr);
-        store.setAgendaManager(_addr);
-    }
-
-    function setProxyAactivityfeeManager(address _addr) onlyOwner validStore public {
-        require(_addr != address(0), "DAOCommitteeProxy: ActivityFeeManager address is zero");
-        activityfeeManager = DAOActivityFeeManager(_addr);
-        store.setActivityFeeManager(_addr);
-    }
-
-    //--
-    function setProxyElection(address _addr) onlyOwner public {
-        require(_addr != address(0), "DAOCommitteeProxy: election address is zero");
-        election = DAOElectionStore(_addr);
-    }
-
-    function setProxyCommitteeL2Factory(address _addr) onlyOwner public {
-        require(_addr != address(0), "DAOCommitteeProxy: factory address is zero");
-        committeeL2Factory = CommitteeL2FactoryI(_addr);
-        election.setCommitteeL2Factory(_addr);
-    }
-
-    function setProxyLayer2Registry(address _addr) onlyOwner public {
-        require(_addr != address(0), "DAOCommitteeProxy: registry address is zero");
-        layer2Registry = Layer2RegistryI(_addr);
-        election.setLayer2Registry(_addr);
-    }
-
-    function setProxySeigManager(address _addr) onlyOwner public {
-        require(_addr != address(0), "DAOCommitteeProxy: SeigManager address is zero");
-        seigManager = SeigManagerI(_addr);
-        election.setSeigManager(_addr);
-    }*/
-    //--
-
+    /// @notice Set implementation contract
+    /// @param impl New implementation contract address
     function upgradeTo(address impl) public onlyOwner {
         require(_implementation != impl, "DAOCommitteeProxy: implementation address is zero");
         _implementation = impl;
