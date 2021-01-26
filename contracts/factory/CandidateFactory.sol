@@ -5,12 +5,25 @@ import { Candidate } from "../dao/Candidate.sol";
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 
 contract CandidateFactory is ICandidateFactory {
-    // layer2 deploy... make coinages
-    function deploy(address _candidate, string memory _name, address _seigManager, address _layer2registry) public override returns (address) {
-        Candidate c = new Candidate(_candidate, _name);
-        c.setSeigManager(_seigManager);
-        //c.setLayer2Registry(_layer2registry);
-        c.transferOwnership(_candidate);
+    function deploy(
+        address _candidate,
+        bool _isLayer2Candidate,
+        string memory _name,
+        address _committee,
+        address _seigManager
+    )
+        public
+        override
+        returns (address)
+    {
+        Candidate c = new Candidate(
+            _candidate,
+            _isLayer2Candidate,
+            _name,
+            _committee,
+            _seigManager
+        );
+        c.transferOwnership(_committee);
         return address(c);
     }
 }

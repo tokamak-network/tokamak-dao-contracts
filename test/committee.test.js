@@ -74,11 +74,10 @@ const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
 const AGENDA_INDEX_COUNTING_YES = 6;
 const AGENDA_INDEX_COUNTING_NO = 7;
 const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_REWARD = 9;
-const AGENDA_INDEX_STATUS = 10;
-const AGENDA_INDEX_RESULT = 11;
+const AGENDA_INDEX_STATUS = 9;
+const AGENDA_INDEX_RESULT = 10;
 //const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 12;
+const AGENDA_INDEX_EXECUTED = 11;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -634,7 +633,7 @@ describe('DAOCommittee', function () {
         const maxMember = await committeeProxy.maxMember();
         await expectRevert(
           committeeProxy.setMaxMember(maxMember.sub(toBN("1"))),
-          "DAOCommitteeStore: You have to call reduceMemberSlot to decrease"
+          "DAOCommitteeStore: You have to call decreaseMaxMember to decrease"
         );
       });
 
@@ -648,7 +647,7 @@ describe('DAOCommittee', function () {
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME].should.be.bignumber.gt(toBN("0"));
 
         reducingMember.should.be.not.equal(ZERO_ADDRESS);
-        await committeeProxy.reduceMemberSlot(reducingSlotIndex);
+        await committeeProxy.decreaseMaxMember(reducingSlotIndex);
         (await committeeProxy.members(reducingSlotIndex)).should.be.not.equal(reducingMember);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(maxMember.sub(toBN("1")));
 
@@ -666,7 +665,7 @@ describe('DAOCommittee', function () {
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_INDEX].should.be.bignumber.equal(reducingSlotIndex);
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME].should.be.bignumber.gt(toBN("0"));
 
-        await committeeProxy.reduceMemberSlot(reducingSlotIndex);
+        await committeeProxy.decreaseMaxMember(reducingSlotIndex);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(maxMember.sub(toBN("1")));
 
         const reducingMemberInfoAfter = await committeeProxy.candidateInfos(reducingMember);

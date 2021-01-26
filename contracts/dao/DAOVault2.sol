@@ -26,29 +26,46 @@ contract DAOVault2 is Ownable {
         wton = IERC20(_wton);
     }
 
+    /// @notice Set TON address
+    /// @param _ton TON address
     function setTON(address _ton) external onlyOwner {
         ton = IERC20(_ton);
     }
 
+    /// @notice Set WTON address
+    /// @param _wton WTON address
     function setWTON(address _wton) external onlyOwner {
         wton = IERC20(_wton);
     }
 
+    /// @notice Approves TON to specific address
+    /// @param _to Address to be approved
+    /// @param _amount Approving TON amount
     function approveTON(address _to, uint256 _amount) public onlyOwner {
         ton.safeApprove(_to, _amount);
         emit Approved(address(ton), _to, _amount);
     }
 
+    /// @notice Approves WTON to specific address
+    /// @param _to Address to be approved
+    /// @param _amount Approving WTON amount
     function approveWTON(address _to, uint256 _amount) public onlyOwner {
         wton.safeApprove(_to, _amount);
         emit Approved(address(wton), _to, _amount);
     }
 
+    /// @notice Approves ERC20 token to specific address
+    /// @param _token Token address
+    /// @param _to Address to be approved
+    /// @param _amount Approving ERC20 token amount
     function approveERC20(address _token, address _to, uint256 _amount) public onlyOwner {
         IERC20(_token).safeApprove(_to, _amount);
         emit Approved(address(_token), _to, _amount);
     }
 
+    /// @notice Transfers TON to specific address
+    /// @param _to Address to receive
+    /// @param _amount Transfer TON amount
     function claimTON(address _to, uint256 _amount) public onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
@@ -72,6 +89,9 @@ contract DAOVault2 is Ownable {
         emit Claimed(address(ton), _to, _amount);
     }
 
+    /// @notice Transfers WTON to specific address
+    /// @param _to Address to receive
+    /// @param _amount Transfer WTON amount
     function claimWTON(address _to, uint256 _amount) public onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
@@ -96,6 +116,9 @@ contract DAOVault2 is Ownable {
         emit Claimed(address(wton), _to, _amount);
     }
 
+    /// @notice Transfers ERC20 token to specific address
+    /// @param _to Address to receive
+    /// @param _amount Transfer ERC20 token amount
     function claimERC20(address _token, address _to, uint256 _amount) public onlyOwner {
         require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
         IERC20(_token).safeTransfer(_to, _amount);

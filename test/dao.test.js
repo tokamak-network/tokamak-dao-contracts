@@ -14,8 +14,7 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
-//const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
-//const deployPlasmaEvmContracts = require('./utils/deploy.js');
+const DaoContracts = require('../utils/plasma_test_deploy.js');
 
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
@@ -75,11 +74,10 @@ const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
 const AGENDA_INDEX_COUNTING_YES = 6;
 const AGENDA_INDEX_COUNTING_NO = 7;
 const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_REWARD = 9;
-const AGENDA_INDEX_STATUS = 10;
-const AGENDA_INDEX_RESULT = 11;
+const AGENDA_INDEX_STATUS = 9;
+const AGENDA_INDEX_RESULT = 10;
 //const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 12;
+const AGENDA_INDEX_EXECUTED = 11;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -140,31 +138,30 @@ let daoVault;
 let seigManager;
 let powerton;
 
+let daoContractsDeployed ; 
+
 describe('Test 1', function () {
   before(async function () {
     this.timeout(1000000);
 
-    /*[
-      ton,
-      wton,
-      registry,
-      depositManager,
-      coinageFactory,
-      daoVault,
-      seigManager,
-      powerton
-    ] = await deployPlasmaEvmContracts(owner);*/
+    daoContractsDeployed = new DaoContracts(); 
 
-    /*[
-      daoVault2,
-      agendaManager,
-      candidateFactory,
-      committee,
-      committeeProxy
-    ] = await deployDaoContracts(owner);*/
+    const returnData = await daoContractsDeployed.initializePlasmaEvmContracts(owner);
+    ton = returnData.ton;
+    wton = returnData.wton;
+    registry = returnData.registry;
+    depositManager = returnData.depositManager;
+    factory = returnData.coinageFactory;
+    daoVault = returnData.daoVault;
+    seigManager = returnData.seigManager;
+    powerton = returnData.powerton; 
 
-    await initializePlasmaEvmContracts(); 
-    await initializeDaoContracts();
+    const returnData1 = await daoContractsDeployed.initializeDaoContracts(owner);
+    daoVault2 = returnData1.daoVault2;
+    agendaManager = returnData1.agendaManager;
+    candidateFactory = returnData1.candidateFactory;
+    committee = returnData1.committee;
+    committeeProxy= returnData1.committeeProxy; 
 
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
@@ -235,131 +232,6 @@ describe('Test 1', function () {
         }  
     }  
     assert(false, 'Did not find event');
-  } 
-
-
-  async function initializePlasmaEvmContracts() {
-    ton = await TON.new();
-    wton = await WTON.new(ton.address);
-    registry = await Layer2Registry.new();
-    depositManager = await DepositManager.new(
-      wton.address,
-      registry.address,
-      WITHDRAWAL_DELAY,
-    );
-    factory = await CoinageFactory.new();
-
-    currentTime = await time.latest();
-    console.log(`currentTime1: ${currentTime}`);
-    daoVault = await DAOVault.new(wton.address, currentTime);
-    seigManager = await SeigManager.new(
-      ton.address,
-      wton.address,
-      registry.address,
-      depositManager.address,
-      SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-      factory.address
-    );
-    powerton = await PowerTON.new(
-      seigManager.address,
-      wton.address,
-      ROUND_DURATION,
-    );
-    await powerton.init();
-
-    await seigManager.setPowerTON(powerton.address);
-    await powerton.start();
-    await seigManager.setDao(daoVault.address);
-    await wton.addMinter(seigManager.address);
-    await ton.addMinter(wton.address);
-    
-    await Promise.all([
-      depositManager,
-      wton,
-    ].map(contract => contract.setSeigManager(seigManager.address)));
-      
-    // ton setting
-    await ton.mint(deployer, TON_INITIAL_SUPPLY.toFixed(TON_UNIT));
-    await ton.approve(wton.address, TON_INITIAL_SUPPLY.toFixed(TON_UNIT));
-     
-    seigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-    seigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-    seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
-    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
-
-    await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-  }
-
-  async function initializeDaoContracts() {
-    debugLog =false;
-    if(debugLog) console.log('ton :', ton.address) ;
-
-    //===================================================
-    daoVault2 = await DAOVault2.new(ton.address, wton.address);
-    if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
-    //===================================================
-    agendaManager = await DAOAgendaManager.new();
-    if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
-    //===================================================
-    candidateFactory = await CandidateFactory.new();
-    if(debugLog)  console.log('candidateFactory :', candidateFactory.address) ;
-    //===================================================
-
-    committee = await DAOCommittee.new();
-    if(debugLog)  console.log('dAOCommittee :', committee.address) ;
-
-    daoCommitteeProxy = await DAOCommitteeProxy.new(
-      ton.address,
-      committee.address,
-      seigManager.address,
-      registry.address,
-      agendaManager.address,
-      candidateFactory.address,
-      daoVault2.address
-    );
-    if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
-   
-    let impl = await daoCommitteeProxy.implementation() ;
-
-    committeeProxy = await DAOCommittee.at(daoCommitteeProxy.address);
-    if(debugLog)  console.log('committeeProxy :', committeeProxy.address ) ;
-     
-    if(debugLog){
-      console.log('dAOCommittee :', committee.address) ;
-      console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
-      console.log('daoCommitteeProxy implementation :', impl) ;
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    // test setting
-    await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
-
-    ////////////////////////////////////////////////////////////////////////
-    // permissions
-    await ton.addMinter(committeeProxy.address);
-    await ton.transferOwnership(committeeProxy.address);
-
-    await wton.addMinter(committeeProxy.address);
-    await wton.transferOwnership(committeeProxy.address);
-
-    await seigManager.addPauser(committeeProxy.address);
-
-    await registry.transferOwnership(committeeProxy.address);
-    await seigManager.transferOwnership(committeeProxy.address);
-    await depositManager.transferOwnership(committeeProxy.address);
-
-    await daoVault2.transferOwnership(committeeProxy.address);
-    await agendaManager.setCommittee(committeeProxy.address);
-    await agendaManager.transferOwnership(committeeProxy.address);
-
-    await committeeProxy.increaseMaxMember(3, 2);
-
-    await ton.renounceMinter();
-    await wton.renounceMinter();
   } 
 
   async function deposit(candidateContractAddress, account, tonAmount) {
@@ -488,6 +360,11 @@ describe('Test 1', function () {
     return layer2;
   }
 
+  async function getCandidateContract(candidate) {
+    const contractAddress = await committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
+
   before(async function () { 
     this.timeout(1000000);
     await addCandidate(candidate1);
@@ -495,8 +372,8 @@ describe('Test 1', function () {
   });
 
   describe('Candidate', function () {
-
     it('create candidate', async function () {
+      this.timeout(1000000);
       (await committeeProxy.isExistCandidate(candidate3)).should.be.equal(false);
       await addCandidate(candidate3);
       (await committeeProxy.isExistCandidate(candidate3)).should.be.equal(true);
@@ -550,65 +427,63 @@ describe('Test 1', function () {
     });
 
     describe('operator as a candidate', async function () {
+      let layer2;
       it('register on Committee', async function () {
         (await committeeProxy.isExistCandidate(user1)).should.be.equal(false);
 
-        const layer2 = await addOperator(user1);
+        layer2 = await addOperator(user1);
         layer2.should.be.not.equal(ZERO_ADDRESS);
          
         await committeeProxy.registerOperator(layer2.address, "memo", {from: user1});
 
-        (await committeeProxy.isExistCandidate(user1)).should.be.equal(true);
-        const candidateInfo = await committeeProxy.candidateInfos(user1);
-        candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
+        (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
+        const candidateInfo = await committeeProxy.candidateInfos(layer2.address);
+        //candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
       });
 
       it('isCandidateContract', async function () {
           const isCandidate = await committeeProxy.isCandidate(user1);
           isCandidate.should.be.equal(false);
 
-          const candidateContractAddress = await committeeProxy.candidateContract(user1);
+          const candidateContractAddress = await committeeProxy.candidateContract(layer2.address);
           const candidateContract = await Candidate.at(candidateContractAddress);
-          await expectRevert.unspecified(
-            candidateContract.isCandidateContract()
-          );
+          (await candidateContract.isCandidateContract()).should.be.equal(true);
       });
 
       it('can not updateSeigniorage on Committee', async function () {
         await expectRevert(
-          committeeProxy.updateSeigniorage(user1, {from: user1}),
-          "DAOCommittee: the contract doesn't support updateSeigniorage"
+          committeeProxy.updateSeigniorage(layer2.address, {from: user1}),
+          "Candidate: you should update seigniorage from layer2 contract"
         );
       });
 
       it('register on Committee by owner', async function () {
         (await committeeProxy.isExistCandidate(user2)).should.be.equal(false);
 
-        const layer2 = await addOperator(user2);
+        layer2 = await addOperator(user2);
         layer2.should.be.not.equal(ZERO_ADDRESS);
 
+        (await layer2.operator()).should.be.equal(user2);
         await committeeProxy.registerOperatorByOwner(user2, layer2.address, "memo");
 
-        (await committeeProxy.isExistCandidate(user2)).should.be.equal(true);
-        const candidateInfo = await committeeProxy.candidateInfos(user2);
-        candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
+        (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
+        const candidateInfo = await committeeProxy.candidateInfos(layer2.address);
+        //candidateInfo[CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT].should.be.equal(layer2.address);
       });
 
       it('isCandidateContract', async function () {
           const isCandidate = await committeeProxy.isCandidate(user2);
           isCandidate.should.be.equal(false);
 
-          const candidateContractAddress = await committeeProxy.candidateContract(user2);
+          const candidateContractAddress = await committeeProxy.candidateContract(layer2.address);
           const candidateContract = await Candidate.at(candidateContractAddress);
-          await expectRevert.unspecified(
-            candidateContract.isCandidateContract()
-          );
+          (await candidateContract.isCandidateContract()).should.be.equal(true);
       });
 
       it('can not updateSeigniorage on Committee', async function () {
         await expectRevert(
-          committeeProxy.updateSeigniorage(user2, {from: user2}),
-          "DAOCommittee: the contract doesn't support updateSeigniorage"
+          committeeProxy.updateSeigniorage(layer2.address, {from: user2}),
+          "Candidate: you should update seigniorage from layer2 contract"
         );
       });
  
@@ -620,7 +495,8 @@ describe('Test 1', function () {
       (await committeeProxy.isExistCandidate(candidate1)).should.be.equal(true);
       const slotIndex = 0;
       (await committeeProxy.members(slotIndex)).should.be.equal(ZERO_ADDRESS);
-      await committeeProxy.changeMember(slotIndex, {from: candidate1});
+      const candidateContract = await getCandidateContract(candidate1);
+      await candidateContract.changeMember(slotIndex, {from: candidate1});
       (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
     });
 
@@ -631,18 +507,22 @@ describe('Test 1', function () {
       );
 
       const slotIndex = 0;
+      const candidateContract1 = await getCandidateContract(candidate1);
       (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
+      const candidateContract2 = await getCandidateContract(candidate2);
       expectRevert(
-        committeeProxy.changeMember(slotIndex, {from: candidate2}),
+        candidateContract2.changeMember(slotIndex, {from: candidate2}),
         "not enough amount"
       );
     });
 
     it('should fail to own two slots', async function () {
+      const candidateContract1 = await getCandidateContract(candidate1);
       (await committeeProxy.members(0)).should.be.equal(candidate1);
       (await committeeProxy.members(1)).should.be.equal(ZERO_ADDRESS);
+      const candidateContract = await getCandidateContract(candidate1);
       expectRevert(
-        committeeProxy.changeMember(1, {from: candidate1}),
+        candidateContract.changeMember(1, {from: candidate1}),
         "DAOCommittee: already member"
       );
     });
@@ -655,16 +535,19 @@ describe('Test 1', function () {
       );
 
       const slotIndex = 0;
+      const candidateContract1 = await getCandidateContract(candidate1);
       (await committeeProxy.members(slotIndex)).should.be.equal(candidate1);
-      await committeeProxy.changeMember(slotIndex, {from: candidate2});
+      const candidateContract = await getCandidateContract(candidate2);
+      await candidateContract.changeMember(slotIndex, {from: candidate2});
       (await committeeProxy.members(slotIndex)).should.be.equal(candidate2);
     });
 
     it('retire', async function () {
       (await committeeProxy.isExistCandidate(candidate2)).should.be.equal(true);
       const slotIndex = 0;
+      const candidateContract2 = await getCandidateContract(candidate2);
       (await committeeProxy.members(slotIndex)).should.be.equal(candidate2);
-      await committeeProxy.retireMember({from: candidate2});
+      await candidateContract2.retireMember({from: candidate2});
       (await committeeProxy.isExistCandidate(candidate2)).should.be.equal(true);
       (await committeeProxy.members(slotIndex)).should.be.equal(ZERO_ADDRESS);
     });
@@ -676,9 +559,12 @@ describe('Test 1', function () {
         (await committeeProxy.members(1)).should.be.equal(ZERO_ADDRESS);
         (await committeeProxy.members(2)).should.be.equal(ZERO_ADDRESS);
 
-        await committeeProxy.changeMember(0, {from: candidate1});
-        await committeeProxy.changeMember(1, {from: candidate2});
-        await committeeProxy.changeMember(2, {from: candidate3});
+        const candidateContract1 = await getCandidateContract(candidate1);
+        await candidateContract1.changeMember(0, {from: candidate1});
+        const candidateContract2 = await getCandidateContract(candidate2);
+        await candidateContract2.changeMember(1, {from: candidate2});
+        const candidateContract3 = await getCandidateContract(candidate3);
+        await candidateContract3.changeMember(2, {from: candidate3});
 
         (await committeeProxy.members(0)).should.be.equal(candidate1);
         (await committeeProxy.members(1)).should.be.equal(candidate2);
@@ -687,8 +573,9 @@ describe('Test 1', function () {
 
       it('can not exceed maximum', async function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
+        const candidateContract = await getCandidateContract(candidate2);
         expectRevert(
-          committeeProxy.changeMember(3, {from: candidate2}),
+          candidateContract.changeMember(3, {from: candidate2}),
           "DAOCommittee: index is not available"
         );
       });
@@ -703,7 +590,7 @@ describe('Test 1', function () {
       it('decrease maximum', async function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('4'));
         (await committeeProxy.members(3)).should.be.equal(ZERO_ADDRESS);
-        await committeeProxy.reduceMemberSlot(3, 2);
+        await committeeProxy.decreaseMaxMember(3, 2);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
       });
     });
@@ -711,6 +598,7 @@ describe('Test 1', function () {
 
   describe('Member - Behavior', function () {
     it('update seigniorage', async function () {
+      const candidateContract1 = await getCandidateContract(candidate1);
       (await committeeProxy.members(0)).should.be.equal(candidate1);
       const beforeBalance = await totalBalanceOfCandidate(candidate1);
       await committeeProxy.updateSeigniorage(candidate1);
@@ -724,7 +612,7 @@ describe('Test 1', function () {
     describe('Create', function () {
       const votesList = [
         {
-          "votes": [VOTE_ABSTAIN, VOTE_ABSTAIN],
+          "votes": [VOTE_ABSTAIN, VOTE_ABSTAIN, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
@@ -736,11 +624,11 @@ describe('Test 1', function () {
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_ABSTAIN, VOTE_NO],
+          "votes": [VOTE_ABSTAIN, VOTE_NO, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_DISMISSED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_YES, VOTE_YES],
+          "votes": [VOTE_YES, VOTE_YES, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_ACCEPTED,
           "expected_status": AGENDA_STATUS_WAITING_EXEC
         }, {
@@ -748,7 +636,7 @@ describe('Test 1', function () {
           "expected_result": AGENDA_RESULT_REJECTED,
           "expected_status": AGENDA_STATUS_ENDED
         }, {
-          "votes": [VOTE_NO, VOTE_NO],
+          "votes": [VOTE_NO, VOTE_NO, VOTE_ABSTAIN],
           "expected_result": AGENDA_RESULT_REJECTED,
           "expected_status": AGENDA_STATUS_ENDED
         }
@@ -756,6 +644,7 @@ describe('Test 1', function () {
       let agendaID;
 
       async function isVoter(_agendaID, voter) {
+        const candidateContract = await getCandidateContract(voter);
         const agenda = await agendaManager.agendas(_agendaID);
 
         if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
@@ -776,7 +665,8 @@ describe('Test 1', function () {
           committeeProxy.endAgendaVoting(_agendaID)
         );
 
-        await committeeProxy.castVote(_agendaID, _vote, "test comment", {from: voter});
+        const candidateContract = await getCandidateContract(voter);
+        await candidateContract.castVote(_agendaID, _vote, "test comment", {from: voter});
 
         const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
         voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
@@ -861,6 +751,15 @@ describe('Test 1', function () {
               const agenda = await agendaManager.agendas(agendaID);
               agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(votesList[i].expected_result));
               agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(votesList[i].expected_status));
+
+              if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_WAITING_EXEC) {
+                const votingEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+                const currentTime = await time.latest();
+                if (currentTime < votingEndTimestamp) {
+                  await time.increaseTo(votingEndTimestamp);
+                }
+                (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
+              }
             });
 
             it("execute", async function () {

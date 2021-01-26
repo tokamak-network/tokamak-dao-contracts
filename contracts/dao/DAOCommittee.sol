@@ -9,6 +9,7 @@ import "./StorageStateCommittee.sol";
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
+import { ILayer2 } from "../interfaces/ILayer2.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
 import { ERC165Checker } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165Checker.sol";
@@ -90,40 +91,89 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     //////////////////////////////////////////////////////////////////////
     // setters
 
-    function setSeigManager(address _agendaManager) public onlyOwner {
-        require(_agendaManager != address(0), "zero address");
-        seigManager = ISeigManager(_agendaManager);
+    /// @notice Set SeigManager contract address
+    /// @param _seigManager New SeigManager contract address
+    function setSeigManager(address _seigManager) public onlyOwner {
+        require(_seigManager != address(0), "zero address");
+        seigManager = ISeigManager(_seigManager);
     }
      
+    /// @notice Set SeigManager contract address on candidate contracts
+    /// @param _candidateContracts Candidate contracts to be set
+    /// @param _seigManager New SeigManager contract address
+    function setCandidatesSeigManager(
+        address[] calldata _candidateContracts,
+        address _seigManager
+    )
+        public
+        onlyOwner
+    {
+        require(_seigManager != address(0), "zero address");
+        for (uint256 i = 0; i < _candidateContracts.length; i++) {
+            ICandidate(_candidateContracts[i]).setSeigManager(_seigManager);
+        }
+    }
+
+    /// @notice Set DAOCommitteeProxy contract address on candidate contracts
+    /// @param _candidateContracts Candidate contracts to be set
+    /// @param _committee New DAOCommitteeProxy contract address
+    function setCandidatesCommittee(
+        address[] calldata _candidateContracts,
+        address _committee
+    )
+        public
+        onlyOwner
+    {
+        require(_committee != address(0), "zero address");
+        for (uint256 i = 0; i < _candidateContracts.length; i++) {
+            ICandidate(_candidateContracts[i]).setCommittee(_committee);
+        }
+    }
+
+    /// @notice Set DAOVault2 contract address
+    /// @param _daoVault New DAOVault2 contract address
     function setDaoVault(address _daoVault) public onlyOwner {
         require(_daoVault != address(0), "zero address");
         daoVault = IDAOVault2(_daoVault);
     }
 
+    /// @notice Set Layer2Registry contract address
+    /// @param _layer2Registry New Layer2Registry contract address
     function setLayer2Registry(address _layer2Registry) public onlyOwner {
         require(_layer2Registry != address(0), "zero address");
         layer2Registry = ILayer2Registry(_layer2Registry);
     }
 
+    /// @notice Set DAOAgendaManager contract address
+    /// @param _agendaManager New DAOAgendaManager contract address
     function setAgendaManager(address _agendaManager) public onlyOwner {
         require(_agendaManager != address(0), "zero address");
         agendaManager = IDAOAgendaManager(_agendaManager);
     }
 
+    /// @notice Set CandidateFactory contract address
+    /// @param _candidateFactory New CandidateFactory contract address
     function setCandidateFactory(address _candidateFactory) public onlyOwner {
         require(_candidateFactory != address(0), "zero address");
         candidateFactory = ICandidateFactory(_candidateFactory);
     }
 
+    /// @notice Set TON contract address
+    /// @param _ton New TON contract address
     function setTon(address _ton) public onlyOwner {
         require(_ton != address(0), "zero address");
         ton = _ton;
     }
 
+    /// @notice Set activity reward amount
+    /// @param _value New activity reward per second
     function setActivityRewardPerSecond(uint256 _value) public onlyOwner {
         activityRewardPerSecond = _value;
     }
 
+    /// @notice Increases the number of member slot
+    /// @param _newMaxMember New number of member slot
+    /// @param _quorum New quorum
     function increaseMaxMember(
         uint256 _newMaxMember,
         uint256 _quorum
@@ -131,7 +181,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         public
         onlyOwner
     {
-        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
+        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call decreaseMaxMember to decrease");
         emit ChangedSlotMaximum(maxMember, _newMaxMember);
         maxMember = _newMaxMember;
         fillMemberSlot();
@@ -141,7 +191,9 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     //////////////////////////////////////////////////////////////////////
     // Managing members
 
-    function createCandidate(string memory _memo)
+    /// @notice Creates a candidate contract and register it on SeigManager
+    /// @param _memo A memo for the candidate
+    function createCandidate(string calldata _memo)
         public
         validSeigManager
         validLayer2Registry
@@ -149,11 +201,15 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     {
         require(!isExistCandidate(msg.sender), "DAOCommittee: candidate already registerd");
 
-        //uint256 minimumAmount = seigManager.minimumAmount();
-        //require(minimumAmount <= tonAmount, "DAOCommittee: not enough ton");
-          
         // Candidate
-        address candidateContract = candidateFactory.deploy(msg.sender, _memo, address(seigManager), address(layer2Registry));
+        address candidateContract = candidateFactory.deploy(
+            msg.sender,
+            false,
+            _memo,
+            address(this),
+            address(seigManager)
+        );
+
         require(
             candidateContract != address(0),
             "DAOCommittee: deployed candidateContract is zero"
@@ -180,30 +236,47 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit CandidateContractCreated(msg.sender, candidateContract, _memo);
     }
 
-    function registerOperator(address _contractAddress, string memory _memo)
+    /// @notice Registers the exist layer2 on DAO
+    /// @param _layer2 Layer2 contract address to be registered
+    /// @param _memo A memo for the candidate
+    function registerOperator(address _layer2, string memory _memo)
         public
         validSeigManager
         validLayer2Registry
         validCommitteeL2Factory
     {
-        _registerOperator(msg.sender, _contractAddress, _memo);
+        _registerOperator(msg.sender, _layer2, _memo);
     }
 
-    function registerOperatorByOwner(address _operator, address _contractAddress, string memory _memo)
+    /// @notice Registers the exist layer2 on DAO by owner
+    /// @param _operator Operator address of the layer2 contract
+    /// @param _layer2 Layer2 contract address to be registered
+    /// @param _memo A memo for the candidate
+    function registerOperatorByOwner(address _operator, address _layer2, string memory _memo)
         public
         onlyOwner
         validSeigManager
         validLayer2Registry
         validCommitteeL2Factory
     {
-        _registerOperator(_operator, _contractAddress, _memo);
+        _registerOperator(_operator, _layer2, _memo);
     }
 
-    function changeMember(uint256 _memberIndex)
+    /// @notice Replaces an existing member
+    /// @param _memberIndex The member slot index to be replaced
+    /// @return Whether or not the execution succeeded
+    function changeMember(
+        uint256 _memberIndex
+    )
         public
         returns (bool)
     {
-        CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
+        address newMember = ICandidate(msg.sender).candidate();
+        CandidateInfo storage candidateInfo = candidateInfos[newMember];
+        require(
+            ICandidate(msg.sender).isCandidateContract(),
+            "DAOCommittee: sender is not a candidate contract"
+        );
         require(
             _memberIndex < maxMember,
             "DAOCommittee: index is not available"
@@ -218,44 +291,52 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         );
         
         address prevMember = members[_memberIndex];
+        address prevMemberContract = candidateContract(prevMember);
 
         candidateInfo.memberJoinedTime = block.timestamp;
         candidateInfo.indexMembers = _memberIndex;
 
-        members[_memberIndex] = msg.sender;
+        members[_memberIndex] = newMember;
 
         if (prevMember == address(0)) {
-            emit ChangedMember(_memberIndex, prevMember, msg.sender);
+            emit ChangedMember(_memberIndex, prevMember, newMember);
             return true;
         }
 
         require(
-            totalSupplyOnCandidate(msg.sender) > totalSupplyOnCandidate(prevMember),
+            ICandidate(msg.sender).totalStaked() > ICandidate(prevMemberContract).totalStaked(),
             "not enough amount"
         );
 
-        CandidateInfo storage prevCandidate = candidateInfos[prevMember];
-        prevCandidate.indexMembers = 0;
-        prevCandidate.rewardPeriod = prevCandidate.rewardPeriod.add(block.timestamp.sub(prevCandidate.memberJoinedTime));
-        prevCandidate.memberJoinedTime = 0;
+        CandidateInfo storage prevCandidateInfo = candidateInfos[prevMember];
+        prevCandidateInfo.indexMembers = 0;
+        prevCandidateInfo.rewardPeriod = prevCandidateInfo.rewardPeriod.add(block.timestamp.sub(prevCandidateInfo.memberJoinedTime));
+        prevCandidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(_memberIndex, prevMember, msg.sender);
+        emit ChangedMember(_memberIndex, prevMember, newMember);
 
         return true;
     }
     
-    function retireMember() onlyMember(msg.sender) public returns (bool) {
-        CandidateInfo storage candidateInfo = candidateInfos[msg.sender];
+    /// @notice Retires member
+    /// @return Whether or not the execution succeeded
+    function retireMember() onlyMemberContract public returns (bool) {
+        address candidate = ICandidate(msg.sender).candidate();
+        CandidateInfo storage candidateInfo = candidateInfos[candidate];
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(candidateInfo.indexMembers, msg.sender, address(0));
+        emit ChangedMember(candidateInfo.indexMembers, candidate, address(0));
 
         candidateInfo.indexMembers = 0;
+        return true;
     }
 
-    function reduceMemberSlot(
+    /// @notice Decreases the number of member slot
+    /// @param _reducingMemberIndex Reducing member slot index
+    /// @param _quorum New quorum
+    function decreaseMaxMember(
         uint256 _reducingMemberIndex,
         uint256 _quorum
     )
@@ -306,6 +387,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         return true;
     }
 
+    /// @notice Set new quorum
+    /// @param _quorum New quorum
     function setQuorum(
         uint256 _quorum
     )
@@ -319,6 +402,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit QuorumChanged(quorum);
     }
 
+    /// @notice Set fee amount of creating an agenda
+    /// @param _fees Fee amount on TON
     function setCreateAgendaFees(
         uint256 _fees
     )
@@ -329,6 +414,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         agendaManager.setCreateAgendaFees(_fees);
     }
 
+    /// @notice Set the minimum notice period
+    /// @param _minimumNoticePeriod New minimum period in second
     function setMinimumNoticePeriodSeconds(
         uint256 _minimumNoticePeriod
     )
@@ -339,6 +426,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         agendaManager.setMinimumNoticePeriodSeconds(_minimumNoticePeriod);
     }
 
+    /// @notice Set the minimum voting period
+    /// @param _minimumVotingPeriod New minimum period in second
     function setMinimumVotingPeriodSeconds(
         uint256 _minimumVotingPeriod
     )
@@ -349,6 +438,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         agendaManager.setMinimumVotingPeriodSeconds(_minimumVotingPeriod);
     }
 
+    /// @notice Vote on an agenda
+    /// @param _agendaID The agenda ID
+    /// @param _vote voting type
+    /// @param _comment voting comment
     function castVote(
         uint256 _agendaID,
         uint _vote,
@@ -357,26 +450,25 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         public 
         validAgendaManager
     {
-        uint256 requiredVotes = quorum;
-        require(requiredVotes > 0, "DAOCommittee: requiredVotes is zero");
+        address candidate = ICandidate(msg.sender).candidate();
         
         agendaManager.castVote(
             _agendaID,
-            msg.sender,
+            candidate,
             _vote
         );
 
         (uint256 yes, uint256 no, uint256 abstain) = agendaManager.getVotingCount(_agendaID);
 
-        if (requiredVotes <= yes) {
+        if (quorum <= yes) {
             // yes
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.ACCEPT);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.WAITING_EXEC);
-        } else if (requiredVotes <= no) {
+        } else if (quorum <= no) {
             // no
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.REJECT);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
-        } else if (requiredVotes <= abstain.add(no) ) {
+        } else if (quorum <= abstain.add(no) ) {
             // dismiss
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
@@ -385,10 +477,14 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
     }
 
+    /// @notice Set the agenda status as ended(denied or dismissed)
+    /// @param _agendaID Agenda ID
     function endAgendaVoting(uint256 _agendaID) public {
         agendaManager.endAgendaVoting(_agendaID);
     }
 
+    /// @notice Execute the accepted agenda
+    /// @param _agendaID Agenda ID
     function executeAgenda(uint256 _agendaID) public validAgendaManager {
         require(
             agendaManager.canExecuteAgenda(_agendaID),
@@ -397,45 +493,43 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         
         (address[] memory target, bytes[] memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
        
+        agendaManager.setExecutedAgenda(_agendaID);
+
         for (uint256 i = 0; i < target.length; i++) {
             (bool success, ) = address(target[i]).call(functionBytecode[i]);
             require(success, "DAOCommittee: Failed to execute the agenda");
         }
 
-        agendaManager.setExecutedAgenda(_agendaID);
-
         emit AgendaExecuted(_agendaID, target);
     }
 
+    /// @notice Set status and result of specific agenda
+    /// @param _agendaID Agenda ID
+    /// @param _status New status
+    /// @param _result New result
     function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) public onlyOwner {
         agendaManager.setResult(_agendaID, LibAgenda.AgendaResult(_result));
         agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus(_status));
     }
      
+    /// @notice Call updateSeigniorage on SeigManager
+    /// @param _candidate Candidate address to be updated
+    /// @return Whether or not the execution succeeded
     function updateSeigniorage(address _candidate) public returns (bool) {
         address candidateContract = candidateInfos[_candidate].candidateContract;
-        require(candidateContract != address(0), "DAOCommittee: not a candidate");
-        require(
-            ERC165Checker.supportsInterface(
-                candidateContract,
-                ICandidate(candidateContract).isCandidateContract.selector
-            ),
-            "DAOCommittee: the contract doesn't support updateSeigniorage"
-        );
-        require(
-            ICandidate(candidateContract).isCandidateContract(),
-            "DAOCommittee: not a candidate contract"
-        );
-
-        ICandidate(candidateContract).updateSeigniorage();
+        return ICandidate(candidateContract).updateSeigniorage();
     }
 
+    /// @notice Call updateSeigniorage on SeigManager
+    /// @param _candidates Candidate addresses to be updated
+    /// @return Whether or not the execution succeeded
     function updateSeigniorages(address[] calldata _candidates) public returns (bool) {
         for (uint256 i = 0; i < _candidates.length; i++) {
             updateSeigniorage(_candidates[i]);
         }
     }
 
+    /// @notice Claims the activity reward for member
     function claimActivityReward() public {
         CandidateInfo storage info = candidateInfos[msg.sender];
         uint256 amount = getClaimableActivityReward(msg.sender);
@@ -449,34 +543,56 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit ClaimedActivityReward(msg.sender, amount);
     }
 
-    function _registerOperator(address _operator, address _contractAddress, string memory _memo)
+    function _registerOperator(address _operator, address _layer2, string memory _memo)
         internal
         validSeigManager
         validLayer2Registry
         validCommitteeL2Factory
     {
-        require(!isExistCandidate(_operator), "DAOCommittee: candidate already registerd");
+        require(!isExistCandidate(_layer2), "DAOCommittee: candidate already registerd");
 
         require(
-            _contractAddress != address(0),
+            _layer2 != address(0),
             "DAOCommittee: deployed candidateContract is zero"
         );
         require(
-            candidateInfos[_operator].candidateContract == address(0),
-            "DAOCommitteeStore: The candidate already has contract"
+            candidateInfos[_layer2].candidateContract == address(0),
+            "DAOCommittee: The candidate already has contract"
+        );
+        ILayer2 layer2 = ILayer2(_layer2);
+        require(
+            layer2.isLayer2(),
+            "DAOCommittee: invalid layer2 contract"
+        );
+        require(
+            layer2.operator() == _operator,
+            "DAOCommittee: invalid operator"
         );
 
-        candidateInfos[_operator] = CandidateInfo({
-            candidateContract: _contractAddress,
+        address candidateContract = candidateFactory.deploy(
+            _layer2,
+            true,
+            _memo,
+            address(this),
+            address(seigManager)
+        );
+
+        require(
+            candidateContract != address(0),
+            "DAOCommittee: deployed candidateContract is zero"
+        );
+
+        candidateInfos[_layer2] = CandidateInfo({
+            candidateContract: candidateContract,
             memberJoinedTime: 0,
             indexMembers: 0,
             rewardPeriod: 0,
             claimedTimestamp: 0
         });
 
-        candidates.push(_operator);
+        candidates.push(_layer2);
        
-        emit OperatorRegistered(_operator, _contractAddress, _memo);
+        emit OperatorRegistered(_layer2, candidateContract, _memo);
     }
 
     function fillMemberSlot() internal {
@@ -519,7 +635,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
             _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
-            0,
             _functionBytecodes
         );
           

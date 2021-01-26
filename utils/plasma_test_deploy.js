@@ -17,6 +17,18 @@ chai.use(require('chai-bn')(BN)).should();
 //const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
 //const deployPlasmaEvmContracts = require('./utils/deploy.js');
 
+const DAOCommitteeAbi = require('../build/contracts/DAOCommittee.json').abi;
+const DepositManagerAbi = require('../build/contracts/DepositManager.json').abi;
+const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
+const CandidateAbi = require('../build/contracts/Candidate.json').abi;
+const DAOAgendaManagerAbi = require('../build/contracts/DAOAgendaManager.json').abi;
+const Layer2RegistryAbi = require('../build/contracts/Layer2Registry.json').abi;
+const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
+const TONAbi = require('../build/contracts/TON.json').abi;
+const WTONAbi = require('../build/contracts/WTON.json').abi;
+const DAOCommitteeProxyAbi = require('../build/contracts/DAOCommitteeProxy.json').abi;
+
+
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -149,6 +161,23 @@ class DaoContracts {
     this.candidateFactory = null;
     this.committee = null;
     this.committeeProxy = null; 
+
+    this.layer2s = [];
+    this.coinages = [];
+
+    this.AbiObject={
+      TON: null,
+      WTON: null,
+      DepositManager: null,
+      SeigManager: null,
+      Layer2Registry: null,
+      DAOVault2: null,
+      Committee: null,
+      Agenda: null,
+      Candidate: null ,
+      CommitteeProxy: null,
+    } 
+     
   }
 
   initializePlasmaEvmContracts= async function (owner) {
@@ -167,7 +196,6 @@ class DaoContracts {
       this.factory = await CoinageFactory.new({from:owner});
   
       let currentTime = await time.latest();
-      console.log(`currentTime1: ${currentTime}`);
       this.daoVault = await DAOVault.new(this.wton.address, currentTime,{from:owner});
       this.seigManager = await SeigManager.new(
         this.ton.address,
@@ -191,7 +219,7 @@ class DaoContracts {
       await this.seigManager.setDao(this.daoVault.address,{from:owner});
       await this.wton.addMinter(this.seigManager.address,{from:owner});
       await this.ton.addMinter(this.wton.address,{from:owner});
-      
+    
       await Promise.all([
         this.depositManager,
         this.wton,
@@ -225,7 +253,7 @@ class DaoContracts {
       return  returnData;
       
     }
-
+ 
     initializeDaoContracts  = async function (owner ) {
       //this = self;
       this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
@@ -264,7 +292,24 @@ class DaoContracts {
      // let byteZERO = 0x0;
      // await this.committee.grantRole( byteZERO, this.committeeProxy.address,{from:owner});
         
-      console.log('\n\n');
+      await this.ton.addMinter(this.committeeProxy.address);
+      await this.ton.transferOwnership(this.committeeProxy.address);
+
+      await this.wton.addMinter(this.committeeProxy.address);
+      await this.wton.transferOwnership(this.committeeProxy.address);
+
+      await this.seigManager.addPauser(this.committeeProxy.address);
+      await this.seigManager.renouncePauser();
+
+      await this.seigManager.transferOwnership(this.committeeProxy.address);
+      await this.depositManager.transferOwnership(this.committeeProxy.address);
+
+      await this.ton.renounceMinter();
+      await this.wton.renounceMinter();
+
+      await this.powerton.addPauser(this.committeeProxy.address);
+      await this.powerton.renouncePauser();
+      await this.powerton.transferOwnership(this.committeeProxy.address);
     
       let returnData ={
         daoVault2: this.daoVault2, 
@@ -286,7 +331,8 @@ class DaoContracts {
         daoVault: this.daoVault,
         seigManager: this.seigManager,
         powerton: this.powerton };
-    } 
+    }
+     
     getDaoContracts  = function () {
       return { 
         daoVault2 : this.daoVault2,
@@ -295,8 +341,7 @@ class DaoContracts {
         committee: this.committee,
         committeeProxy: this.committeeProxy
       };
-    }  
-
+    }
 
   addOperator = async function(operator) {
     const etherToken = await EtherToken.new(true, this.ton.address, true, {from: operator});
@@ -338,6 +383,12 @@ class DaoContracts {
     const stakedAmount = await coinage.balanceOf(operator);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
     
+    if (this.layer2s == null) this.layer2s = [];
+    this.layer2s.push(layer2);
+
+    if (this.coinages == null) this.coinages = [];
+    this.coinages.push(coinage);
+    
     return layer2;
   }
 
@@ -362,21 +413,16 @@ class DaoContracts {
     return true;
   }
 
-  addCandidate = async function (candidate) { 
+  addCandidate = async function (candidate) {
     const minimum = await this.seigManager.minimumAmount();
     const beforeTonBalance = await this.ton.balanceOf(candidate);
 
     const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
     const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
-    //await ton.approve(committeeProxy.address, stakeAmountTON, {from: candidate});
-    //tmp = await ton.allowance(candidate, committeeProxy.address);
-    //tmp.should.be.bignumber.equal(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT));
-    await this.committeeProxy.createCandidate(candidate, {from: candidate});
+    const testMemo = candidate + " memo string";
+    await this.committeeProxy.createCandidate(testMemo, {from: candidate});
 
     const candidateContractAddress = await this.committeeProxy.candidateContract(candidate);
-
-    //const testMemo = "candidate memo string";
-    //const data = web3.eth.abi.encodeParameter("string", testMemo);
 
     (await this.registry.layer2s(candidateContractAddress)).should.be.equal(true);
 
@@ -387,6 +433,14 @@ class DaoContracts {
 
     const coinageAddress = await this.seigManager.coinages(candidateContractAddress);
     const coinage = await AutoRefactorCoinage.at(coinageAddress);
+
+    if (this.layer2s == null) this.layer2s = [];
+    let layer2 = await Candidate.at(candidateContractAddress);
+    this.layer2s.push(layer2);
+    
+    if (this.coinages == null) this.coinages = [];
+    this.coinages.push(coinage);
+
     const stakedAmount = await coinage.balanceOf(candidate);
     stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
 
@@ -400,10 +454,52 @@ class DaoContracts {
       }
     }
     foundCandidate.should.be.equal(true);
-
   }
 
-  newSeigManager = async function (layer2s,operator1,operator2){
+  addCandidateForOperator = async function (operator, layer2Address) {
+    const minimum = await this.seigManager.minimumAmount();
+    const beforeTonBalance = await this.ton.balanceOf(operator);
+
+    const stakeAmountTON = TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT);
+    const stakeAmountWTON = TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT);
+    const testMemo = operator + " memo string";
+    await this.committeeProxy.registerOperator(layer2Address, testMemo, {from: operator});
+
+    const candidateContractAddress = await this.committeeProxy.candidateContract(operator);
+
+    (await this.registry.layer2s(layer2Address)).should.be.equal(true);
+
+    //await this.deposit(layer2Address, operator, stakeAmountTON);
+     
+    //const afterTonBalance = await this.ton.balanceOf(operator);
+    //beforeTonBalance.sub(afterTonBalance).should.be.bignumber.equal(stakeAmountTON);
+
+    //const coinageAddress = await this.seigManager.coinages(layer2Address);
+    //const coinage = await AutoRefactorCoinage.at(coinageAddress);
+
+    /*if (this.layer2s == null) this.layer2s = [];
+    let layer2 = await Candidate.at(candidateContractAddress);
+    this.layer2s.push(layer2);
+    
+    if (this.coinages == null) this.coinages = [];
+    this.coinages.push(coinage);*/
+
+    //const stakedAmount = await coinage.balanceOf(operator);
+    //stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
+
+    const candidatesLength = await this.committeeProxy.candidatesLength();
+    let foundCandidate = false;
+    for (let i = 0; i < candidatesLength; i++) {
+      const address = await this.committeeProxy.candidates(i);
+      if (address === layer2Address) {
+        foundCandidate = true;
+        break;
+      }
+    }
+    foundCandidate.should.be.equal(true);
+  }
+
+  newSeigManager = async function (){
     var newSeigManager = await SeigManager.new(
       this.ton.address,
       this.wton.address,
@@ -415,7 +511,7 @@ class DaoContracts {
 
     await newSeigManager.setPowerTON(this.powerton.address); 
     await newSeigManager.setDao(this.daoVault2.address);
-    await this.wton.addMinter(newSeigManager.address);
+    //await this.wton.addMinter(newSeigManager.address);
     //await ton.addMinter(wton.address);
     
     /* 
@@ -429,7 +525,7 @@ class DaoContracts {
     newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
     newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-     
+     /* 
    //onlyOperatorOrSeigManager
    const _layer0 = await Layer2.at(layer2s[0].address);
    await _layer0.setSeigManager(newSeigManager.address,{from: operator1});
@@ -452,6 +548,7 @@ class DaoContracts {
     // stakedAmount.should.be.bignumber.equal(stakeAmountWTON);
   
     expect(coinageAddress).to.not.equal(ZERO_ADDRESS);
+    */
     return newSeigManager;
   } 
   
@@ -464,6 +561,12 @@ class DaoContracts {
       if(data.registry!=null)  this.registry = data.registry ;
       if(data.depositManager!=null)  this.depositManager = data.depositManager ;
       if(data.factory!=null)  this.factory = data.factory ; 
+
+      if(data.agendaManager!=null)  this.agendaManager = data.agendaManager ; 
+      if(data.candidateFactory!=null)  this.candidateFactory = data.candidateFactory ; 
+      if(data.committee!=null)  this.committee = data.committee ; 
+      if(data.committeeProxy!=null)  this.committeeProxy = data.committeeProxy ; 
+      if(data.daoVault2!=null)  this.daoVault2 = data.daoVault2 ; 
     } 
     
   }
@@ -483,7 +586,16 @@ objectMapping = async ( abi ) => {
       //let inputs = abi[i].inputs; 
        
       if(abi[i].type=="function"){
-        objects[abi[i].name] =   abi[i] ; 
+        /* 
+        if(abi[i].name=='transferOwnership' || abi[i].name=='renouncePauser' 
+        || abi[i].name=='renounceOwnership' ) {
+          console.log('abi[i].name' , abi[i].name, abi[i].inputs  ) ;
+          console.log('objects[abi[i].name]' , objects[abi[i].name]  ) ; 
+        } */
+        
+        if(objects[abi[i].name] == undefined) objects[abi[i].name] = abi[i] ; 
+        else objects[abi[i].name+'2'] = abi[i] ; 
+         
       } 
     }
   } 
@@ -496,11 +608,20 @@ objectMapping = async ( abi ) => {
 
       let noticePeriod = await this.agendaManager.minimumNoticePeriodSeconds();
       let votingPeriod = await this.agendaManager.minimumVotingPeriodSeconds();
-      
-      const param = web3.eth.abi.encodeParameters(
-        ["address[]", "uint256", "uint256", "bytes[]"],
-        [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
-      );
+      let param = null;
+      if ( Array.isArray(_target)){
+        param = web3.eth.abi.encodeParameters(
+          ["address[]", "uint256", "uint256", "bytes[]"],
+          [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
+        );
+      } 
+      else {
+        param = web3.eth.abi.encodeParameters(
+          ["address[]", "uint256", "uint256", "bytes[]"],
+          [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
+        );
+      }
+     
       // create agenda
       await this.ton.approveAndCall(
         this.committeeProxy.address,
@@ -510,6 +631,83 @@ objectMapping = async ( abi ) => {
       );
       let agendaID = (await this.agendaManager.numAgendas()).sub(toBN("1")); 
       return agendaID;
+  }
+
+  getCandidateContract = async function(candidate) {
+    const contractAddress = await this.committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
+
+  getLayer2s = function(){
+    return  this.layer2s; 
+  }
+
+  getCoinages = function(){
+    return  this.coinages; 
+  }
+
+  isVoter = async function (_agendaID, voter) { 
+
+    const candidateContract = await this.getCandidateContract(voter);
+    const agenda = await this.agendaManager.agendas(_agendaID);
+
+    if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
+      return (await this.committeeProxy.isMember(voter));
+    else
+      return (await this.agendaManager.isVoter(_agendaID, voter));
+  }
+
+
+  agendaVoteYesAll = async function (agendaId){
+    let quorum = await this.committeeProxy.quorum();
+    let quorumInt = toBN(quorum).toNumber();
+    let agenda = await this.agendaManager.agendas(agendaId);  
+    const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP]; 
+    time.increaseTo(noticeEndTimestamp); 
+    let agendaAfterStartVoting =0;
+    let votingEndTimestamp =0; 
+
+    for(let i=0; i< candidates.length ; i++ ){
+      if(quorumInt >= (i+1)){ 
+        
+        (await this.isVoter(agendaId, candidates[i])).should.be.equal(true);
+        const candidateContract = await this.getCandidateContract(candidates[i]);
+        await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
+ 
+      }
+      if(i==0) {
+        agendaAfterStartVoting = await this.agendaManager.agendas(agendaId);  
+      } 
+      if(i== (quorumInt-1)) votingEndTimestamp = agendaAfterStartVoting.votingEndTimestamp;  
+    }
+    
+    time.increaseTo(votingEndTimestamp); 
+  }  
+
+  executeAgenda = async function (_target, _functionBytecode){ 
+    let agendaID = await this.createAgenda(_target, _functionBytecode); 
+    await this.agendaVoteYesAll(agendaID); 
+    await this.committeeProxy.executeAgenda(agendaID);   
+  } 
+  
+  setAbiObject = async function (){  
+    this.AbiObject.TON =  await this.objectMapping(TONAbi);
+    this.AbiObject.WTON =  await this.objectMapping(WTONAbi);
+    this.AbiObject.DepositManager =  await this.objectMapping(DepositManagerAbi);
+    this.AbiObject.SeigManager =  await this.objectMapping(SeigManagerAbi);
+    this.AbiObject.Layer2Registry =  await this.objectMapping(Layer2RegistryAbi);
+    this.AbiObject.DAOVault2 =  await this.objectMapping(DAOVault2Abi);
+    this.AbiObject.Committee =  await this.objectMapping(DAOCommitteeAbi);
+    this.AbiObject.Agenda =  await this.objectMapping(DAOAgendaManagerAbi);
+    this.AbiObject.Candidate =  await this.objectMapping(CandidateAbi);
+    this.AbiObject.CommitteeProxy =  await this.objectMapping(DAOCommitteeProxyAbi); 
+
+    return  this.AbiObject;
+  }
+
+  clearLayers = async function (){
+    this.layers = []; 
+    this.coinages = [];
   }
 
 } 

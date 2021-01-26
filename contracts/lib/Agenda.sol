@@ -26,7 +26,6 @@ library LibAgenda {
         uint256 countingYes;
         uint256 countingNo;
         uint256 countingAbstain;
-        uint256 reward;
         AgendaStatus status;
         AgendaResult result;
         address[] voters;
