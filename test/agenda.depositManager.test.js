@@ -274,7 +274,8 @@ let AbiObj, DaoContractsDeployed ;
       } ;
       await DaoContractsDeployed.setDaoContract(data);
     });
-      
+  
+    /*
     it('depositManager.deposit by new user after setSeigManager - fail ', async function () {  
 
       let stakeAmountTON = TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT);
@@ -297,7 +298,8 @@ let AbiObj, DaoContractsDeployed ;
       stakedAmountWTON.should.be.bignumber.equal(stakeAmountWTON2);
       
     });
-     
+    */
+
     it('depositManager.transferOwnership', async function () {    
       let params = [user1] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DepositManager.transferOwnership, params);

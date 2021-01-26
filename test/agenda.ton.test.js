@@ -245,6 +245,7 @@ const {
 
         }); 
         
+
        it('TON.mint ', async function () { 
             this.timeout(1000000); 
             let agendaFee = await agendaManager.createAgendaFees();
@@ -307,6 +308,7 @@ const {
             expect(await powerton.isPauser(ton.address)).to.equal(false);
         });  
          
+        /* 
         it('TON.setSeigManager -- fail', async function () {  
             this.timeout(1000000); 
             
@@ -318,7 +320,7 @@ const {
             await DaoContractsDeployed.executeAgenda(ton.address, functionBytecode);  
             expect(await ton.seigManager()).to.equal(_newSeigManager.address);  
         });  
-        
+        */
 
         it('TON.transferOwnership(address)', async function () {    
             expect(await ton.owner()).to.equal(committeeProxy.address);

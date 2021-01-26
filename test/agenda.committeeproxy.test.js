@@ -240,7 +240,7 @@ const {
           await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
           expect(await _committeeProxy.pauseProxy()).to.equal(true);  
       }); 
-      
+      /*
       it('DAOCommitteeProxy.setProxyPause - false ', async function () {  
         this.timeout(1000000);   
 
@@ -250,6 +250,6 @@ const {
         await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
         expect(await _committeeProxy.pauseProxy()).to.equal(false);  
       }); 
-    
+      */
  
   }); 
