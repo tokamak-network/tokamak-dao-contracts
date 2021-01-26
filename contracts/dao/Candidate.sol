@@ -13,6 +13,8 @@ import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
+/// @title Managing a candidate
+/// @notice Either a user or layer2 contract can be a candidate
 contract Candidate is Ownable, ERC165 {
     using SafeMath for uint256;
 
@@ -56,14 +58,20 @@ contract Candidate is Ownable, ERC165 {
         _registerInterface(ICandidate(address(this)).isCandidateContract.selector);
     }
     
+    /// @notice Set SeigManager contract address
+    /// @param _seigManager New SeigManager contract address
     function setSeigManager(address _seigManager) public onlyOwner {
         seigManager = ISeigManager(_seigManager);
     }
 
+    /// @notice Set DAOCommitteeProxy contract address
+    /// @param _committee New DAOCommitteeProxy contract address
     function setCommittee(address _committee) public onlyOwner {
         committee = IDAOCommittee(_committee);
     }
 
+    /// @notice Call updateSeigniorage on SeigManager
+    /// @return Whether or not the execution succeeded
     function updateSeigniorage() public returns (bool) {
         require(address(seigManager) != address(0), "Candidate: SeigManager is zero");
         require(
@@ -74,6 +82,9 @@ contract Candidate is Ownable, ERC165 {
         return ISeigManager(seigManager).updateSeigniorage();
     }
 
+    /// @notice Try to be a member
+    /// @param _memberIndex The index of changing member slot
+    /// @return Whether or not the execution succeeded
     function changeMember(uint256 _memberIndex)
         public
         onlyCandidate
@@ -82,10 +93,16 @@ contract Candidate is Ownable, ERC165 {
         return committee.changeMember(_memberIndex);
     }
 
+    /// @notice Retire a member
+    /// @return Whether or not the execution succeeded
     function retireMember() public onlyCandidate returns (bool) {
         return committee.retireMember();
     }
     
+    /// @notice Vote on an agenda
+    /// @param _agendaID The agenda ID
+    /// @param _vote voting type
+    /// @param _comment voting comment
     function castVote(
         uint256 _agendaID,
         uint _vote,
@@ -97,14 +114,8 @@ contract Candidate is Ownable, ERC165 {
         committee.castVote(_agendaID, _vote, _comment);
     }
 
-    /*function isCommitteeLayer2() public view returns (bool) {
-        return true;
-    }*/
-
-    /*function candidateAndOwner() public view returns (address, address) {
-        return (candidate, owner);
-    }*/
-
+    /// @notice Checks whether this contract is a candidate contract
+    /// @return Whether or not this contract is a candidate contract
     function isCandidateContract() public view returns (bool) {
         return true;
     }
@@ -114,6 +125,8 @@ contract Candidate is Ownable, ERC165 {
     function currentFork() public view returns (uint) { return 1; }
     function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }
 
+    /// @notice Retrieves the total staked balance on this candidate
+    /// @return totalsupply Total staked amount on this candidate
     function totalStaked()
         public
         view
@@ -124,6 +137,9 @@ contract Candidate is Ownable, ERC165 {
         return IERC20(coinage).totalSupply();
     }
 
+    /// @notice Retrieves the staked balance of the account on this candidate
+    /// @param _account Address being retrieved
+    /// @return amount The staked balance of the account on this candidate
     function stakedOf(
         address _account
     )

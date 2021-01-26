@@ -26,10 +26,14 @@ contract DAOVault2 is Ownable {
         wton = IERC20(_wton);
     }
 
+    /// @notice Set TON address
+    /// @param _ton TON address
     function setTON(address _ton) external onlyOwner {
         ton = IERC20(_ton);
     }
 
+    /// @notice Set WTON address
+    /// @param _wton WTON address
     function setWTON(address _wton) external onlyOwner {
         wton = IERC20(_wton);
     }

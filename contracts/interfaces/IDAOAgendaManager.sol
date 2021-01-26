@@ -19,7 +19,6 @@ interface IDAOAgendaManager  {
         address[] memory _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
-        uint256 _reward,
         bytes[] calldata _functionBytecodes
     )
         external

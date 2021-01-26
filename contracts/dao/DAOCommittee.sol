@@ -158,7 +158,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         public
         onlyOwner
     {
-        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call reduceMemberSlot to decrease");
+        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call decreaseMaxMember to decrease");
         emit ChangedSlotMaximum(maxMember, _newMaxMember);
         maxMember = _newMaxMember;
         fillMemberSlot();
@@ -296,7 +296,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         return true;
     }
 
-    function reduceMemberSlot(
+    function decreaseMaxMember(
         uint256 _reducingMemberIndex,
         uint256 _quorum
     )
@@ -568,7 +568,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
             _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
-            0,
             _functionBytecodes
         );
           

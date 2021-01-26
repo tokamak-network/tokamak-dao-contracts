@@ -72,11 +72,10 @@ const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
 const AGENDA_INDEX_COUNTING_YES = 6;
 const AGENDA_INDEX_COUNTING_NO = 7;
 const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_REWARD = 9;
-const AGENDA_INDEX_STATUS = 10;
-const AGENDA_INDEX_RESULT = 11;
+const AGENDA_INDEX_STATUS = 9;
+const AGENDA_INDEX_RESULT = 10;
 //const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 12;
+const AGENDA_INDEX_EXECUTED = 11;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -496,7 +495,8 @@ describe('Test 1', function () {
 
     (await isVoter(_agendaID, voter)).should.be.equal(true);
 
-    await committeeProxy.castVote(_agendaID, vote, "test comment", {from: voter});
+    const candidateContract = await getCandidateContract(voter);
+    await candidateContract.castVote(_agendaID, vote, "test comment", {from: voter});
 
     const voterInfo2 = await agendaManager.voterInfos(_agendaID, voter);
     voterInfo2[VOTER_INFO_ISVOTER].should.be.equal(true);
@@ -509,13 +509,20 @@ describe('Test 1', function () {
     agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
   }
 
+  async function getCandidateContract(candidate) {
+    const contractAddress = await committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
+
   describe('Execute', function () {
     beforeEach(async function () { 
       this.timeout(1000000);
 
       for (let i = 0; i < 3; i++) {
-        await addCandidate(candidates[i]);
-        await committeeProxy.changeMember(i, {from: candidates[i]});
+        const candidate = candidates[i];
+        await addCandidate(candidate);
+        const candidateContract = await getCandidateContract(candidate);
+        await candidateContract.changeMember(i, {from: candidate});
       }
     });
 
@@ -681,7 +688,7 @@ describe('Test 1', function () {
           paramTypes: ["uint256", "uint256"],
           params: ["12", "8"]
         }, {
-          sig: "reduceMemberSlot(uint256,uint256)",
+          sig: "decreaseMaxMember(uint256,uint256)",
           paramTypes: ["uint256", "uint256"],
           params: ["0", "1"]
         }, {
@@ -868,6 +875,14 @@ describe('Test 1', function () {
                 await castVote(agendaID, candidates[k], VOTE_YES);
               }
 
+              const agenda2 = await agendaManager.agendas(agendaID);  
+              const votingEndTimestamp = agenda2[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+              const currentTime = await time.latest();
+              if (currentTime < votingEndTimestamp) {
+                await time.increaseTo(votingEndTimestamp);
+              }
+              (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
+
               // check status
               const agendaAfter = await agendaManager.agendas(agendaID);
               agendaAfter[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
@@ -933,6 +948,14 @@ describe('Test 1', function () {
             for (let k = 0; k < 2; k++) {
               await castVote(agendaID, candidates[k], VOTE_YES);
             }
+
+            const agenda2 = await agendaManager.agendas(agendaID);  
+            const votingEndTimestamp = agenda2[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+            const currentTime = await time.latest();
+            if (currentTime < votingEndTimestamp) {
+              await time.increaseTo(votingEndTimestamp);
+            }
+            (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
 
             // check status
             const agendaAfter = await agendaManager.agendas(agendaID);

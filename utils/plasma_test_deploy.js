@@ -299,12 +299,17 @@ class DaoContracts {
       await this.wton.transferOwnership(this.committeeProxy.address);
 
       await this.seigManager.addPauser(this.committeeProxy.address);
+      await this.seigManager.renouncePauser();
 
       await this.seigManager.transferOwnership(this.committeeProxy.address);
       await this.depositManager.transferOwnership(this.committeeProxy.address);
 
       await this.ton.renounceMinter();
       await this.wton.renounceMinter();
+
+      await this.powerton.addPauser(this.committeeProxy.address);
+      await this.powerton.renouncePauser();
+      await this.powerton.transferOwnership(this.committeeProxy.address);
     
       let returnData ={
         daoVault2: this.daoVault2, 

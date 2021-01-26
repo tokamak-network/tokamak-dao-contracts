@@ -74,11 +74,10 @@ const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
 const AGENDA_INDEX_COUNTING_YES = 6;
 const AGENDA_INDEX_COUNTING_NO = 7;
 const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_REWARD = 9;
-const AGENDA_INDEX_STATUS = 10;
-const AGENDA_INDEX_RESULT = 11;
+const AGENDA_INDEX_STATUS = 9;
+const AGENDA_INDEX_RESULT = 10;
 //const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 12;
+const AGENDA_INDEX_EXECUTED = 11;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -164,9 +163,6 @@ describe('Test 1', function () {
     committee = returnData1.committee;
     committeeProxy= returnData1.committeeProxy; 
 
-    //await initializePlasmaEvmContracts(); 
-    //await initializeDaoContracts();
-
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
   });
@@ -236,131 +232,6 @@ describe('Test 1', function () {
         }  
     }  
     assert(false, 'Did not find event');
-  } 
-
-
-  async function initializePlasmaEvmContracts() {
-    ton = await TON.new();
-    wton = await WTON.new(ton.address);
-    registry = await Layer2Registry.new();
-    depositManager = await DepositManager.new(
-      wton.address,
-      registry.address,
-      WITHDRAWAL_DELAY,
-    );
-    factory = await CoinageFactory.new();
-
-    currentTime = await time.latest();
-    console.log(`currentTime1: ${currentTime}`);
-    daoVault = await DAOVault.new(wton.address, currentTime);
-    seigManager = await SeigManager.new(
-      ton.address,
-      wton.address,
-      registry.address,
-      depositManager.address,
-      SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-      factory.address
-    );
-    powerton = await PowerTON.new(
-      seigManager.address,
-      wton.address,
-      ROUND_DURATION,
-    );
-    await powerton.init();
-
-    await seigManager.setPowerTON(powerton.address);
-    await powerton.start();
-    await seigManager.setDao(daoVault.address);
-    await wton.addMinter(seigManager.address);
-    await ton.addMinter(wton.address);
-    
-    await Promise.all([
-      depositManager,
-      wton,
-    ].map(contract => contract.setSeigManager(seigManager.address)));
-      
-    // ton setting
-    await ton.mint(deployer, TON_INITIAL_SUPPLY.toFixed(TON_UNIT));
-    await ton.approve(wton.address, TON_INITIAL_SUPPLY.toFixed(TON_UNIT));
-     
-    seigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-    seigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-    seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-    await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
-    await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
-
-    await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-  }
-
-  async function initializeDaoContracts() {
-    debugLog =false;
-    if(debugLog) console.log('ton :', ton.address) ;
-
-    //===================================================
-    daoVault2 = await DAOVault2.new(ton.address, wton.address);
-    if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
-    //===================================================
-    agendaManager = await DAOAgendaManager.new();
-    if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
-    //===================================================
-    candidateFactory = await CandidateFactory.new();
-    if(debugLog)  console.log('candidateFactory :', candidateFactory.address) ;
-    //===================================================
-
-    committee = await DAOCommittee.new();
-    if(debugLog)  console.log('dAOCommittee :', committee.address) ;
-
-    daoCommitteeProxy = await DAOCommitteeProxy.new(
-      ton.address,
-      committee.address,
-      seigManager.address,
-      registry.address,
-      agendaManager.address,
-      candidateFactory.address,
-      daoVault2.address
-    );
-    if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
-   
-    let impl = await daoCommitteeProxy.implementation() ;
-
-    committeeProxy = await DAOCommittee.at(daoCommitteeProxy.address);
-    if(debugLog)  console.log('committeeProxy :', committeeProxy.address ) ;
-     
-    if(debugLog){
-      console.log('dAOCommittee :', committee.address) ;
-      console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
-      console.log('daoCommitteeProxy implementation :', impl) ;
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    // test setting
-    await committeeProxy.setActivityRewardPerSecond(toBN("1"));
-    await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
-    await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
-
-    ////////////////////////////////////////////////////////////////////////
-    // permissions
-    await ton.addMinter(committeeProxy.address);
-    await ton.transferOwnership(committeeProxy.address);
-
-    await wton.addMinter(committeeProxy.address);
-    await wton.transferOwnership(committeeProxy.address);
-
-    await seigManager.addPauser(committeeProxy.address);
-
-    await registry.transferOwnership(committeeProxy.address);
-    await seigManager.transferOwnership(committeeProxy.address);
-    await depositManager.transferOwnership(committeeProxy.address);
-
-    await daoVault2.transferOwnership(committeeProxy.address);
-    await agendaManager.setCommittee(committeeProxy.address);
-    await agendaManager.transferOwnership(committeeProxy.address);
-
-    await committeeProxy.increaseMaxMember(3, 2);
-
-    await ton.renounceMinter();
-    await wton.renounceMinter();
   } 
 
   async function deposit(candidateContractAddress, account, tonAmount) {
@@ -719,7 +590,7 @@ describe('Test 1', function () {
       it('decrease maximum', async function () {
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('4'));
         (await committeeProxy.members(3)).should.be.equal(ZERO_ADDRESS);
-        await committeeProxy.reduceMemberSlot(3, 2);
+        await committeeProxy.decreaseMaxMember(3, 2);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(toBN('3'));
       });
     });
