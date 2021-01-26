@@ -27,7 +27,7 @@ const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
 const TONAbi = require('../build/contracts/TON.json').abi;
 const WTONAbi = require('../build/contracts/WTON.json').abi;
 const DAOCommitteeProxyAbi = require('../build/contracts/DAOCommitteeProxy.json').abi;
-
+const PowerTONAbi = require('../build/contracts/PowerTON.json').abi;
 
 // dao-contracts
 const DAOVault2 = contract.fromArtifact('DAOVault2');
@@ -88,12 +88,11 @@ const AGENDA_INDEX_VOTING_END_TIMESTAMP = 4;
 const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
 const AGENDA_INDEX_COUNTING_YES = 6;
 const AGENDA_INDEX_COUNTING_NO = 7;
-const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_REWARD = 9;
-const AGENDA_INDEX_STATUS = 10;
-const AGENDA_INDEX_RESULT = 11;
-//const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 12;
+const AGENDA_INDEX_COUNTING_ABSTAIN = 8; 
+const AGENDA_INDEX_STATUS = 9;
+const AGENDA_INDEX_RESULT = 10;
+//const AGENDA_INDEX_VOTERS = 11;
+const AGENDA_INDEX_EXECUTED = 11;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -176,6 +175,7 @@ class DaoContracts {
       Agenda: null,
       Candidate: null ,
       CommitteeProxy: null,
+      PowerTON: null, 
     } 
      
   }
@@ -332,7 +332,7 @@ class DaoContracts {
         seigManager: this.seigManager,
         powerton: this.powerton };
     }
-     
+
     getDaoContracts  = function () {
       return { 
         daoVault2 : this.daoVault2,
@@ -579,28 +579,28 @@ class DaoContracts {
     return stakedAmountWTON; 
   }
 
-objectMapping = async ( abi ) => {  
-  let objects = {} ;
-  if(abi!=null && abi.length > 0 ){
-    for(let i=0; i< abi.length ; i++ ){
-      //let inputs = abi[i].inputs; 
-       
-      if(abi[i].type=="function"){
-        /* 
-        if(abi[i].name=='transferOwnership' || abi[i].name=='renouncePauser' 
-        || abi[i].name=='renounceOwnership' ) {
-          console.log('abi[i].name' , abi[i].name, abi[i].inputs  ) ;
-          console.log('objects[abi[i].name]' , objects[abi[i].name]  ) ; 
-        } */
+  objectMapping = async ( abi ) => {  
+    let objects = {} ;
+    if(abi!=null && abi.length > 0 ){
+      for(let i=0; i< abi.length ; i++ ){
+        //let inputs = abi[i].inputs; 
         
-        if(objects[abi[i].name] == undefined) objects[abi[i].name] = abi[i] ; 
-        else objects[abi[i].name+'2'] = abi[i] ; 
-         
-      } 
-    }
-  } 
-  return objects;
-}  
+        if(abi[i].type=="function"){
+          /* 
+          if(abi[i].name=='transferOwnership' || abi[i].name=='renouncePauser' 
+          || abi[i].name=='renounceOwnership' ) {
+            console.log('abi[i].name' , abi[i].name, abi[i].inputs  ) ;
+            console.log('objects[abi[i].name]' , objects[abi[i].name]  ) ; 
+          } */
+          
+          if(objects[abi[i].name] == undefined) objects[abi[i].name] = abi[i] ; 
+          else objects[abi[i].name+'2'] = abi[i] ; 
+          
+        } 
+      }
+    } 
+    return objects;
+  }  
 
 
   createAgenda = async function(_target, _functionBytecode){ 
@@ -650,11 +650,11 @@ objectMapping = async ( abi ) => {
 
     const candidateContract = await this.getCandidateContract(voter);
     const agenda = await this.agendaManager.agendas(_agendaID);
-
-    if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE)
-      return (await this.committeeProxy.isMember(voter));
+    if (agenda[AGENDA_INDEX_STATUS] == AGENDA_STATUS_NOTICE) 
+        return (await this.committeeProxy.isMember(voter));
     else
-      return (await this.agendaManager.isVoter(_agendaID, voter));
+        return (await this.agendaManager.isVoter(_agendaID, voter));
+
   }
 
 
@@ -668,8 +668,7 @@ objectMapping = async ( abi ) => {
     let votingEndTimestamp =0; 
 
     for(let i=0; i< candidates.length ; i++ ){
-      if(quorumInt >= (i+1)){ 
-        
+      if(quorumInt >= (i+1)){  
         (await this.isVoter(agendaId, candidates[i])).should.be.equal(true);
         const candidateContract = await this.getCandidateContract(candidates[i]);
         await candidateContract.castVote(agendaId, 1,'candidate'+i+' yes', {from: candidates[i]});
@@ -701,7 +700,8 @@ objectMapping = async ( abi ) => {
     this.AbiObject.Agenda =  await this.objectMapping(DAOAgendaManagerAbi);
     this.AbiObject.Candidate =  await this.objectMapping(CandidateAbi);
     this.AbiObject.CommitteeProxy =  await this.objectMapping(DAOCommitteeProxyAbi); 
-
+    this.AbiObject.PowerTON =  await this.objectMapping(PowerTONAbi); 
+    
     return  this.AbiObject;
   }
 
