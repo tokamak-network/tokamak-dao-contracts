@@ -139,7 +139,7 @@ module.exports = async function (deployer, network) {
 
       save(
         network, {
-          name: "DaoVault",
+          name: "DAOVault",
           address: daoVault.address
         }
       );
