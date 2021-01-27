@@ -155,135 +155,11 @@ const {
   let AbiObj, DaoContractsDeployed ;
   let Layer2RegistryAbiObj, DAOVault2AbiObj, TONAbiObj, WTONAbiObj, SeigManagerAbiObj, DepositManagerAbiObj ;
   let _committeeProxy ;
-
-  describe('Test 1', function () {
-    before(async function () {
-      this.timeout(1000000); 
-    });
-    
-    async function initializeContracts(){ 
-    
-        DaoContractsDeployed = new DaoContracts(); 
-        AbiObject = await DaoContractsDeployed.setAbiObject();   
-        
-        let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-        ton = returnData.ton;
-        wton = returnData.wton;
-        registry = returnData.registry;
-        depositManager = returnData.depositManager;
-        factory = returnData.coinageFactory;
-        daoVault = returnData.daoVault;
-        seigManager = returnData.seigManager;
-        powerton = returnData.powerton; 
-
-        let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-        daoVault2 = returnData1.daoVault2;
-        agendaManager = returnData1.agendaManager;
-        candidateFactory = returnData1.candidateFactory;
-        committee = returnData1.committee;
-        committeeProxy= returnData1.committeeProxy; 
-
-        await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-        await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    } 
-       
-
-    async function NewCommittee(){
-        let _daoCommitteeProxy = await DAOCommitteeProxy.new(
-            ton.address,
-            committee.address,
-            seigManager.address,
-            registry.address,
-            agendaManager.address,
-            candidateFactory.address,
-            daoVault2.address,
-            {from:owner}
-          );  
-          let impl = await  _daoCommitteeProxy.implementation({from:owner}) ;
-      
-        _daoCommitteeProxy = await DAOCommittee.at(_daoCommitteeProxy.address,{from:owner});  
-        
-        return _daoCommitteeProxy; 
-    } 
-
-    async function setNewCommittee( _newCommitteeProxy ) {
-   
-        await _newCommitteeProxy.increaseMaxMember(3, 2, {from:owner}); 
-        await _newCommitteeProxy.setActivityRewardPerSecond(toBN("1"),{from:owner});  
-
-        let params = [_committeeProxy.address] ;
-        let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.Layer2Registry.transferOwnership,params);
-        let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObject.DAOVault2.transferOwnership,params);
-        let functionBytecode3 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.setCommittee,params);
-        let functionBytecode4 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.transferOwnership,params);
-        let functionBytecode5 =  web3.eth.abi.encodeFunctionCall(AbiObject.TON.addMinter,params);
-        let functionBytecode6 =  web3.eth.abi.encodeFunctionCall(AbiObject.TON.transferOwnership2,params);
-        let functionBytecode7 =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.addMinter,params);
-        let functionBytecode8 =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.transferOwnership2,params);
-        let functionBytecode9 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.addPauser,params);
-        let functionBytecode10 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership2,params);
-        let functionBytecode11 =  web3.eth.abi.encodeFunctionCall(AbiObject.DepositManager.transferOwnership,params);
-         
-       
-        /*
-        await this.registry.transferOwnership(this.committeeProxy.address,{from:owner});
-        await this.daoVault2.transferOwnership(this.committeeProxy.address,{from:owner});
-        await this.agendaManager.setCommittee(this.committeeProxy.address,{from:owner});
-        await this.agendaManager.transferOwnership(this.committeeProxy.address,{from:owner});
-          
-        await this.ton.addMinter(this.committeeProxy.address);
-        await this.ton.transferOwnership(this.committeeProxy.address);
-  
-        await this.wton.addMinter(this.committeeProxy.address);
-        await this.wton.transferOwnership(this.committeeProxy.address);
-  
-        await this.seigManager.addPauser(this.committeeProxy.address);
-  
-        await this.seigManager.transferOwnership(this.committeeProxy.address);
-        await this.depositManager.transferOwnership(this.committeeProxy.address);
-
-
-        // === 
-         await _newCommitteeProxy.transferOwnership(this.committeeProxy.address);
  
-        */ 
-  
-        await DaoContractsDeployed.executeAgenda(
-          [ registry.address , daoVault2.address, agendaManager.address,  agendaManager.address, ton.address,
-             ton.address, wton.address, wton.address, seigManager.address, seigManager.address, 
-            depositManager.address ],
-          [ functionBytecode1,functionBytecode2,functionBytecode3,functionBytecode4,functionBytecode5,
-            functionBytecode6,functionBytecode7,functionBytecode8,functionBytecode9,functionBytecode10,
-            functionBytecode11 ] );  
-        
-        
-        await DaoContractsDeployed.setDaoContract(
-            {   
-                ton: ton , 
-                wton: wton, 
-                powerton: powerton, 
-                registry: registry, 
-                depositManager: depositManager, 
-                seigManager: seigManager, 
-                factory: factory,  
-                daoVault2 : daoVault2,
-                agendaManager: agendaManager,
-                candidateFactory: candidateFactory,
-                committee: committee,
-                committeeProxy: _newCommitteeProxy
-            }
-        ); 
-       
-    }  
     
-    async function addlayer2s(operator){
-      let _layer2 = await DaoContractsDeployed.addOperator(operator);
-      layer2s.push(_layer2);
-    }   
-  
   
     describe('Agenda - AgendaManager', function () {   
-           
+            
         before(async function () {  
             this.timeout(1000000); 
 
@@ -297,12 +173,137 @@ const {
             await DaoContractsDeployed.addCandidate(candidate3); 
         
             let layer2s = DaoContractsDeployed.getLayer2s();
-    
+
             await layer2s[2].changeMember(0, {from: candidate1});
             await layer2s[3].changeMember(1, {from: candidate2});
             await layer2s[4].changeMember(2, {from: candidate3});
-          
+            
         }); 
+
+        async function initializeContracts(){ 
+        
+            DaoContractsDeployed = new DaoContracts(); 
+            AbiObject = await DaoContractsDeployed.setAbiObject();   
+            
+            let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+            ton = returnData.ton;
+            wton = returnData.wton;
+            registry = returnData.registry;
+            depositManager = returnData.depositManager;
+            factory = returnData.coinageFactory;
+            daoVault = returnData.daoVault;
+            seigManager = returnData.seigManager;
+            powerton = returnData.powerton; 
+
+            let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+            daoVault2 = returnData1.daoVault2;
+            agendaManager = returnData1.agendaManager;
+            candidateFactory = returnData1.candidateFactory;
+            committee = returnData1.committee;
+            committeeProxy= returnData1.committeeProxy; 
+
+            await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+            await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+        } 
+        
+
+        async function NewCommittee(){
+            let _daoCommitteeProxy = await DAOCommitteeProxy.new(
+                ton.address,
+                committee.address,
+                seigManager.address,
+                registry.address,
+                agendaManager.address,
+                candidateFactory.address,
+                daoVault2.address,
+                {from:owner}
+            );  
+            let impl = await  _daoCommitteeProxy.implementation({from:owner}) ;
+        
+            _daoCommitteeProxy = await DAOCommittee.at(_daoCommitteeProxy.address,{from:owner});  
+            
+            return _daoCommitteeProxy; 
+        } 
+
+        async function setNewCommittee( _newCommitteeProxy ) {
+
+            await _newCommitteeProxy.increaseMaxMember(3, 2, {from:owner}); 
+            await _newCommitteeProxy.setActivityRewardPerSecond(toBN("1"),{from:owner});  
+
+            let params = [_committeeProxy.address] ;
+            let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.Layer2Registry.transferOwnership,params);
+            let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObject.DAOVault2.transferOwnership,params);
+            let functionBytecode3 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.setCommittee,params);
+            let functionBytecode4 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.transferOwnership,params);
+            let functionBytecode5 =  web3.eth.abi.encodeFunctionCall(AbiObject.TON.addMinter,params);
+            let functionBytecode6 =  web3.eth.abi.encodeFunctionCall(AbiObject.TON.transferOwnership2,params);
+            let functionBytecode7 =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.addMinter,params);
+            let functionBytecode8 =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.transferOwnership2,params);
+            let functionBytecode9 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.addPauser,params);
+            let functionBytecode10 =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership2,params);
+            let functionBytecode11 =  web3.eth.abi.encodeFunctionCall(AbiObject.DepositManager.transferOwnership,params);
+            
+        
+            /*
+            await this.registry.transferOwnership(this.committeeProxy.address,{from:owner});
+            await this.daoVault2.transferOwnership(this.committeeProxy.address,{from:owner});
+            await this.agendaManager.setCommittee(this.committeeProxy.address,{from:owner});
+            await this.agendaManager.transferOwnership(this.committeeProxy.address,{from:owner});
+            
+            await this.ton.addMinter(this.committeeProxy.address);
+            await this.ton.transferOwnership(this.committeeProxy.address);
+
+            await this.wton.addMinter(this.committeeProxy.address);
+            await this.wton.transferOwnership(this.committeeProxy.address);
+
+            await this.seigManager.addPauser(this.committeeProxy.address);
+
+            await this.seigManager.transferOwnership(this.committeeProxy.address);
+            await this.depositManager.transferOwnership(this.committeeProxy.address);
+
+
+            // === 
+            await _newCommitteeProxy.transferOwnership(this.committeeProxy.address);
+
+            */ 
+
+            await DaoContractsDeployed.executeAgenda(
+            [ registry.address , daoVault2.address, agendaManager.address,  agendaManager.address, ton.address,
+                ton.address, wton.address, wton.address, seigManager.address, seigManager.address, 
+                depositManager.address ],
+            [ functionBytecode1,functionBytecode2,functionBytecode3,functionBytecode4,functionBytecode5,
+                functionBytecode6,functionBytecode7,functionBytecode8,functionBytecode9,functionBytecode10,
+                functionBytecode11 ] );  
+            
+            
+            await DaoContractsDeployed.setDaoContract(
+                {   
+                    ton: ton , 
+                    wton: wton, 
+                    powerton: powerton, 
+                    registry: registry, 
+                    depositManager: depositManager, 
+                    seigManager: seigManager, 
+                    factory: factory,  
+                    daoVault2 : daoVault2,
+                    agendaManager: agendaManager,
+                    candidateFactory: candidateFactory,
+                    committee: committee,
+                    committeeProxy: _newCommitteeProxy
+                }
+            ); 
+        
+        }  
+        
+        async function addlayer2s(operator){
+            let _layer2 = await DaoContractsDeployed.addOperator(operator);
+            layer2s.push(_layer2);
+        }   
+
+        beforeEach(async function () {  
+            this.timeout(1000000);  
+        });
+
 
         it('new _committeeProxy : multi execute : transferOwnership  setCommittee ', async function () { 
             this.timeout(1000000); 
@@ -313,7 +314,7 @@ const {
             expect(await seigManager.owner()).to.equal( _committeeProxy.address);   
             expect(await depositManager.owner()).to.equal( _committeeProxy.address);   
 
-             
+                
             let data = await DaoContractsDeployed.getDaoContracts(); 
             expect(await data.committeeProxy.address).to.equal( _committeeProxy.address);    
             
@@ -321,7 +322,7 @@ const {
 
         });  
 
-         /* 
+            /* 
         it('AgendaManager.renounceOwnership', async function () { 
             this.timeout(1000000); 
             
@@ -331,7 +332,5 @@ const {
             expect(await agendaManager.owner()).to.equal( ZERO_ADDRESS );  
         });   
         */
-    });
-   
-  });
+    }); 
   

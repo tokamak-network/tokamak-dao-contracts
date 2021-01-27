@@ -33,7 +33,7 @@ module.exports = async function (deployer, network) {
     let ton;
 
     tonAddress = load(network, "TON");
-    if (tonAddress === "") {
+    if (tonAddress === undefined) {
       console.log("deploy TON");
       await deployer.deploy(TON)
         .then((_ton) => {
@@ -139,7 +139,7 @@ module.exports = async function (deployer, network) {
 
       save(
         network, {
-          name: "DaoVault",
+          name: "DAOVault",
           address: daoVault.address
         }
       );

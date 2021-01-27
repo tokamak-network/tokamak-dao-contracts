@@ -144,43 +144,7 @@ const {
   let layer2s=[];
   let _committeeProxy, _newton , _newWton ;
   let AbiObject, DaoContractsDeployed ;
-   
-
-  describe('Test 1', function () {
-    before(async function () {
-      this.timeout(1000000); 
-   });
-     
-    async function initializeContracts(){ 
-  
-        DaoContractsDeployed = new DaoContracts(); 
-        AbiObject = await DaoContractsDeployed.setAbiObject();   
-         
-        let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-        ton = returnData.ton;
-        wton = returnData.wton;
-        registry = returnData.registry;
-        depositManager = returnData.depositManager;
-        factory = returnData.coinageFactory;
-        daoVault = returnData.daoVault;
-        seigManager = returnData.seigManager;
-        powerton = returnData.powerton; 
     
-        let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-        daoVault2 = returnData1.daoVault2;
-        agendaManager = returnData1.agendaManager;
-        candidateFactory = returnData1.candidateFactory;
-        committee = returnData1.committee;
-        committeeProxy= returnData1.committeeProxy; 
-    
-        await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-        await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    } 
-    
-    async function addlayer2s(operator){
-      let _layer2 = await DaoContractsDeployed.addOperator(operator);
-      layer2s.push(_layer2);
-    }  
   
     describe('Agenda - DAOVault2', function () { 
         before(async function () {  
@@ -202,6 +166,42 @@ const {
             await layer2s[4].changeMember(2, {from: candidate3});
             
         }); 
+
+        async function initializeContracts(){ 
+  
+            DaoContractsDeployed = new DaoContracts(); 
+            AbiObject = await DaoContractsDeployed.setAbiObject();   
+             
+            let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+            ton = returnData.ton;
+            wton = returnData.wton;
+            registry = returnData.registry;
+            depositManager = returnData.depositManager;
+            factory = returnData.coinageFactory;
+            daoVault = returnData.daoVault;
+            seigManager = returnData.seigManager;
+            powerton = returnData.powerton; 
+        
+            let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+            daoVault2 = returnData1.daoVault2;
+            agendaManager = returnData1.agendaManager;
+            candidateFactory = returnData1.candidateFactory;
+            committee = returnData1.committee;
+            committeeProxy= returnData1.committeeProxy; 
+        
+            await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+            await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+        } 
+        
+        async function addlayer2s(operator){
+          let _layer2 = await DaoContractsDeployed.addOperator(operator);
+          layer2s.push(_layer2);
+        }  
+
+        beforeEach(async function () {  
+            this.timeout(1000000);  
+        });
+
                 
         it('DAOVault2.setTON ', async function () {  
             this.timeout(1000000);    
@@ -307,7 +307,4 @@ const {
             await DaoContractsDeployed.executeAgenda(daoVault2.address, functionBytecode);    
             expect(await daoVault2.owner()).to.equal(ZERO_ADDRESS); 
         }); 
-        });
-   
-  });
-  
+}); 

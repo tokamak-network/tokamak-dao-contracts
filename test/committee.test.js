@@ -18,6 +18,7 @@ chai.use(require('chai-bn')(BN)).should();
 //const deployPlasmaEvmContracts = require('./utils/deploy.js');
 
 // dao-contracts
+const Candidate = contract.fromArtifact('Candidate');
 const DAOVault2 = contract.fromArtifact('DAOVault2');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 //const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
@@ -279,7 +280,7 @@ describe('DAOCommittee', function () {
     if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
 
     //===================================================
-    agendaManager = await DAOAgendaManager.new(ton.address);
+    agendaManager = await DAOAgendaManager.new();
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
     //===================================================
     candidateFactory = await CandidateFactory.new();
@@ -315,7 +316,7 @@ describe('DAOCommittee', function () {
       console.log('daoCommitteeProxy implementation :', impl) ;
     }
 
-    await committeeProxy.setMaxMember(3);
+    await committeeProxy.increaseMaxMember(3, 2);
 
     ////////////////////////////////////////////////////////////////////////
     // test setting
@@ -329,7 +330,7 @@ describe('DAOCommittee', function () {
     await daoVault2.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
-    await committee.transferOwnership(committeeProxy.address);
+    //await committee.transferOwnership(committeeProxy.address);
   } 
 
   async function deposit(candidateContractAddress, account, tonAmount) {
@@ -469,6 +470,11 @@ describe('DAOCommittee', function () {
     });
   });
 
+  async function getCandidateContract(candidate) {
+    const contractAddress = await committeeProxy.candidateContract(candidate);
+    return await Candidate.at(contractAddress);
+  }
+
   describe('Member', function () {
     const candidate = candidate1;
     beforeEach(async function () { 
@@ -486,7 +492,8 @@ describe('DAOCommittee', function () {
         const otherCandidateContractAddress = await committeeProxy.candidateContract(otherCandidate);
 
         await deposit(otherCandidateContractAddress, otherCandidate, toBN("1"));
-        await committeeProxy.changeMember(testSlotIndex, {from: otherCandidate});
+        const candidateContract = await getCandidateContract(otherCandidate);
+        await candidateContract.changeMember(testSlotIndex, {from: otherCandidate});
       });
 
       it('can not challenge with lower balance', async function () {
@@ -495,13 +502,15 @@ describe('DAOCommittee', function () {
 
         candidateBalance.should.be.bignumber.lt(otherCandidateBalance);
 
+        const candidateContract = await getCandidateContract(candidate);
         await expectRevert(
-          committeeProxy.changeMember(testSlotIndex, {from: candidate}),
+          candidateContract.changeMember(testSlotIndex, {from: candidate}),
           "not enough amount"
         );
       });
 
       it('challenge', async function () {
+        this.timeout(1000000);
         const candidateContractAddress = await committeeProxy.candidateContract(candidate);
         await deposit(candidateContractAddress, candidate, toBN("2"));
 
@@ -512,7 +521,8 @@ describe('DAOCommittee', function () {
 
         (await committeeProxy.members(testSlotIndex)).should.be.equal(otherCandidate);
 
-        await committeeProxy.changeMember(testSlotIndex, {from: candidate});
+        const candidateContract = await getCandidateContract(candidate);
+        await candidateContract.changeMember(testSlotIndex, {from: candidate});
 
         (await committeeProxy.members(testSlotIndex)).should.be.equal(candidate);
       });
@@ -522,22 +532,26 @@ describe('DAOCommittee', function () {
       const testSlotIndex = 0;
       beforeEach(async function () { 
         this.timeout(1000000);
-        await committeeProxy.changeMember(testSlotIndex, {from: candidate});
+
+        const candidateContract = await getCandidateContract(candidate);
+        await candidateContract.changeMember(testSlotIndex, {from: candidate});
       });
 
       it('can not own two slots', async function () {
         (await committeeProxy.members(testSlotIndex)).should.be.equal(candidate);
         (await committeeProxy.members(1)).should.be.equal(ZERO_ADDRESS);
+        const candidateContract = await getCandidateContract(candidate);
         expectRevert(
-          committeeProxy.changeMember(1, {from: candidate}),
-          "DAOCommitteeStore: already member"
+          candidateContract.changeMember(1, {from: candidate}),
+          "DAOCommittee: already member"
         );
       });
 
       it('retire', async function () {
         (await committeeProxy.isExistCandidate(candidate)).should.be.equal(true);
         (await committeeProxy.members(testSlotIndex)).should.be.equal(candidate);
-        await committeeProxy.retireMember({from: candidate});
+        const candidateContract = await getCandidateContract(candidate);
+        await candidateContract.retireMember({from: candidate});
         (await committeeProxy.isExistCandidate(candidate)).should.be.equal(true);
         (await committeeProxy.members(testSlotIndex)).should.be.equal(ZERO_ADDRESS);
       });
@@ -577,7 +591,8 @@ describe('DAOCommittee', function () {
         this.timeout(1000000);
         for (let i = 0; i < candidates.length; i++) {
           const candidate = candidates[i];
-          await committeeProxy.changeMember(i, {from: candidate});
+          const candidateContract = await getCandidateContract(candidate);
+          await candidateContract.changeMember(i, {from: candidate});
         }
 
         await time.increase("10000");
@@ -617,22 +632,25 @@ describe('DAOCommittee', function () {
         await addCandidate(candidate2);
         await addCandidate(candidate3);
 
-        await committeeProxy.changeMember(0, {from: candidate1});
-        await committeeProxy.changeMember(1, {from: candidate2});
-        await committeeProxy.changeMember(2, {from: candidate3});
+        const candidateContract1 = await getCandidateContract(candidate1);
+        await candidateContract1.changeMember(0, {from: candidate1});
+        const candidateContract2 = await getCandidateContract(candidate2);
+        await candidateContract2.changeMember(1, {from: candidate2});
+        const candidateContract3 = await getCandidateContract(candidate3);
+        await candidateContract3.changeMember(2, {from: candidate3});
       });
 
       it('increase max member', async function () {
         const maxMember = await committeeProxy.maxMember();
-        await committeeProxy.setMaxMember(maxMember.add(toBN("1")));
+        await committeeProxy.increaseMaxMember(maxMember.add(toBN("1")), 2);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(maxMember.add(toBN("1")));
         (await committeeProxy.members(maxMember)).should.be.equal(ZERO_ADDRESS);
       });
 
-      it('can not decrease max member using setMaxMember.', async function () {
+      it('can not decrease max member using increaseMaxMember.', async function () {
         const maxMember = await committeeProxy.maxMember();
         await expectRevert(
-          committeeProxy.setMaxMember(maxMember.sub(toBN("1"))),
+          committeeProxy.increaseMaxMember(maxMember.sub(toBN("1")), 2),
           "DAOCommitteeStore: You have to call decreaseMaxMember to decrease"
         );
       });
@@ -647,7 +665,7 @@ describe('DAOCommittee', function () {
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME].should.be.bignumber.gt(toBN("0"));
 
         reducingMember.should.be.not.equal(ZERO_ADDRESS);
-        await committeeProxy.decreaseMaxMember(reducingSlotIndex);
+        await committeeProxy.decreaseMaxMember(reducingSlotIndex, 2);
         (await committeeProxy.members(reducingSlotIndex)).should.be.not.equal(reducingMember);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(maxMember.sub(toBN("1")));
 
@@ -665,7 +683,7 @@ describe('DAOCommittee', function () {
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_INDEX].should.be.bignumber.equal(reducingSlotIndex);
         reducingMemberInfoBefore[CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME].should.be.bignumber.gt(toBN("0"));
 
-        await committeeProxy.decreaseMaxMember(reducingSlotIndex);
+        await committeeProxy.decreaseMaxMember(reducingSlotIndex, 2);
         (await committeeProxy.maxMember()).should.be.bignumber.equal(maxMember.sub(toBN("1")));
 
         const reducingMemberInfoAfter = await committeeProxy.candidateInfos(reducingMember);

@@ -149,57 +149,11 @@ let noticePeriod, votingPeriod , agendaFee;
 let layer2s=[];
 let AbiObj, WTONAbiObj, DaoContractsDeployed ; 
 
-describe('Test 1', function () {
-  before(async function () {
-    this.timeout(1000000);
-  });
-  
-  async function initializeContracts(){ 
-  
-      DaoContractsDeployed = new DaoContracts(); 
-      AbiObject = await DaoContractsDeployed.setAbiObject();   
-      
-      let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-      ton = returnData.ton;
-      wton = returnData.wton;
-      registry = returnData.registry;
-      depositManager = returnData.depositManager;
-      factory = returnData.coinageFactory;
-      daoVault = returnData.daoVault;
-      seigManager = returnData.seigManager;
-      powerton = returnData.powerton; 
-
-      let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-      daoVault2 = returnData1.daoVault2;
-      agendaManager = returnData1.agendaManager;
-      candidateFactory = returnData1.candidateFactory;
-      committee = returnData1.committee;
-      committeeProxy= returnData1.committeeProxy; 
-
-      await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-      await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-  }          
-  async function NewPowerTON(){
-    let _powerton = await PowerTON.new(
-      seigManager.address,
-      wton.address,
-      ROUND_DURATION, 
-    );
-    await _powerton.init();  
-    await _powerton.start();  
-
-    return _powerton;
-  }  
-
-  async function addlayer2s(operator){   
-    let _layer2 = await DaoContractsDeployed.addOperator(operator);
-    layer2s.push(_layer2);
-  }  
 
   describe('Agenda - seigManager', function () {  
 
     before(async function () {  
-        this.timeout(1000000); 
+        this.timeout(1000000);  
 
         await initializeContracts();
 
@@ -217,6 +171,52 @@ describe('Test 1', function () {
         await layer2s[4].changeMember(2, {from: candidate3});
       
     }); 
+    async function initializeContracts(){ 
+  
+        DaoContractsDeployed = new DaoContracts(); 
+        AbiObject = await DaoContractsDeployed.setAbiObject();   
+        
+        let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+        ton = returnData.ton;
+        wton = returnData.wton;
+        registry = returnData.registry;
+        depositManager = returnData.depositManager;
+        factory = returnData.coinageFactory;
+        daoVault = returnData.daoVault;
+        seigManager = returnData.seigManager;
+        powerton = returnData.powerton; 
+
+        let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+        daoVault2 = returnData1.daoVault2;
+        agendaManager = returnData1.agendaManager;
+        candidateFactory = returnData1.candidateFactory;
+        committee = returnData1.committee;
+        committeeProxy= returnData1.committeeProxy; 
+
+        await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+        await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+    }     
+
+    async function NewPowerTON(){
+      let _powerton = await PowerTON.new(
+        seigManager.address,
+        wton.address,
+        ROUND_DURATION, 
+      );
+      await _powerton.init();  
+      await _powerton.start();  
+
+      return _powerton;
+    }  
+
+    async function addlayer2s(operator){   
+      let _layer2 = await DaoContractsDeployed.addOperator(operator);
+      layer2s.push(_layer2);
+    }  
+
+    beforeEach(async function () { 
+      this.timeout(0);
+    });
     
     it('seigManager.setPowerTON', async function () {  
       
@@ -249,7 +249,7 @@ describe('Test 1', function () {
     });
 
     it('seigManager.setPowerTONSeigRate setDaoSeigRate setPseigRate ', async function () {  
-      this.timeout(1000000);
+      this.timeout(0);
 
       const POWERTON_SEIG_RATE_2 = _WTON('0.4'); 
       const DAO_SEIG_RATE_2 = _WTON('0.3');  
@@ -274,8 +274,8 @@ describe('Test 1', function () {
       rSeigRate.should.be.bignumber.equal(toBN(PSEIG_RATE_2.toFixed(WTON_UNIT))); 
 
       await DaoContractsDeployed.setDaoContract({seigManager:seigManager}) ;
-
     });
+
     it('seigManager.setCoinageFactory', async function () {  
       let _factory = await CoinageFactory.new({from:owner});
       let params = [_factory.address] ;
@@ -310,7 +310,7 @@ describe('Test 1', function () {
     });  
     
     it('seigManager.renounceWTONMinter', async function () {   
-      this.timeout(1000000);  
+      this.timeout(0);
       expect(await wton.isMinter(seigManager.address)).to.equal(true);
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.renounceWTONMinter,[]); 
       await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
@@ -331,24 +331,27 @@ describe('Test 1', function () {
 
       await seigManager.transferOwnership(committeeProxy.address); 
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
-
     }); 
     
     it('seigManager.transferOwnership(address,address)  ', async function () {   
       this.timeout(1000000); 
-
       expect(await seigManager.owner()).to.equal(committeeProxy.address);
-      await powerton.transferOwnership(seigManager.address); 
+      expect(await powerton.owner()).to.equal(committeeProxy.address);
+
+      //await powerton.transferOwnership(seigManager.address); 
+      let params1 = [seigManager.address] ;
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.PowerTON.transferOwnership2,params1); 
+      await DaoContractsDeployed.executeAgenda(powerton.address, functionBytecode1 ); 
 
       let params = [powerton.address, owner] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.transferOwnership,params); 
-      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
+      await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode ); 
       expect(await powerton.owner()).to.equal(owner);
 
       await powerton.transferOwnership(committeeProxy.address); 
-      expect(await powerton.owner()).to.equal(committeeProxy.address);
+      expect(await powerton.owner()).to.equal(committeeProxy.address); 
+    });
 
-    });   
     it('seigManager.addPauser', async function () { 
      
       expect(await seigManager.isPauser(user1)).to.equal(false);
@@ -375,7 +378,7 @@ describe('Test 1', function () {
 
     it('seigManager.unpause', async function () {   
       let pausedBlock = await seigManager.pausedBlock(); 
-       let params = [] ;  
+      let params = [] ;  
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.unpause,params); 
       await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode); 
       let unpausedBlockkAfter = await seigManager.unpausedBlock(); 
@@ -384,7 +387,11 @@ describe('Test 1', function () {
 
     it('seigManager.renouncePauser(address)', async function () {   
      
-      await powerton.addPauser(seigManager.address);
+      expect(await powerton.isPauser(committeeProxy.address)).to.equal(true); 
+ 
+      let params1 = [seigManager.address] ; 
+      let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.PowerTON.addPauser,params1); 
+      await DaoContractsDeployed.executeAgenda(powerton.address, functionBytecode1);   
       expect(await powerton.isPauser(seigManager.address)).to.equal(true); 
 
       let params = [powerton.address] ; 
@@ -392,7 +399,6 @@ describe('Test 1', function () {
       await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);  
       expect(await powerton.isPauser(seigManager.address)).to.equal(false);
     }); 
- 
 
     it('seigManager.renouncePauser()', async function () {  
       expect(await seigManager.isPauser(committeeProxy.address)).to.equal(true);
@@ -450,5 +456,4 @@ describe('Test 1', function () {
     }); 
 
   });
- 
-});
+  

@@ -14,6 +14,7 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 ```
 $ npm install
 $ npm run compile:plasma
+$ truffle compile
 ```
 
 # Test

@@ -150,12 +150,30 @@ const {
   let layer2s=[];
   let AbiObj, DaoContractsDeployed ; 
   let _committeeProxy;
+ 
+    describe('Agenda - DAOCommitteeProxy', function () { 
+       
+      before(async function () {  
+        this.timeout(1000000); 
 
-  describe('Test 1', function () {
-    before(async function () {
-      this.timeout(1000000);
-  
-    }); 
+        await initializeContracts();
+
+        await addlayer2s(operator1);
+        await addlayer2s(operator2);
+    
+        await DaoContractsDeployed.addCandidate(candidate1);
+        await DaoContractsDeployed.addCandidate(candidate2);
+        await DaoContractsDeployed.addCandidate(candidate3); 
+    
+        let layer2s = DaoContractsDeployed.getLayer2s();
+
+        await layer2s[2].changeMember(0, {from: candidate1});
+        await layer2s[3].changeMember(1, {from: candidate2});
+        await layer2s[4].changeMember(2, {from: candidate3});
+        
+        _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
+     });  
+
 
     async function initializeContracts(){ 
   
@@ -187,29 +205,12 @@ const {
       let _layer2 = await DaoContractsDeployed.addOperator(operator);
       layer2s.push(_layer2);
     }  
-  
-    describe('Agenda - DAOCommitteeProxy', function () { 
-       
-      before(async function () {  
-        this.timeout(1000000); 
 
-        await initializeContracts();
 
-        await addlayer2s(operator1);
-        await addlayer2s(operator2);
-    
-        await DaoContractsDeployed.addCandidate(candidate1);
-        await DaoContractsDeployed.addCandidate(candidate2);
-        await DaoContractsDeployed.addCandidate(candidate3); 
-    
-        let layer2s = DaoContractsDeployed.getLayer2s();
+     beforeEach(async function () {  
+        this.timeout(1000000);  
+    });
 
-        await layer2s[2].changeMember(0, {from: candidate1});
-        await layer2s[3].changeMember(1, {from: candidate2});
-        await layer2s[4].changeMember(2, {from: candidate3});
-        
-        _committeeProxy = await DAOCommitteeProxy.at(committeeProxy.address); 
-     });  
 
     it('DAOCommitteeProxy.upgradeTo ', async function () {  
         this.timeout(1000000);   
@@ -239,7 +240,7 @@ const {
           await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
           expect(await _committeeProxy.pauseProxy()).to.equal(true);  
       }); 
-      
+      /*
       it('DAOCommitteeProxy.setProxyPause - false ', async function () {  
         this.timeout(1000000);   
 
@@ -248,10 +249,7 @@ const {
         let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.CommitteeProxy.setProxyPause,params);
         await DaoContractsDeployed.executeAgenda(_committeeProxy.address, functionBytecode);   
         expect(await _committeeProxy.pauseProxy()).to.equal(false);  
-    }); 
-    
+      }); 
+      */
  
-    });
-   
-  });
-  
+  }); 

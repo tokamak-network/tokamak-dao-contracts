@@ -144,75 +144,7 @@ const {
   let layer2s=[];
   let _committeeProxy, _newton , _newWton, _newLayer2 ;
   let AbiObject, DaoContractsDeployed ;
-   
-
-  describe('Test 1', function () {
-    before(async function () {
-      this.timeout(1000000);  
-    });
-
-    async function initializeContracts(){ 
-  
-        DaoContractsDeployed = new DaoContracts(); 
-        AbiObject = await DaoContractsDeployed.setAbiObject();   
-         
-        let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
-        ton = returnData.ton;
-        wton = returnData.wton;
-        registry = returnData.registry;
-        depositManager = returnData.depositManager;
-        factory = returnData.coinageFactory;
-        daoVault = returnData.daoVault;
-        seigManager = returnData.seigManager;
-        powerton = returnData.powerton; 
     
-        let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-        daoVault2 = returnData1.daoVault2;
-        agendaManager = returnData1.agendaManager;
-        candidateFactory = returnData1.candidateFactory;
-        committee = returnData1.committee;
-        committeeProxy= returnData1.committeeProxy; 
-    
-        await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
-        await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    } 
-    
-    async function addlayer2s(operator){
-      let _layer2 = await DaoContractsDeployed.addOperator(operator);
-      layer2s.push(_layer2);
-    } 
-
-    async function NewSeigManager(){
-        var newSeigManager = await SeigManager.new(
-        ton.address,
-        wton.address,
-        registry.address,
-        depositManager.address,
-        SEIG_PER_BLOCK.toFixed(WTON_UNIT),
-        factory.address
-        ); 
-
-        await newSeigManager.setPowerTON(powerton.address); 
-        await newSeigManager.setDao(daoVault2.address);
-    ///await wton.addMinter(newSeigManager.address);
-        //await ton.addMinter(wton.address);
-        
-        /* 
-        await Promise.all([
-        depositManager,
-        wton,
-        ].map(contract => contract.setSeigManager(newSeigManager.address)));
-        */ 
-
-        newSeigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
-        newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
-        newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
-        await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
-        
-        
-        return newSeigManager;
-    }
-     
       
     describe('Agenda - WTON', function () { 
 
@@ -234,7 +166,75 @@ const {
             await layer2s[3].changeMember(1, {from: candidate2});
             await layer2s[4].changeMember(2, {from: candidate3});
           
-        });  
+        });
+
+
+        async function initializeContracts(){ 
+    
+            DaoContractsDeployed = new DaoContracts(); 
+            AbiObject = await DaoContractsDeployed.setAbiObject();   
+            
+            let returnData = await DaoContractsDeployed.initializePlasmaEvmContracts(owner);
+            ton = returnData.ton;
+            wton = returnData.wton;
+            registry = returnData.registry;
+            depositManager = returnData.depositManager;
+            factory = returnData.coinageFactory;
+            daoVault = returnData.daoVault;
+            seigManager = returnData.seigManager;
+            powerton = returnData.powerton; 
+        
+            let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
+            daoVault2 = returnData1.daoVault2;
+            agendaManager = returnData1.agendaManager;
+            candidateFactory = returnData1.candidateFactory;
+            committee = returnData1.committee;
+            committeeProxy= returnData1.committeeProxy; 
+        
+            await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
+            await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
+        } 
+        
+        async function addlayer2s(operator){
+        let _layer2 = await DaoContractsDeployed.addOperator(operator);
+        layer2s.push(_layer2);
+        } 
+
+        async function NewSeigManager(){
+            var newSeigManager = await SeigManager.new(
+            ton.address,
+            wton.address,
+            registry.address,
+            depositManager.address,
+            SEIG_PER_BLOCK.toFixed(WTON_UNIT),
+            factory.address
+            ); 
+
+            await newSeigManager.setPowerTON(powerton.address); 
+            await newSeigManager.setDao(daoVault2.address);
+        ///await wton.addMinter(newSeigManager.address);
+            //await ton.addMinter(wton.address);
+            
+            /* 
+            await Promise.all([
+            depositManager,
+            wton,
+            ].map(contract => contract.setSeigManager(newSeigManager.address)));
+            */ 
+
+            newSeigManager.setPowerTONSeigRate(POWERTON_SEIG_RATE.toFixed(WTON_UNIT));
+            newSeigManager.setDaoSeigRate(DAO_SEIG_RATE.toFixed(WTON_UNIT));
+            newSeigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
+            await newSeigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
+            
+            
+            return newSeigManager;
+        }
+        
+        
+        beforeEach(async function () {  
+            this.timeout(1000000);  
+        });
 
        it('WTON.enableCallback ', async function () { 
             this.timeout(1000000); 
@@ -302,12 +302,18 @@ const {
 
         it('WTON.renouncePauser(address)', async function () {  
             this.timeout(1000000); 
-            await powerton.addPauser(wton.address);
+            expect(await powerton.isPauser(committeeProxy.address)).to.equal(true);  
+
+            //await powerton.addPauser(wton.address);
+            let params1 = [wton.address] ; 
+            let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.PowerTON.addPauser,params1); 
+            await DaoContractsDeployed.executeAgenda(powerton.address, functionBytecode1);  
+
             expect(await powerton.isPauser(wton.address)).to.equal(true);  
             let params = [powerton.address] ; 
             let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.renouncePauser,params); 
             await DaoContractsDeployed.executeAgenda(wton.address, functionBytecode);  
-            expect(await powerton.isPauser(wton.address)).to.equal(false);
+            expect(await powerton.isPauser(wton.address)).to.equal(false);  
         });  
          
         it('WTON.setSeigManager ', async function () {  
@@ -332,14 +338,19 @@ const {
 
         it('WTON.transferOwnership(address,address)  ', async function () {   
             this.timeout(1000000); 
-            expect(await wton.owner()).to.equal(committeeProxy.address);
-            await powerton.transferOwnership(wton.address); 
+            expect(await wton.owner()).to.equal(committeeProxy.address);  
+
+            //await powerton.transferOwnership(wton.address); 
+            let params1 = [wton.address] ; 
+            let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.PowerTON.transferOwnership2,params1); 
+            await DaoContractsDeployed.executeAgenda(powerton.address, functionBytecode1); 
+            
             let params = [powerton.address, owner] ;
             let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.WTON.transferOwnership,params); 
             await DaoContractsDeployed.executeAgenda(wton.address, functionBytecode); 
             expect(await powerton.owner()).to.equal(owner);
             await powerton.transferOwnership(committeeProxy.address); 
-            expect(await powerton.owner()).to.equal(committeeProxy.address);
+            expect(await powerton.owner()).to.equal(committeeProxy.address); 
         });   
 
         it('WTON.renounceOwnership(address)', async function () {     
@@ -362,7 +373,4 @@ const {
             expect(await wton.owner()).to.equal(ZERO_ADDRESS); 
         });
 
-    });
-   
-  });
-  
+    }); 
