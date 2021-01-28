@@ -42582,8 +42582,8 @@
         }
       },
       "links": {},
-      "address": "0x98D44C2aE6Db972b8d35dB4E7047778b91DFc850",
-      "transactionHash": "0xff7023ecc25d2b42054e945436c9b3523b50c0699f4f8f471570390d2f251985"
+      "address": "0x908B05753462Dc3E569Db8132AeFc6e39cacfCA1",
+      "transactionHash": "0xdc4192f9db2b15d374871b399bfc05c6dcc5a5a9734d7f49d4f4915c36f1bdd4"
     },
     "1611558241387": {
       "events": {
@@ -42654,10 +42654,150 @@
       "links": {},
       "address": "0x6Ee419f5953754F9B0830ee994673B298E4C7d83",
       "transactionHash": "0x6bce2cceeb2d5143c62ca6a1e1c64b15e3b28bc2ac8721b9fc929f626e82f7c2"
+    },
+    "1611753329924": {
+      "events": {
+        "0xf874b3fe678e8c9f4bd9dd7051e2bd81708e378e98526f16586e7bf60b77effc": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "agendaID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "result",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaResultChanged",
+          "type": "event"
+        },
+        "0x27e1508d1d92ba0e1e406fad0138e0f3dd44688f5018dbe7f5718da02931eb7c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "agendaID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "prevStatus",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newStatus",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaStatusChanged",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x6d83b913CB6128C499D1D8C57EeCa66a6E1b2B9a",
+      "transactionHash": "0x440c7923995ea89ca9e5cb35b0a26b365d364e549da62ab843db1d63f6d1763b"
+    },
+    "1611757411125": {
+      "events": {
+        "0xf874b3fe678e8c9f4bd9dd7051e2bd81708e378e98526f16586e7bf60b77effc": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "agendaID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "result",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaResultChanged",
+          "type": "event"
+        },
+        "0x27e1508d1d92ba0e1e406fad0138e0f3dd44688f5018dbe7f5718da02931eb7c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "agendaID",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "prevStatus",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newStatus",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaStatusChanged",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xee3cA607935B2298a29051972489Bf87F4fd2b01",
+      "transactionHash": "0x20a72fc5d9febe62818f38352ee5b9c56d46f1066ba0d4712482ad981ac32ef3"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-26T04:42:38.231Z",
+  "updatedAt": "2021-01-28T01:01:57.026Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

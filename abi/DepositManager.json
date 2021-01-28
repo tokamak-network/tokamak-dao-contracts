@@ -35593,10 +35593,212 @@
       "links": {},
       "address": "0xEB37A4B475cb214664d4d0B4Fda0E74403063146",
       "transactionHash": "0x53f4eab8dbad9ecc261768c1b78ad2eb10eda2cae3b86dc31856e1745ef7d70e"
+    },
+    "1611753329924": {
+      "events": {
+        "0x8752a472e571a816aea92eec8dae9baf628e840f4929fbcc2d155e6233ff68a7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposited",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0xcd1fce47d5ad89dd70b04c75bd6bdb8114d4d4ff7b4393f9fb5937e733ba9582": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "WithdrawalProcessed",
+          "type": "event"
+        },
+        "0x04c56a409d50971e45c5a2d96e5d557d2b0f1d66d40f14b141e4c958b0f39b32": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "WithdrawalRequested",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x1b2C50Bf2ACa6b89beBf9F063B2A21092B9FE2B7",
+      "transactionHash": "0x05a9510e49a6b2acd8632f65149245af8ae9d7f6a47553b80ac3b531a47a7052"
+    },
+    "1611757411125": {
+      "events": {
+        "0x8752a472e571a816aea92eec8dae9baf628e840f4929fbcc2d155e6233ff68a7": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposited",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0xcd1fce47d5ad89dd70b04c75bd6bdb8114d4d4ff7b4393f9fb5937e733ba9582": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "WithdrawalProcessed",
+          "type": "event"
+        },
+        "0x04c56a409d50971e45c5a2d96e5d557d2b0f1d66d40f14b141e4c958b0f39b32": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "WithdrawalRequested",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xe33662Ee7Bdeb37fA5bB56201b9b18506cD86Dca",
+      "transactionHash": "0xa917d696c4e8042211bb029d8b0a9b1c907541f5ab02903cffe1b79d657f3084"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-26T04:37:09.682Z",
+  "updatedAt": "2021-01-28T01:01:46.355Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "DepositManager manages WTON deposit and withdrawal from operator and WTON holders.",

@@ -72632,8 +72632,8 @@
         }
       },
       "links": {},
-      "address": "0xDb0dD01CE5964A816f87211Abb0DBe1DFf25e3b5",
-      "transactionHash": "0x36009fe5ea03e087c9fcde6e4ac12cec2e69bee0b27260a7869fea3286c4dfde"
+      "address": "0xaD1C782E3c16Dc45730DBb45E78b3395d771c89e",
+      "transactionHash": "0xc90d8f44d5000677f1cead662a9857ae41df150c07e35f44a960d00cd0721a90"
     },
     "1611558241387": {
       "events": {
@@ -72960,10 +72960,662 @@
       "links": {},
       "address": "0x832d7A0b176Cef6051064e3137Ce4b65FBDfd1bB",
       "transactionHash": "0xc3dc2de9827e085a2aab311a805106c22c4a8bdcba960c91e65ac6be7e882619"
+    },
+    "1611753329924": {
+      "events": {
+        "0xb0c20bab69de391cff8f119cf876e708b1b41868e0fd397cbcd2b4d3c623b5b8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "targets",
+              "type": "address[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "noticePeriodSeconds",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "votingPeriodSeconds",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaCreated",
+          "type": "event"
+        },
+        "0x785146be3266678a3f4ea454b310ff1f8c91d0ad9a7997bcd0619940d4d67fe6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "target",
+              "type": "address[]"
+            }
+          ],
+          "name": "AgendaExecuted",
+          "type": "event"
+        },
+        "0xfa0761008653bc7bf9fa040fb7e07672ad3e17a976eb452c44e81dd782a6214b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "voting",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "comment",
+              "type": "string"
+            }
+          ],
+          "name": "AgendaVoteCasted",
+          "type": "event"
+        },
+        "0xda6c16eb4f8fb6ec38ec7e9454e1c4edc683be68090430dad446a152fa719789": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "member",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalbalance",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "memberIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "ApplyMemberSuccess",
+          "type": "event"
+        },
+        "0x7cf8db18d9a5c7f44156bfabdbb59ac982a8a004e461ca1b87ee71a5cdfbc5ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidateContract",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "memo",
+              "type": "string"
+            }
+          ],
+          "name": "CandidateContractCreated",
+          "type": "event"
+        },
+        "0x663b98adf1afa777e36528b3293a057803f87ed00d2d2518dccfe5d7a6e99ccf": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "slotIndex",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "prevMember",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newMember",
+              "type": "address"
+            }
+          ],
+          "name": "ChangedMember",
+          "type": "event"
+        },
+        "0x8c0366d1e3a335a312d012257ee764723c38ec2dd5e74cbfad372513521f9771": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "prevSlotMax",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "slotMax",
+              "type": "uint256"
+            }
+          ],
+          "name": "ChangedSlotMaximum",
+          "type": "event"
+        },
+        "0xe013459a1c3162ae04cb4b22feaa126a5d302e283c7333f41d1ebe1b2cd7384b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ClaimedActivityReward",
+          "type": "event"
+        },
+        "0x574651c4b47831128b9ed5b0c878675fc9c8e14d7119b755a31c7fef6065e970": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidateContract",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "memo",
+              "type": "string"
+            }
+          ],
+          "name": "OperatorRegistered",
+          "type": "event"
+        },
+        "0x027863d12a407097e086a48e36475bfc859d0b200b7e6f65b5fd3b218e46632e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newQuorum",
+              "type": "uint256"
+            }
+          ],
+          "name": "QuorumChanged",
+          "type": "event"
+        },
+        "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
+            }
+          ],
+          "name": "RoleAdminChanged",
+          "type": "event"
+        },
+        "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleGranted",
+          "type": "event"
+        },
+        "0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleRevoked",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xdA0E00Cc28fE5eb74A9590843B77C45FD1ae222C",
+      "transactionHash": "0x78945e4b05f0f7765fa4dd18d1b107fd314f73316f9077c7f27c7be6569f1ab1"
+    },
+    "1611757411125": {
+      "events": {
+        "0xb0c20bab69de391cff8f119cf876e708b1b41868e0fd397cbcd2b4d3c623b5b8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "targets",
+              "type": "address[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "noticePeriodSeconds",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "votingPeriodSeconds",
+              "type": "uint256"
+            }
+          ],
+          "name": "AgendaCreated",
+          "type": "event"
+        },
+        "0x785146be3266678a3f4ea454b310ff1f8c91d0ad9a7997bcd0619940d4d67fe6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "target",
+              "type": "address[]"
+            }
+          ],
+          "name": "AgendaExecuted",
+          "type": "event"
+        },
+        "0xfa0761008653bc7bf9fa040fb7e07672ad3e17a976eb452c44e81dd782a6214b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "voting",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "comment",
+              "type": "string"
+            }
+          ],
+          "name": "AgendaVoteCasted",
+          "type": "event"
+        },
+        "0xda6c16eb4f8fb6ec38ec7e9454e1c4edc683be68090430dad446a152fa719789": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "member",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalbalance",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "memberIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "ApplyMemberSuccess",
+          "type": "event"
+        },
+        "0x7cf8db18d9a5c7f44156bfabdbb59ac982a8a004e461ca1b87ee71a5cdfbc5ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidateContract",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "memo",
+              "type": "string"
+            }
+          ],
+          "name": "CandidateContractCreated",
+          "type": "event"
+        },
+        "0x663b98adf1afa777e36528b3293a057803f87ed00d2d2518dccfe5d7a6e99ccf": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "slotIndex",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "prevMember",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newMember",
+              "type": "address"
+            }
+          ],
+          "name": "ChangedMember",
+          "type": "event"
+        },
+        "0x8c0366d1e3a335a312d012257ee764723c38ec2dd5e74cbfad372513521f9771": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "prevSlotMax",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "slotMax",
+              "type": "uint256"
+            }
+          ],
+          "name": "ChangedSlotMaximum",
+          "type": "event"
+        },
+        "0xe013459a1c3162ae04cb4b22feaa126a5d302e283c7333f41d1ebe1b2cd7384b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ClaimedActivityReward",
+          "type": "event"
+        },
+        "0x574651c4b47831128b9ed5b0c878675fc9c8e14d7119b755a31c7fef6065e970": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidate",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "candidateContract",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "memo",
+              "type": "string"
+            }
+          ],
+          "name": "OperatorRegistered",
+          "type": "event"
+        },
+        "0x027863d12a407097e086a48e36475bfc859d0b200b7e6f65b5fd3b218e46632e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newQuorum",
+              "type": "uint256"
+            }
+          ],
+          "name": "QuorumChanged",
+          "type": "event"
+        },
+        "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
+            }
+          ],
+          "name": "RoleAdminChanged",
+          "type": "event"
+        },
+        "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleGranted",
+          "type": "event"
+        },
+        "0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleRevoked",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x095fbD71dFd3dD9534B6B32F5C58E9ebE867da28",
+      "transactionHash": "0xd018d09cdf154fba21e204364d21d20ab07830834e12dd88fd004ae34409c0ad"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-01-26T04:42:38.263Z",
+  "updatedAt": "2021-01-28T01:02:21.116Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
