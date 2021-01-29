@@ -282,18 +282,18 @@ let DAOCommitteeAbiObj, DaoContractsDeployed, WTONAbiObj ;
       expect(await committeeProxy.candidateFactory()).to.equal(_factory.address); 
    
     });
-    it('committeeProxy.registerOperatorByOwner', async function () {  
+    it('committeeProxy.registerLayer2CandidateByOwner', async function () {  
       this.timeout(1000000); 
       (await layer2s[0].operator()).should.be.equal(operator1);
      // expect(await committeeProxy.isCandidate(operator1)).to.equal(false);  
       let params = [operator1 , layer2s[0].address, 'operator1'] ;
-      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Committee.registerOperatorByOwner,params);
+      let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Committee.registerLayer2CandidateByOwner,params);
       await DaoContractsDeployed.executeAgenda(committeeProxy.address, functionBytecode);  
       expect(await committeeProxy.isExistCandidate(layer2s[0].address)).to.equal(true); 
       
 
       params = [user2 , layer2s[1].address, 'user2'] ;
-      functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Committee.registerOperatorByOwner,params);
+      functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Committee.registerLayer2CandidateByOwner,params);
       let agendaID = await DaoContractsDeployed.createAgenda(committeeProxy.address, functionBytecode); 
       await DaoContractsDeployed.agendaVoteYesAll(agendaID);  
       await expectRevert.unspecified(committeeProxy.executeAgenda(agendaID) ); 

@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
 
-import "./DAOAgendaManager.sol";
-//import "./DAOActivityRewardManager.sol";
-
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
-//import { IDAOActivityRewardManager } from "../interfaces/IDAOActivityRewardManager.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
@@ -53,11 +49,6 @@ contract StorageStateCommittee {
         _;
     }
     
-    /*modifier validActivityRewardManager() {
-        require(address(activityRewardManager) != address(0), "StorageStateCommittee: ActivityRewardManager is zero");
-        _;
-    }*/
-
     modifier validCommitteeL2Factory() {
         require(address(candidateFactory) != address(0), "StorageStateCommittee: unvalid CommitteeL2Factory");
         _;

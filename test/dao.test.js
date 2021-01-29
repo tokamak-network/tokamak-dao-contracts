@@ -434,7 +434,7 @@ describe('Test 1', function () {
         layer2 = await addOperator(user1);
         layer2.should.be.not.equal(ZERO_ADDRESS);
          
-        await committeeProxy.registerOperator(layer2.address, "memo", {from: user1});
+        await committeeProxy.registerLayer2Candidate(layer2.address, "memo", {from: user1});
 
         (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(layer2.address);
@@ -464,7 +464,7 @@ describe('Test 1', function () {
         layer2.should.be.not.equal(ZERO_ADDRESS);
 
         (await layer2.operator()).should.be.equal(user2);
-        await committeeProxy.registerOperatorByOwner(user2, layer2.address, "memo");
+        await committeeProxy.registerLayer2CandidateByOwner(user2, layer2.address, "memo");
 
         (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(layer2.address);

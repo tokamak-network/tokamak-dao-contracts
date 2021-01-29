@@ -2,7 +2,6 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import "./StorageStateCommittee.sol";
 
@@ -239,27 +238,27 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     /// @notice Registers the exist layer2 on DAO
     /// @param _layer2 Layer2 contract address to be registered
     /// @param _memo A memo for the candidate
-    function registerOperator(address _layer2, string memory _memo)
+    function registerLayer2Candidate(address _layer2, string memory _memo)
         public
         validSeigManager
         validLayer2Registry
         validCommitteeL2Factory
     {
-        _registerOperator(msg.sender, _layer2, _memo);
+        _registerLayer2Candidate(msg.sender, _layer2, _memo);
     }
 
     /// @notice Registers the exist layer2 on DAO by owner
     /// @param _operator Operator address of the layer2 contract
     /// @param _layer2 Layer2 contract address to be registered
     /// @param _memo A memo for the candidate
-    function registerOperatorByOwner(address _operator, address _layer2, string memory _memo)
+    function registerLayer2CandidateByOwner(address _operator, address _layer2, string memory _memo)
         public
         onlyOwner
         validSeigManager
         validLayer2Registry
         validCommitteeL2Factory
     {
-        _registerOperator(_operator, _layer2, _memo);
+        _registerLayer2Candidate(_operator, _layer2, _memo);
     }
 
     /// @notice Replaces an existing member
@@ -543,7 +542,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         emit ClaimedActivityReward(msg.sender, amount);
     }
 
-    function _registerOperator(address _operator, address _layer2, string memory _memo)
+    function _registerLayer2Candidate(address _operator, address _layer2, string memory _memo)
         internal
         validSeigManager
         validLayer2Registry
