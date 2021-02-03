@@ -21,12 +21,12 @@ const {
   const CandidateAbi = require('../build/contracts/Candidate.json').abi;
   const DAOAgendaManagerAbi = require('../build/contracts/DAOAgendaManager.json').abi;
   const Layer2RegistryAbi = require('../build/contracts/Layer2Registry.json').abi;
-  const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
+  const DAOVaultAbi = require('../build/contracts/DAOVault.json').abi;
   const TONAbi = require('../build/contracts/TON.json').abi;
   const WTONAbi = require('../build/contracts/WTON.json').abi;
 
   // dao-contracts
-  const DAOVault2 = contract.fromArtifact('DAOVault2');
+  const DAOVault = contract.fromArtifact('DAOVault');
   const DAOCommittee = contract.fromArtifact('DAOCommittee');
   const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
   const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -42,7 +42,7 @@ const {
   const Layer2Registry = contract.fromArtifact('Layer2Registry');
   const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
   const PowerTON = contract.fromArtifact('PowerTON');
-  const DAOVault = contract.fromArtifact('DAOVault');
+  const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
   const EtherToken = contract.fromArtifact('EtherToken');
   const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -133,7 +133,7 @@ const {
   ////////////////////////////////////////////////////////////////////////////////
 
   const owner= defaultSender;
-  let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+  let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
   let gasUsedRecords = [];
   let gasUsedTotal = 0;
   let debugLog=true;
@@ -145,7 +145,7 @@ const {
   let registry;
   let depositManager;
   let factory;
-  let daoVault;
+  let oldDaoVault;
   let seigManager;
   let powerton;
 
@@ -191,12 +191,12 @@ const {
             registry = returnData.registry;
             depositManager = returnData.depositManager;
             factory = returnData.coinageFactory;
-            daoVault = returnData.daoVault;
+            oldDaoVault = returnData.oldDaoVault;
             seigManager = returnData.seigManager;
             powerton = returnData.powerton;
 
             let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-            daoVault2 = returnData1.daoVault2;
+            daoVault = returnData1.daoVault;
             agendaManager = returnData1.agendaManager;
             candidateFactory = returnData1.candidateFactory;
             committee = returnData1.committee;
@@ -215,7 +215,7 @@ const {
                 registry.address,
                 agendaManager.address,
                 candidateFactory.address,
-                daoVault2.address,
+                daoVault.address,
                 {from:owner}
             );
             let impl = await  _daoCommitteeProxy.implementation({from:owner}) ;
@@ -232,7 +232,7 @@ const {
 
             let params = [_committeeProxy.address] ;
             let functionBytecode1 =  web3.eth.abi.encodeFunctionCall(AbiObject.Layer2Registry.transferOwnership,params);
-            let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObject.DAOVault2.transferOwnership,params);
+            let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(AbiObject.DAOVault.transferOwnership,params);
             let functionBytecode3 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.setCommittee,params);
             let functionBytecode4 =  web3.eth.abi.encodeFunctionCall(AbiObject.Agenda.transferOwnership,params);
             let functionBytecode5 =  web3.eth.abi.encodeFunctionCall(AbiObject.TON.addMinter,params);
@@ -246,7 +246,7 @@ const {
 
             /*
             await this.registry.transferOwnership(this.committeeProxy.address,{from:owner});
-            await this.daoVault2.transferOwnership(this.committeeProxy.address,{from:owner});
+            await this.daoVault.transferOwnership(this.committeeProxy.address,{from:owner});
             await this.agendaManager.setCommittee(this.committeeProxy.address,{from:owner});
             await this.agendaManager.transferOwnership(this.committeeProxy.address,{from:owner});
 
@@ -268,7 +268,7 @@ const {
             */
 
             await DaoContractsDeployed.executeAgenda(
-            [ registry.address , daoVault2.address, agendaManager.address,  agendaManager.address, ton.address,
+            [ registry.address , daoVault.address, agendaManager.address,  agendaManager.address, ton.address,
                 ton.address, wton.address, wton.address, seigManager.address, seigManager.address,
                 depositManager.address ],
             [ functionBytecode1,functionBytecode2,functionBytecode3,functionBytecode4,functionBytecode5,
@@ -285,7 +285,7 @@ const {
                     depositManager: depositManager,
                     seigManager: seigManager,
                     factory: factory,
-                    daoVault2 : daoVault2,
+                    daoVault : daoVault,
                     agendaManager: agendaManager,
                     candidateFactory: candidateFactory,
                     committee: committee,

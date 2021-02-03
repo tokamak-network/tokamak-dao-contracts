@@ -16,7 +16,7 @@ const {
 
   const DaoContracts = require('../utils/plasma_test_deploy.js');
   // dao-contracts
-  const DAOVault2 = contract.fromArtifact('DAOVault2');
+  const DAOVault = contract.fromArtifact('DAOVault');
   const DAOCommittee = contract.fromArtifact('DAOCommittee');
   const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
   const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -32,7 +32,7 @@ const {
   const Layer2Registry = contract.fromArtifact('Layer2Registry');
   const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
   const PowerTON = contract.fromArtifact('PowerTON');
-  const DAOVault = contract.fromArtifact('DAOVault');
+  const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
   const EtherToken = contract.fromArtifact('EtherToken');
   const EpochHandler = contract.fromArtifact('EpochHandler');

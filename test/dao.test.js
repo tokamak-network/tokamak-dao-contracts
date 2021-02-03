@@ -33,7 +33,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 const EtherToken = contract.fromArtifact('EtherToken');
 const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -122,7 +122,7 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -134,7 +134,7 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
@@ -152,12 +152,12 @@ describe('Test 1', function () {
     registry = returnData.registry;
     depositManager = returnData.depositManager;
     factory = returnData.coinageFactory;
-    daoVault = returnData.daoVault;
+    oldDaoVault = returnData.oldDaoVault;
     seigManager = returnData.seigManager;
     powerton = returnData.powerton; 
 
     const returnData1 = await daoContractsDeployed.initializeDaoContracts(owner);
-    daoVault2 = returnData1.daoVault2;
+    daoVault = returnData1.daoVault;
     agendaManager = returnData1.agendaManager;
     candidateFactory = returnData1.candidateFactory;
     committee = returnData1.committee;
@@ -858,16 +858,18 @@ describe('Test 1', function () {
   });
 
   describe('Vault', function () {
-    it('claim from DAOVault', async function () {
-      let amount = await wton.balanceOf(daoVault.address);
+    it('claim from OldDAOVaultMock', async function () {
+      let amount = await wton.balanceOf(oldDaoVault.address);
       amount.should.be.bignumber.gt(toBN('0'));
-      beforeBalance = await wton.balanceOf(daoVault2.address);
-      const owner = await daoVault.owner();
+      beforeBalance = await wton.balanceOf(daoVault.address);
+      console.log(`beforeBalance: ${beforeBalance}`);
+      const owner = await oldDaoVault.owner();
       currentTime = await time.latest();
-      await daoVault.claim(daoVault2.address);
-      afterBalance = await ton.balanceOf(daoVault2.address);
+      await oldDaoVault.claim(daoVault.address);
+      afterBalance = await ton.balanceOf(daoVault.address);
+      console.log(`afterBalance: ${afterBalance}`);
 
-      amount = await wton.balanceOf(daoVault.address);
+      amount = await wton.balanceOf(oldDaoVault.address);
       amount.should.be.bignumber.equal(toBN('0'));
     });
 
@@ -876,10 +878,23 @@ describe('Test 1', function () {
         const candidate = candidates[i];
         const beforeBalance = await ton.balanceOf(candidate);
 
+        const fee = await committeeProxy.activityRewardPerSecond();
+        console.log(`fee: ${fee}`);
+
+        const beforeBalanceTV = await ton.balanceOf(daoVault.address);
+        const beforeBalanceWV = await wton.balanceOf(daoVault.address);
+        console.log(`beforeBalanceTV: ${beforeBalanceTV}`);
+        console.log(`beforeBalanceWV: ${beforeBalanceWV}`);
+
         const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
         claimableAmount.should.be.bignumber.gt(toBN("0"));
 
         await committeeProxy.claimActivityReward({from: candidate});
+
+        const afterBalanceTV = await ton.balanceOf(daoVault.address);
+        const afterBalanceWV = await wton.balanceOf(daoVault.address);
+        console.log(`afterBalanceTV: ${afterBalanceTV}`);
+        console.log(`afterBalanceWV: ${afterBalanceWV}`);
 
         const afterBalance = await ton.balanceOf(candidate);
         afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);

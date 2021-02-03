@@ -23,14 +23,14 @@ const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
 const CandidateAbi = require('../build/contracts/Candidate.json').abi;
 const DAOAgendaManagerAbi = require('../build/contracts/DAOAgendaManager.json').abi;
 const Layer2RegistryAbi = require('../build/contracts/Layer2Registry.json').abi;
-const DAOVault2Abi = require('../build/contracts/DAOVault2.json').abi;
+const DAOVaultAbi = require('../build/contracts/DAOVault.json').abi;
 const TONAbi = require('../build/contracts/TON.json').abi;
 const WTONAbi = require('../build/contracts/WTON.json').abi;
 const DAOCommitteeProxyAbi = require('../build/contracts/DAOCommitteeProxy.json').abi;
 const PowerTONAbi = require('../build/contracts/PowerTON.json').abi;
 
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -46,7 +46,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 const EtherToken = contract.fromArtifact('EtherToken');
 const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -136,7 +136,7 @@ const TON_USER_STAKE_AMOUNT = _TON('10');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0;
 let debugLog=true;
@@ -151,11 +151,11 @@ class DaoContracts {
     this.registry = null;
     this.depositManager = null;
     this.factory = null;
-    this.daoVault = null;
+    this.oldDaoVault = null;
     this.seigManager = null;
     this.powerton = null;
 
-    this.daoVault2 = null;
+    this.daoVault = null;
     this.agendaManager = null;
     this.candidateFactory = null;
     this.committee = null;
@@ -170,7 +170,7 @@ class DaoContracts {
       DepositManager: null,
       SeigManager: null,
       Layer2Registry: null,
-      DAOVault2: null,
+      DAOVault: null,
       Committee: null,
       Agenda: null,
       Candidate: null ,
@@ -196,7 +196,7 @@ class DaoContracts {
       this.factory = await CoinageFactory.new({from:owner});
 
       let currentTime = await time.latest();
-      this.daoVault = await DAOVault.new(this.wton.address, currentTime,{from:owner});
+      this.oldDaoVault = await OldDAOVaultMock.new(this.wton.address, currentTime,{from:owner});
       this.seigManager = await SeigManager.new(
         this.ton.address,
         this.wton.address,
@@ -216,7 +216,7 @@ class DaoContracts {
 
       await this.seigManager.setPowerTON(this.powerton.address,{from:owner});
       await this.powerton.start({from:owner});
-      await this.seigManager.setDao(this.daoVault.address,{from:owner});
+      await this.seigManager.setDao(this.oldDaoVault.address,{from:owner});
       await this.wton.addMinter(this.seigManager.address,{from:owner});
       await this.ton.addMinter(this.wton.address,{from:owner});
 
@@ -236,7 +236,7 @@ class DaoContracts {
       await users.map(account => this.ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)),{from:owner});
       await operators.map(account => this.ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)),{from:owner});
 
-      await this.wton.mint(this.daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT),{from:owner});
+      await this.wton.mint(this.oldDaoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT),{from:owner});
 
       await this.seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT),{from:owner})
 
@@ -246,7 +246,7 @@ class DaoContracts {
         registry: this.registry ,
         depositManager: this.depositManager,
         coinageFactory: this.factory,
-        daoVault: this.daoVault,
+        oldDaoVault: this.oldDaoVault,
         seigManager : this.seigManager,
         powerton: this.powerton
       }
@@ -256,7 +256,7 @@ class DaoContracts {
 
     initializeDaoContracts  = async function (owner ) {
       //this = self;
-      this.daoVault2 = await DAOVault2.new(this.ton.address, this.wton.address,{from:owner});
+      this.daoVault = await DAOVault.new(this.ton.address, this.wton.address,{from:owner});
       this.agendaManager = await DAOAgendaManager.new({from:owner});
       this.candidateFactory = await CandidateFactory.new({from:owner});
       this.committee = await DAOCommittee.new({from:owner});
@@ -267,7 +267,7 @@ class DaoContracts {
         this.registry.address,
         this.agendaManager.address,
         this.candidateFactory.address,
-        this.daoVault2.address,
+        this.daoVault.address,
         {from:owner}
       );
       let impl = await this.daoCommitteeProxy.implementation({from:owner}) ;
@@ -285,7 +285,7 @@ class DaoContracts {
       ////////////////////////////////////////////////////////////////////////
 
       await this.registry.transferOwnership(this.committeeProxy.address,{from:owner});
-      await this.daoVault2.transferOwnership(this.committeeProxy.address,{from:owner});
+      await this.daoVault.transferOwnership(this.committeeProxy.address,{from:owner});
       await this.agendaManager.setCommittee(this.committeeProxy.address,{from:owner});
       await this.agendaManager.transferOwnership(this.committeeProxy.address,{from:owner});
      // await this.committee.transferOwnership(this.committeeProxy.address,{from:owner});
@@ -312,7 +312,7 @@ class DaoContracts {
       await this.powerton.transferOwnership(this.committeeProxy.address);
 
       let returnData ={
-        daoVault2: this.daoVault2,
+        daoVault: this.daoVault,
         agendaManager: this.agendaManager,
         candidateFactory: this.candidateFactory ,
         committee: this.committee,
@@ -328,14 +328,14 @@ class DaoContracts {
         registry: this.registry,
         depositManager: this.depositManager,
         coinageFactory: this.coinageFactory,
-        daoVault: this.daoVault,
+        oldDaoVault: this.oldDaoVault,
         seigManager: this.seigManager,
         powerton: this.powerton };
     }
 
     getDaoContracts  = function () {
       return {
-        daoVault2 : this.daoVault2,
+        daoVault : this.daoVault,
         agendaManager: this.agendaManager,
         candidateFactory: this.candidateFactory,
         committee: this.committee,
@@ -510,7 +510,7 @@ class DaoContracts {
     );
 
     await newSeigManager.setPowerTON(this.powerton.address);
-    await newSeigManager.setDao(this.daoVault2.address);
+    await newSeigManager.setDao(this.daoVault.address);
     //await this.wton.addMinter(newSeigManager.address);
     //await ton.addMinter(wton.address);
 
@@ -566,7 +566,7 @@ class DaoContracts {
       if(data.candidateFactory!=null)  this.candidateFactory = data.candidateFactory ;
       if(data.committee!=null)  this.committee = data.committee ;
       if(data.committeeProxy!=null)  this.committeeProxy = data.committeeProxy ;
-      if(data.daoVault2!=null)  this.daoVault2 = data.daoVault2 ;
+      if(data.daoVault!=null)  this.daoVault = data.daoVault ;
     }
 
   }
@@ -695,7 +695,7 @@ class DaoContracts {
     this.AbiObject.DepositManager =  await this.objectMapping(DepositManagerAbi);
     this.AbiObject.SeigManager =  await this.objectMapping(SeigManagerAbi);
     this.AbiObject.Layer2Registry =  await this.objectMapping(Layer2RegistryAbi);
-    this.AbiObject.DAOVault2 =  await this.objectMapping(DAOVault2Abi);
+    this.AbiObject.DAOVault =  await this.objectMapping(DAOVaultAbi);
     this.AbiObject.Committee =  await this.objectMapping(DAOCommitteeAbi);
     this.AbiObject.Agenda =  await this.objectMapping(DAOAgendaManagerAbi);
     this.AbiObject.Candidate =  await this.objectMapping(CandidateAbi);

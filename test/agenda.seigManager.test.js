@@ -21,7 +21,7 @@ const SeigManagerAbi = require('../build/contracts/SeigManager.json').abi;
 const WTONAbi = require('../build/contracts/WTON.json').abi;
 
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -37,7 +37,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 const EtherToken = contract.fromArtifact('EtherToken');
 const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -242,11 +242,11 @@ let AbiObj, WTONAbiObj, DaoContractsDeployed ;
 
     it('seigManager.setDao', async function () {
       this.timeout(1000000);
-      let _daoVault2 = await DAOVault2.new(ton.address, wton.address,{from:owner});
-      let params = [_daoVault2.address] ;
+      let daoVault = await DAOVault.new(ton.address, wton.address,{from:owner});
+      let params = [daoVault.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setDao,params);
       await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);
-      expect(await seigManager.dao()).to.equal(_daoVault2.address);
+      expect(await seigManager.dao()).to.equal(daoVault.address);
 
     });
 

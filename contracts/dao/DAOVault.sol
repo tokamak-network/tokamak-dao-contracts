@@ -7,7 +7,7 @@ import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMa
 import { SafeERC20 } from "../../node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import { IWTON } from "../interfaces/IWTON.sol";
 
-contract DAOVault2 is Ownable {
+contract DAOVault is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     
@@ -71,7 +71,7 @@ contract DAOVault2 is Ownable {
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
             tonBalance.add(_toWAD(wtonBalance)) >= _amount,
-            "DAOVault2: not enough balance"
+            "DAOVault: not enough balance"
         );
 
         uint256 tonAmount = _amount;
@@ -81,7 +81,7 @@ contract DAOVault2 is Ownable {
 
             require(
                 IWTON(address(wton)).swapToTONAndTransfer(_to, wtonAmount),
-                "DAOVault2: failed to swap and transfer wton"
+                "DAOVault: failed to swap and transfer wton"
             );
         }
 
@@ -97,7 +97,7 @@ contract DAOVault2 is Ownable {
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
             _toRAY(tonBalance).add(wtonBalance) >= _amount,
-            "DAOVault2: not enough balance"
+            "DAOVault: not enough balance"
         );
 
         uint256 wtonAmount = _amount;
@@ -108,7 +108,7 @@ contract DAOVault2 is Ownable {
             ton.safeApprove(address(wton), tonAmount);
             require(
                 IWTON(address(wton)).swapFromTONAndTransfer(_to, tonAmount),
-                "DAOVault2: failed to swap and transfer ton"
+                "DAOVault: failed to swap and transfer ton"
             );
         }
 
@@ -120,7 +120,7 @@ contract DAOVault2 is Ownable {
     /// @param _to Address to receive
     /// @param _amount Transfer ERC20 token amount
     function claimERC20(address _token, address _to, uint256 _amount) public onlyOwner {
-        require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
+        require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault: not enough balance");
         IERC20(_token).safeTransfer(_to, _amount);
         emit Claimed(address(wton), _to, _amount);
     }

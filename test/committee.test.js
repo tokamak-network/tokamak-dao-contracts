@@ -19,7 +19,7 @@ chai.use(require('chai-bn')(BN)).should();
 
 // dao-contracts
 const Candidate = contract.fromArtifact('Candidate');
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 //const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
@@ -38,7 +38,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 let o;
 process.on('exit', function () {
@@ -122,7 +122,7 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -134,7 +134,7 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
@@ -147,7 +147,7 @@ describe('DAOCommittee', function () {
 
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT), {from: deployer}));  
-    await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(TON_UNIT));
+    await ton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(TON_UNIT));
   });
 
   function recordGasUsed(_tx, _label) { 
@@ -230,7 +230,7 @@ describe('DAOCommittee', function () {
     factory = await CoinageFactory.new();
 
     currentTime = await time.latest();
-    daoVault = await DAOVault.new(wton.address, currentTime);
+    oldDaoVault = await OldDAOVaultMock.new(wton.address, currentTime);
     seigManager = await SeigManager.new(
       ton.address,
       wton.address,
@@ -248,7 +248,7 @@ describe('DAOCommittee', function () {
 
     await seigManager.setPowerTON(powerton.address);
     await powerton.start();
-    await seigManager.setDao(daoVault.address);
+    await seigManager.setDao(oldDaoVault.address);
     await wton.addMinter(seigManager.address);
     await ton.addMinter(wton.address);
     
@@ -266,7 +266,7 @@ describe('DAOCommittee', function () {
     seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    await wton.mint(oldDaoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
   }
@@ -276,8 +276,8 @@ describe('DAOCommittee', function () {
     if(debugLog) console.log('ton :', ton.address) ;
 
     //===================================================
-    daoVault2 = await DAOVault2.new(ton.address, wton.address);
-    if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
+    daoVault = await DAOVault.new(ton.address, wton.address);
+    if(debugLog)  console.log('daoVault :', daoVault.address) ;
 
     //===================================================
     agendaManager = await DAOAgendaManager.new();
@@ -296,7 +296,7 @@ describe('DAOCommittee', function () {
       registry.address,
       agendaManager.address,
       candidateFactory.address,
-      daoVault2.address
+      daoVault.address
     );
     if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
    
@@ -327,7 +327,7 @@ describe('DAOCommittee', function () {
     ////////////////////////////////////////////////////////////////////////
 
     await registry.transferOwnership(committeeProxy.address);
-    await daoVault2.transferOwnership(committeeProxy.address);
+    await daoVault.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     //await committee.transferOwnership(committeeProxy.address);

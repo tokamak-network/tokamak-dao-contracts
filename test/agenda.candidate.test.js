@@ -22,7 +22,7 @@ const {
    
 
   // dao-contracts
-  const DAOVault2 = contract.fromArtifact('DAOVault2');
+  const DAOVault = contract.fromArtifact('DAOVault');
   const DAOCommittee = contract.fromArtifact('DAOCommittee');
   const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
   const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -38,7 +38,7 @@ const {
   const Layer2Registry = contract.fromArtifact('Layer2Registry');
   const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
   const PowerTON = contract.fromArtifact('PowerTON');
-  const DAOVault = contract.fromArtifact('DAOVault');
+  const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
   
   const EtherToken = contract.fromArtifact('EtherToken');
   const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -129,7 +129,7 @@ const {
   ////////////////////////////////////////////////////////////////////////////////
   
   const owner= defaultSender;
-  let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+  let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
   let gasUsedRecords = [];
   let gasUsedTotal = 0; 
   let debugLog=true;
@@ -141,7 +141,7 @@ const {
   let registry;
   let depositManager;
   let factory;
-  let daoVault;
+  let oldDaoVault;
   let seigManager;
   let powerton;
   
@@ -183,12 +183,12 @@ describe('Agenda - candidate', function () {
         registry = returnData.registry;
         depositManager = returnData.depositManager;
         factory = returnData.coinageFactory;
-        daoVault = returnData.daoVault;
+        oldDaoVault = returnData.oldDaoVault;
         seigManager = returnData.seigManager;
         powerton = returnData.powerton; 
 
         let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-        daoVault2 = returnData1.daoVault2;
+        daoVault = returnData1.daoVault;
         agendaManager = returnData1.agendaManager;
         candidateFactory = returnData1.candidateFactory;
         committee = returnData1.committee;
@@ -209,7 +209,7 @@ describe('Agenda - candidate', function () {
         ); 
     
         await newSeigManager.setPowerTON(powerton.address); 
-        await newSeigManager.setDao(daoVault2.address);
+        await newSeigManager.setDao(daoVault.address);
         //await wton.addMinter(newSeigManager.address);
         //await ton.addMinter(wton.address);
         
