@@ -34,6 +34,7 @@ interface IDAOCommittee {
 
     function changeMember(uint256 _memberIndex) external returns (bool);
     function retireMember() external returns (bool);
+    function claimActivityReward(address _receiver) external;
     
     function createAgenda(uint _group, address _target, uint _noticePeriodMin, bytes calldata functionBytecode, string calldata _description) external returns (uint256);
     function electCommiitteeForAgenda(uint256 _AgendaID) external;

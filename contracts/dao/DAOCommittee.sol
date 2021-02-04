@@ -79,6 +79,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
     event ClaimedActivityReward(
         address indexed candidate,
+        address receiver,
         uint256 amount
     );
 
@@ -529,17 +530,18 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     }
 
     /// @notice Claims the activity reward for member
-    function claimActivityReward() public {
-        CandidateInfo storage info = candidateInfos[msg.sender];
-        uint256 amount = getClaimableActivityReward(msg.sender);
+    function claimActivityReward(address _receiver) public {
+        address candidate = ICandidate(msg.sender).candidate();
+        CandidateInfo storage candidateInfo = candidateInfos[candidate];
 
+        uint256 amount = getClaimableActivityReward(candidate);
         require(amount > 0, "DAOCommittee: you don't have claimable ton");
 
-        daoVault.claimTON(msg.sender, amount);
-        info.claimedTimestamp = block.timestamp;
-        info.rewardPeriod = 0;
+        daoVault.claimTON(_receiver, amount);
+        candidateInfo.claimedTimestamp = block.timestamp;
+        candidateInfo.rewardPeriod = 0;
 
-        emit ClaimedActivityReward(msg.sender, amount);
+        emit ClaimedActivityReward(candidate, _receiver, amount);
     }
 
     function _registerLayer2Candidate(address _operator, address _layer2, string memory _memo)

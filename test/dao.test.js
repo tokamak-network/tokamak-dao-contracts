@@ -123,6 +123,7 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 
 const owner= defaultSender;
 let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let layer2s = []
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -357,6 +358,7 @@ describe('Test 1', function () {
 
     await layer2.setSeigManager(seigManager.address, {from: operator});
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address, {from: operator});
+    layer2s.push(layer2.address);
     return layer2;
   }
 
@@ -873,36 +875,64 @@ describe('Test 1', function () {
       amount.should.be.bignumber.equal(toBN('0'));
     });
 
-    it('Claim activity reward', async function () {
-      for (let i = 0; i < candidates.length; i++) {
-        const candidate = candidates[i];
-        const beforeBalance = await ton.balanceOf(candidate);
+    describe('Claim activity reward', function () {
+      it('dao candidate', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          const candidateContract = await getCandidateContract(candidate);
+          const beforeBalance = await ton.balanceOf(candidate);
+
+          const fee = await committeeProxy.activityRewardPerSecond();
+
+          const beforeBalanceTV = await ton.balanceOf(daoVault.address);
+          const beforeBalanceWV = await wton.balanceOf(daoVault.address);
+
+          const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount.should.be.bignumber.gt(toBN("0"));
+
+          await candidateContract.claimActivityReward({from: candidate});
+
+          const afterBalanceTV = await ton.balanceOf(daoVault.address);
+          const afterBalanceWV = await wton.balanceOf(daoVault.address);
+
+          const afterBalance = await ton.balanceOf(candidate);
+          afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
+          
+          const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAfterAmount.should.be.bignumber.equal(toBN("0")); 
+        }
+      });
+
+      it('operator', async function () {
+        const operator = user1;
+        const layer2 = layer2s[0];
+        const candidateContract = await getCandidateContract(layer2);
+
+        await deposit(layer2, operator, _TON("9999").toFixed(TON_UNIT));
+        await candidateContract.changeMember(0, {from: operator});
+        await time.increase(10000);
+
+        const beforeBalance = await ton.balanceOf(operator);
 
         const fee = await committeeProxy.activityRewardPerSecond();
-        console.log(`fee: ${fee}`);
 
         const beforeBalanceTV = await ton.balanceOf(daoVault.address);
         const beforeBalanceWV = await wton.balanceOf(daoVault.address);
-        console.log(`beforeBalanceTV: ${beforeBalanceTV}`);
-        console.log(`beforeBalanceWV: ${beforeBalanceWV}`);
 
-        const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+        const claimableAmount = await committeeProxy.getClaimableActivityReward(layer2s[0]);
         claimableAmount.should.be.bignumber.gt(toBN("0"));
 
-        await committeeProxy.claimActivityReward({from: candidate});
+        await candidateContract.claimActivityReward({from: operator});
 
         const afterBalanceTV = await ton.balanceOf(daoVault.address);
         const afterBalanceWV = await wton.balanceOf(daoVault.address);
-        console.log(`afterBalanceTV: ${afterBalanceTV}`);
-        console.log(`afterBalanceWV: ${afterBalanceWV}`);
 
-        const afterBalance = await ton.balanceOf(candidate);
+        const afterBalance = await ton.balanceOf(operator);
         afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
         
-        const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(candidate);
+        const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(layer2s[0]);
         claimableAfterAmount.should.be.bignumber.equal(toBN("0")); 
-
-      }
+      });
     });
   });
 });

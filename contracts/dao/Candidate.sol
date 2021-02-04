@@ -114,6 +114,21 @@ contract Candidate is Ownable, ERC165 {
         committee.castVote(_agendaID, _vote, _comment);
     }
 
+    function claimActivityReward()
+        public
+        onlyCandidate
+    {
+        address receiver;
+
+        if (isLayer2Candidate) {
+            ILayer2 layer2 = ILayer2(candidate);
+            receiver = layer2.operator();
+        } else {
+            receiver = candidate;
+        }
+        committee.claimActivityReward(receiver);
+    }
+
     /// @notice Checks whether this contract is a candidate contract
     /// @return Whether or not this contract is a candidate contract
     function isCandidateContract() public view returns (bool) {
