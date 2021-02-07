@@ -21,6 +21,7 @@ contract DAOAgendaManager is Ownable {
     
     uint256 public minimumNoticePeriodSeconds;
     uint256 public minimumVotingPeriodSeconds;
+    uint256 public executingPeriodSeconds;
     
     LibAgenda.Agenda[] public agendas;
     mapping(uint256 => mapping(address => LibAgenda.Voter)) public voterInfos;
@@ -43,8 +44,9 @@ contract DAOAgendaManager is Ownable {
     }
     
     constructor() {
-        minimumNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
-        minimumVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
+        minimumNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days, on seconds
+        minimumVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days, on seconds
+        executingPeriodSeconds = 60 * 60 * 24 * 7; //  7 days, on seconds
         
         createAgendaFees = 100000000000000000000; // 100 TON
     }
@@ -91,6 +93,12 @@ contract DAOAgendaManager is Ownable {
         minimumNoticePeriodSeconds = _minimumNoticePeriodSeconds;
     }
 
+    /// @notice Set the executing period in seconds
+    /// @param _executingPeriodSeconds New executing period in seconds
+    function setExecutingPeriodSeconds(uint256 _executingPeriodSeconds) public onlyOwner {
+        executingPeriodSeconds = _executingPeriodSeconds;
+    }
+
     /// @notice Set the minimum voting period in seconds
     /// @param _minimumVotingPeriodSeconds New minimum voting period in seconds
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) public onlyOwner {
@@ -120,18 +128,23 @@ contract DAOAgendaManager is Ownable {
 
         agendaID = agendas.length;
          
-        LibAgenda.Agenda memory p;
-        p.status = LibAgenda.AgendaStatus.NOTICE;
-        p.result = LibAgenda.AgendaResult.PENDING;
-        p.executed = false;
-        p.createdTimestamp = block.timestamp;
-        p.noticeEndTimestamp = block.timestamp + _noticePeriodSeconds;
-        p.votingPeriodInSeconds = _votingPeriodSeconds;
-        p.votingStartedTimestamp = 0;
-        p.votingEndTimestamp = 0;
-        p.executedTimestamp = 0;
-        
-        agendas.push(p);
+        address[] memory emptyArray;
+        agendas.push(LibAgenda.Agenda({
+            status: LibAgenda.AgendaStatus.NOTICE,
+            result: LibAgenda.AgendaResult.PENDING,
+            executed: false,
+            createdTimestamp: block.timestamp,
+            noticeEndTimestamp: block.timestamp + _noticePeriodSeconds,
+            votingPeriodInSeconds: _votingPeriodSeconds,
+            votingStartedTimestamp: 0,
+            votingEndTimestamp: 0,
+            executableLimitTimestamp: 0,
+            executedTimestamp: 0,
+            countingYes: 0,
+            countingNo: 0,
+            countingAbstain: 0,
+            voters: emptyArray
+        }));
 
         LibAgenda.AgendaExecutionInfo storage executionInfo = executionInfos[agendaID];
         for (uint256 i = 0; i < _targets.length; i++) {
@@ -265,6 +278,7 @@ contract DAOAgendaManager is Ownable {
 
         agenda.votingStartedTimestamp = block.timestamp;
         agenda.votingEndTimestamp = block.timestamp.add(agenda.votingPeriodInSeconds);
+        agenda.executableLimitTimestamp = agenda.votingEndTimestamp.add(executingPeriodSeconds);
         agenda.status = LibAgenda.AgendaStatus.VOTING;
 
         uint256 memberCount = committee.maxMember();
@@ -326,6 +340,7 @@ contract DAOAgendaManager is Ownable {
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
 
         return agenda.status == LibAgenda.AgendaStatus.WAITING_EXEC &&
+            block.timestamp <= agenda.executableLimitTimestamp &&
             agenda.result == LibAgenda.AgendaResult.ACCEPT &&
             agenda.votingEndTimestamp <= block.timestamp &&
             agenda.executed == false;

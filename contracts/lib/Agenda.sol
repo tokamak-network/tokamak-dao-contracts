@@ -22,6 +22,7 @@ library LibAgenda {
         uint256 votingPeriodInSeconds;
         uint256 votingStartedTimestamp;
         uint256 votingEndTimestamp;
+        uint256 executableLimitTimestamp;
         uint256 executedTimestamp;
         uint256 countingYes;
         uint256 countingNo;

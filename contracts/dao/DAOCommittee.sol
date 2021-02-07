@@ -60,7 +60,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         string memo
     );
 
-    event OperatorRegistered(
+    event Layer2Registered(
         address indexed candidate,
         address indexed candidateContract,
         string memo
@@ -415,7 +415,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     }
 
     /// @notice Set the minimum notice period
-    /// @param _minimumNoticePeriod New minimum period in second
+    /// @param _minimumNoticePeriod New minimum notice period in second
     function setMinimumNoticePeriodSeconds(
         uint256 _minimumNoticePeriod
     )
@@ -427,7 +427,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     }
 
     /// @notice Set the minimum voting period
-    /// @param _minimumVotingPeriod New minimum period in second
+    /// @param _minimumVotingPeriod New minimum voting period in second
     function setMinimumVotingPeriodSeconds(
         uint256 _minimumVotingPeriod
     )
@@ -436,6 +436,18 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         validAgendaManager
     {
         agendaManager.setMinimumVotingPeriodSeconds(_minimumVotingPeriod);
+    }
+
+    /// @notice Set the executing period
+    /// @param _executingPeriodSeconds New executing period in second
+    function setExecutingPeriodSeconds(
+        uint256 _executingPeriodSeconds
+    )
+        public
+        onlyOwner
+        validAgendaManager
+    {
+        agendaManager.setExecutingPeriodSeconds(_executingPeriodSeconds);
     }
 
     /// @notice Vote on an agenda
@@ -593,7 +605,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
         candidates.push(_layer2);
        
-        emit OperatorRegistered(_layer2, candidateContract, _memo);
+        emit Layer2Registered(_layer2, candidateContract, _memo);
     }
 
     function fillMemberSlot() internal {

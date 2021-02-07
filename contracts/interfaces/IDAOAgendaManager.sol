@@ -13,6 +13,7 @@ interface IDAOAgendaManager  {
     function setCreateAgendaFees(uint256 _createAgendaFees) external;
     function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) external;
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) external;
+    function setExecutingPeriodSeconds(uint256 _executingPeriodSeconds) external;
     //function setActivityFeeManager(address _man) external;
     //function setQuorum(uint256 _quorum) external;
     function newAgenda(
