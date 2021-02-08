@@ -37,13 +37,6 @@ contract StorageStateCommittee {
 
     uint256 public activityRewardPerSecond;
 
-    event ApplyMemberSuccess(
-        address indexed from,
-        address member,
-        uint256 totalbalance,
-        uint256 memberIndex
-    );
-
     modifier validAgendaManager() {
         require(address(agendaManager) != address(0), "StorageStateCommittee: AgendaManager is zero");
         _;

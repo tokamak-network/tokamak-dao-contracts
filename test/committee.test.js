@@ -14,6 +14,42 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
+const {
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_PENDING,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE,
+  CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT,
+  CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME,
+  CANDIDATE_INFO_INDEX_MEMBER_INDEX,
+  CANDIDATE_INFO_INDEX_REWARD_PERIOD
+} = require('../utils/constants.js');
+
 //const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
 //const deployPlasmaEvmContracts = require('./utils/deploy.js');
 
@@ -61,7 +97,7 @@ const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
+/*const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
 const CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME = 1;
 const CANDIDATE_INFO_INDEX_MEMBER_INDEX = 2;
 const CANDIDATE_INFO_INDEX_REWARD_PERIOD = 3;
@@ -100,7 +136,7 @@ const AGENDA_RESULT_DISMISSED = 3;
 
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
+const VOTER_INFO_VOTE = 2;*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -578,8 +614,9 @@ describe('DAOCommittee', function () {
       it('can not claim', async function () {
         for (let i = 0; i < candidates.length; i++) {
           const candidate = candidates[i];
+          const candidateContract = await getCandidateContract(candidate);
           await expectRevert(
-            committeeProxy.claimActivityReward({from: candidate}),
+            candidateContract.claimActivityReward({from: candidate}),
             "DAOCommittee: you don't have claimable ton"
           );
         }
@@ -609,10 +646,11 @@ describe('DAOCommittee', function () {
       it('can claim', async function () {
         for (let i = 0; i < candidates.length; i++) {
           const candidate = candidates[i];
+          const candidateContract = await getCandidateContract(candidate);
           const balanceBefore = await ton.balanceOf(candidate);
           const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
           claimableAmount.should.be.bignumber.gt(toBN("0"));
-          await committeeProxy.claimActivityReward({from: candidate});
+          await candidateContract.claimActivityReward({from: candidate});
 
           const balanceAfter = await ton.balanceOf(candidate);
           balanceAfter.sub(balanceBefore).should.be.bignumber.gte(claimableAmount);

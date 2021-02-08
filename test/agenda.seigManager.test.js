@@ -14,6 +14,38 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
+const {
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_PENDING,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE
+} = require('../utils/constants.js');
+
 const DaoContracts = require('../utils/plasma_test_deploy.js');
 const DAOCommitteeAbi = require('../build/contracts/DAOCommittee.json').abi;
 const DepositManagerAbi = require('../build/contracts/DepositManager.json').abi;
@@ -66,7 +98,7 @@ const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
+/*const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
 const CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME = 1;
 const CANDIDATE_INFO_INDEX_MEMBER_INDEX = 2;
 const CANDIDATE_INFO_INDEX_REWARD_PERIOD = 3;
@@ -106,7 +138,7 @@ const AGENDA_RESULT_DISMISSED = 3;
 
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
+const VOTER_INFO_VOTE = 2;*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -128,7 +160,7 @@ const TON_USER_STAKE_AMOUNT = _TON('10');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0;
 let debugLog=true;
@@ -140,7 +172,7 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
@@ -183,12 +215,12 @@ let AbiObj, WTONAbiObj, DaoContractsDeployed ;
         registry = returnData.registry;
         depositManager = returnData.depositManager;
         factory = returnData.coinageFactory;
-        daoVault = returnData.daoVault;
+        oldDaoVault = returnData.oldDaoVault;
         seigManager = returnData.seigManager;
         powerton = returnData.powerton;
 
         let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-        daoVault2 = returnData1.daoVault2;
+        daoVault = returnData1.daoVault;
         agendaManager = returnData1.agendaManager;
         candidateFactory = returnData1.candidateFactory;
         committee = returnData1.committee;
@@ -242,11 +274,11 @@ let AbiObj, WTONAbiObj, DaoContractsDeployed ;
 
     it('seigManager.setDao', async function () {
       this.timeout(1000000);
-      let daoVault = await DAOVault.new(ton.address, wton.address,{from:owner});
-      let params = [daoVault.address] ;
+      let oldDaoVault = await DAOVault.new(ton.address, wton.address,{from:owner});
+      let params = [oldDaoVault.address] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.SeigManager.setDao,params);
       await DaoContractsDeployed.executeAgenda(seigManager.address, functionBytecode);
-      expect(await seigManager.dao()).to.equal(daoVault.address);
+      expect(await seigManager.dao()).to.equal(oldDaoVault.address);
 
     });
 

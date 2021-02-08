@@ -34,6 +34,11 @@ contract Candidate is Ownable, ERC165 {
         }
         _;
     }
+
+    event ChangedMemo(
+        address candidate,
+        string newMemo
+    );
     
     constructor(
         address _candidate,
@@ -70,6 +75,14 @@ contract Candidate is Ownable, ERC165 {
         committee = IDAOCommittee(_committee);
     }
 
+    /// @notice Set memo
+    /// @param _memo New memo on this candidate
+    function setMemo(string calldata _memo) public onlyCandidate {
+        memo = _memo;
+        emit ChangedMemo(candidate, _memo);
+    }
+
+    /// @notice Set DAOCommitteeProxy contract address
     /// @notice Call updateSeigniorage on SeigManager
     /// @return Whether or not the execution succeeded
     function updateSeigniorage() public returns (bool) {

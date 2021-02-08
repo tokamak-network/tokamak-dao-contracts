@@ -713,9 +713,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     {
         require(_candidateContract != address(0), "This account is not a candidate");
 
-        address coinage = seigManager.coinages(_candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).totalSupply();
+        return ICandidate(_candidateContract).totalStaked();
     }
 
     function balanceOfOnCandidateContract(
@@ -728,9 +726,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     {
         require(_candidateContract != address(0), "This account is not a candidate");
 
-        address coinage = seigManager.coinages(_candidateContract);
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
-        return IERC20(coinage).balanceOf(_account);
+        return ICandidate(_candidateContract).stakedOf(_account);
     }
 
     function candidatesLength() public view returns (uint256) {
