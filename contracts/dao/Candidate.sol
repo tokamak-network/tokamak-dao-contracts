@@ -18,7 +18,7 @@ import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection
 contract Candidate is Ownable, ERC165 {
     using SafeMath for uint256;
 
-    bool isLayer2Candidate;
+    bool public isLayer2Candidate;
     address public candidate;
     string public memo;
 
@@ -35,11 +35,6 @@ contract Candidate is Ownable, ERC165 {
         _;
     }
 
-    event ChangedMemo(
-        address candidate,
-        string newMemo
-    );
-    
     constructor(
         address _candidate,
         bool _isLayer2Candidate,
@@ -77,9 +72,8 @@ contract Candidate is Ownable, ERC165 {
 
     /// @notice Set memo
     /// @param _memo New memo on this candidate
-    function setMemo(string calldata _memo) public onlyCandidate {
+    function setMemo(string calldata _memo) public onlyOwner {
         memo = _memo;
-        emit ChangedMemo(candidate, _memo);
     }
 
     /// @notice Set DAOCommitteeProxy contract address

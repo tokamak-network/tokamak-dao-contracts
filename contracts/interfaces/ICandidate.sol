@@ -11,6 +11,8 @@ interface ICandidate {
     //function candidateAndOwner() external view returns (address, address);
     function isCandidateContract() external view returns (bool);
     function candidate() external view returns (address);
+    function isLayer2Candidate() external view returns (bool);
     function totalStaked() external view returns (uint256 totalsupply);
     function stakedOf(address _account) external view returns (uint256 amount);
+    function setMemo(string calldata _memo) external;
 }

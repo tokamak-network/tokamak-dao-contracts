@@ -267,7 +267,7 @@ describe('Candidate', function () {
       const prevMemo = await candidateContract.memo();
       const newMemo = "new memo1234";
       newMemo.should.be.not.equal(prevMemo);
-      await candidateContract.setMemo(newMemo, {from: candidate});
+      await committeeProxy.setMemoOnCandidate(candidate, newMemo, {from: candidate});
       (await candidateContract.memo()).should.be.equal(newMemo);
     });
 
@@ -277,7 +277,27 @@ describe('Candidate', function () {
       const prevMemo = await candidateContract.memo();
       const newMemo = "new memo1234";
       newMemo.should.be.not.equal(prevMemo);
-      await candidateContract.setMemo(newMemo, {from: candidate});
+      await committeeProxy.setMemoOnCandidate(layer2s[0].address, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
+    });
+
+    it('Memo on dao candidate contract', async function () {
+      const candidate = candidates[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(candidate);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidateContract(candidateContract.address, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
+    });
+
+    it('Memo on layer2 candidate contract', async function () {
+      const candidate = operators[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(layer2s[0].address);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidateContract(candidateContract.address, newMemo, {from: candidate});
       (await candidateContract.memo()).should.be.equal(newMemo);
     });
 

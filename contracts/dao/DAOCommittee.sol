@@ -83,6 +83,11 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         uint256 amount
     );
 
+    event ChangedMemo(
+        address candidate,
+        string newMemo
+    );
+    
     modifier onlyOwner() {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
         _;
@@ -331,6 +336,42 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
 
         candidateInfo.indexMembers = 0;
         return true;
+    }
+
+    /// @notice Set memo
+    /// @param _candidate candidate address
+    /// @param _memo New memo on this candidate
+    function setMemoOnCandidate(
+        address _candidate,
+        string calldata _memo
+    )
+        public
+    {
+        address candidateContract = candidateContract(_candidate);
+        setMemoOnCandidateContract(candidateContract, _memo);
+    }
+
+    /// @notice Set memo
+    /// @param _candidateContract candidate contract address
+    /// @param _memo New memo on this candidate
+    function setMemoOnCandidateContract(
+        address _candidateContract,
+        string calldata _memo
+    )
+        public
+    {
+        address candidate = ICandidate(_candidateContract).candidate();
+        address contractOwner = candidate;
+        if (ICandidate(_candidateContract).isLayer2Candidate()) {
+            contractOwner = ILayer2(candidate).operator();
+        }
+        require(
+            msg.sender == contractOwner,
+            "DAOCommittee: sender is not the candidate of this contract"
+        );
+
+        ICandidate(_candidateContract).setMemo(_memo);
+        emit ChangedMemo(candidate, _memo);
     }
 
     /// @notice Decreases the number of member slot
