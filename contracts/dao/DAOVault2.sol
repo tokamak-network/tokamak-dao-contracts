@@ -6,8 +6,9 @@ import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/
 import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 import { SafeERC20 } from "../../node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import { IWTON } from "../interfaces/IWTON.sol";
+import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
 
-contract DAOVault2 is Ownable {
+contract DAOVault2 is Ownable, IDAOVault2 {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     
@@ -21,27 +22,27 @@ contract DAOVault2 is Ownable {
     event Claimed(address indexed token, address indexed to, uint256 indexed amount);
     event Approved(address indexed token, address indexed to, uint256 indexed amount);
 
-    constructor(address _ton, address _wton) public {
+    constructor(address _ton, address _wton) {
         ton = IERC20(_ton);
         wton = IERC20(_wton);
     }
 
     /// @notice Set TON address
     /// @param _ton TON address
-    function setTON(address _ton) external onlyOwner {
+    function setTON(address _ton) external override onlyOwner {
         ton = IERC20(_ton);
     }
 
     /// @notice Set WTON address
     /// @param _wton WTON address
-    function setWTON(address _wton) external onlyOwner {
+    function setWTON(address _wton) external override onlyOwner {
         wton = IERC20(_wton);
     }
 
     /// @notice Approves TON to specific address
     /// @param _to Address to be approved
     /// @param _amount Approving TON amount
-    function approveTON(address _to, uint256 _amount) public onlyOwner {
+    function approveTON(address _to, uint256 _amount) public override onlyOwner {
         ton.safeApprove(_to, _amount);
         emit Approved(address(ton), _to, _amount);
     }
@@ -49,7 +50,7 @@ contract DAOVault2 is Ownable {
     /// @notice Approves WTON to specific address
     /// @param _to Address to be approved
     /// @param _amount Approving WTON amount
-    function approveWTON(address _to, uint256 _amount) public onlyOwner {
+    function approveWTON(address _to, uint256 _amount) public override onlyOwner {
         wton.safeApprove(_to, _amount);
         emit Approved(address(wton), _to, _amount);
     }
@@ -58,7 +59,7 @@ contract DAOVault2 is Ownable {
     /// @param _token Token address
     /// @param _to Address to be approved
     /// @param _amount Approving ERC20 token amount
-    function approveERC20(address _token, address _to, uint256 _amount) public onlyOwner {
+    function approveERC20(address _token, address _to, uint256 _amount) public override onlyOwner {
         IERC20(_token).safeApprove(_to, _amount);
         emit Approved(address(_token), _to, _amount);
     }
@@ -66,7 +67,7 @@ contract DAOVault2 is Ownable {
     /// @notice Transfers TON to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer TON amount
-    function claimTON(address _to, uint256 _amount) public onlyOwner {
+    function claimTON(address _to, uint256 _amount) public override onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
@@ -92,7 +93,7 @@ contract DAOVault2 is Ownable {
     /// @notice Transfers WTON to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer WTON amount
-    function claimWTON(address _to, uint256 _amount) public onlyOwner {
+    function claimWTON(address _to, uint256 _amount) public override onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
@@ -119,7 +120,7 @@ contract DAOVault2 is Ownable {
     /// @notice Transfers ERC20 token to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer ERC20 token amount
-    function claimERC20(address _token, address _to, uint256 _amount) public onlyOwner {
+    function claimERC20(address _token, address _to, uint256 _amount) public override onlyOwner {
         require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
         IERC20(_token).safeTransfer(_to, _amount);
         emit Claimed(address(wton), _to, _amount);
