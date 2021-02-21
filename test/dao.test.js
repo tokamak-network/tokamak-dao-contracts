@@ -576,7 +576,7 @@ describe('Test 1', function () {
         const candidateContract = await getCandidateContract(candidate2);
         expectRevert(
           candidateContract.changeMember(3, {from: candidate2}),
-          "DAOCommittee: index is not available"
+          "DAOCommittee: invalid member index"
         );
       });
 

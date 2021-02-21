@@ -89,7 +89,12 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     );
 
     modifier onlyOwner() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommittee: msg.sender is not an admin");
+        _;
+    }
+
+    modifier validMemberIndex(uint256 _index) {
+        require(_index < maxMember, "DAOCommittee: invalid member index");
         _;
     }
 
@@ -283,6 +288,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     )
         external
         override
+        validMemberIndex(_memberIndex)
         returns (bool)
     {
         address newMember = ICandidate(msg.sender).candidate();
@@ -290,10 +296,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         require(
             ICandidate(msg.sender).isCandidateContract(),
             "DAOCommittee: sender is not a candidate contract"
-        );
-        require(
-            _memberIndex < maxMember,
-            "DAOCommittee: index is not available"
         );
         require(
             candidateInfo.candidateContract != address(0),
@@ -358,6 +360,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         external
         override
         onlyOwner
+        validMemberIndex(_reducingMemberIndex)
     {
         address reducingMember = members[_reducingMemberIndex];
         CandidateInfo storage reducingCandidate = _candidateInfos[reducingMember];
