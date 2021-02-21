@@ -65,7 +65,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @param _committee New DAOCommitteeProxy contract address
-    function setCommittee(address _committee) public override onlyOwner {
+    function setCommittee(address _committee) external override onlyOwner {
         require(_committee != address(0), "DAOAgendaManager: address is zero");
         committee = IDAOCommittee(_committee);
     }
@@ -82,19 +82,19 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
 
     /// @notice Set the fee(TON) of creating an agenda
     /// @param _createAgendaFees New fee(TON)
-    function setCreateAgendaFees(uint256 _createAgendaFees) public override onlyOwner {
+    function setCreateAgendaFees(uint256 _createAgendaFees) external override onlyOwner {
         createAgendaFees = _createAgendaFees;
     }
 
     /// @notice Set the minimum notice period in seconds
     /// @param _minimumNoticePeriodSeconds New minimum notice period in seconds
-    function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) public override onlyOwner {
+    function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) external override onlyOwner {
         minimumNoticePeriodSeconds = _minimumNoticePeriodSeconds;
     }
 
     /// @notice Set the minimum voting period in seconds
     /// @param _minimumVotingPeriodSeconds New minimum voting period in seconds
-    function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) public override onlyOwner {
+    function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) external override onlyOwner {
         minimumVotingPeriodSeconds = _minimumVotingPeriodSeconds;
     }
       
@@ -110,9 +110,9 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         uint256 _votingPeriodSeconds,
         bytes[] calldata _functionBytecodes
     )
-        onlyOwner
-        public
+        external
         override
+        onlyOwner
         returns (uint256 agendaID)
     {
         require(
@@ -155,9 +155,9 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         address _voter,
         uint _vote
     )
-        public
-        onlyOwner
+        external
         override
+        onlyOwner
         returns (bool)
     {
         require(_vote < uint(VoteChoice.MAX), "DAOAgendaManager: invalid vote");
@@ -201,7 +201,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     /// @notice Set the agenda status as executed
     /// @param _agendaID Agenda ID
     function setExecutedAgenda(uint256 _agendaID)
-        public
+        external
         override
         onlyOwner
     {
@@ -247,7 +247,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     /// @notice Set the agenda status as ended(denied or dismissed)
     /// @param _agendaID Agenda ID
     function endAgendaVoting(uint256 _agendaID)
-        public
+        external
         override
         onlyOwner
     {
@@ -314,22 +314,22 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         );
     }
     
-    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) public view override returns (uint) {
+    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view override returns (uint) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].noticeEndTimestamp;
     }
     
-    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) public view override returns (uint) {
+    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view override returns (uint) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].votingStartedTimestamp;
     }
 
-    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) public view override returns (uint) {
+    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view override returns (uint) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].votingEndTimestamp;
     }
 
-    function canExecuteAgenda(uint256 _agendaID) public view override returns (bool) {
+    function canExecuteAgenda(uint256 _agendaID) external view override returns (bool) {
         LibAgenda.Agenda storage agenda = _agendas[_agendaID];
 
         return agenda.status == LibAgenda.AgendaStatus.WAITING_EXEC &&
@@ -338,22 +338,22 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
             agenda.executed == false;
     }
     
-    function getAgendaStatus(uint256 _agendaID) public view override returns (uint status) {
+    function getAgendaStatus(uint256 _agendaID) external view override returns (uint status) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: invalid agend id");
         return uint(_agendas[_agendaID].status);
     }
 
-    function totalAgendas() public view override returns (uint256) {
+    function totalAgendas() external view override returns (uint256) {
         return _agendas.length;
     }
 
-    function getAgendaResult(uint256 _agendaID) public view override returns (uint result, bool executed) {
+    function getAgendaResult(uint256 _agendaID) external view override returns (uint result, bool executed) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid _agendaID Id");
         return (uint(_agendas[_agendaID].result), _agendas[_agendaID].executed);
     }
    
     function getExecutionInfo(uint256 _agendaID)
-        public
+        external
         view
         override
         returns(
@@ -377,7 +377,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     }
 
     function getVotingCount(uint256 _agendaID)
-        public
+        external
         view
         override
         returns (
@@ -395,7 +395,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     }
 
     function getAgendaTimestamps(uint256 _agendaID)
-        public
+        external
         view
         override
         returns (
@@ -416,11 +416,11 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         );
     }
 
-    function numAgendas() public view override returns (uint256) {
+    function numAgendas() external view override returns (uint256) {
         return _agendas.length;
     }
 
-    function getVoters(uint256 _agendaID) public view override returns (address[] memory) {
+    function getVoters(uint256 _agendaID) external view override returns (address[] memory) {
         return _agendas[_agendaID].voters;
     }
 

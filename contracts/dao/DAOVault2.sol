@@ -42,7 +42,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Approves TON to specific address
     /// @param _to Address to be approved
     /// @param _amount Approving TON amount
-    function approveTON(address _to, uint256 _amount) public override onlyOwner {
+    function approveTON(address _to, uint256 _amount) external override onlyOwner {
         ton.safeApprove(_to, _amount);
         emit Approved(address(ton), _to, _amount);
     }
@@ -50,7 +50,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Approves WTON to specific address
     /// @param _to Address to be approved
     /// @param _amount Approving WTON amount
-    function approveWTON(address _to, uint256 _amount) public override onlyOwner {
+    function approveWTON(address _to, uint256 _amount) external override onlyOwner {
         wton.safeApprove(_to, _amount);
         emit Approved(address(wton), _to, _amount);
     }
@@ -59,7 +59,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @param _token Token address
     /// @param _to Address to be approved
     /// @param _amount Approving ERC20 token amount
-    function approveERC20(address _token, address _to, uint256 _amount) public override onlyOwner {
+    function approveERC20(address _token, address _to, uint256 _amount) external override onlyOwner {
         IERC20(_token).safeApprove(_to, _amount);
         emit Approved(address(_token), _to, _amount);
     }
@@ -67,7 +67,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Transfers TON to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer TON amount
-    function claimTON(address _to, uint256 _amount) public override onlyOwner {
+    function claimTON(address _to, uint256 _amount) external override onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
@@ -93,7 +93,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Transfers WTON to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer WTON amount
-    function claimWTON(address _to, uint256 _amount) public override onlyOwner {
+    function claimWTON(address _to, uint256 _amount) external override onlyOwner {
         uint256 tonBalance = ton.balanceOf(address(this));
         uint256 wtonBalance = wton.balanceOf(address(this));
         require(
@@ -120,7 +120,7 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Transfers ERC20 token to specific address
     /// @param _to Address to receive
     /// @param _amount Transfer ERC20 token amount
-    function claimERC20(address _token, address _to, uint256 _amount) public override onlyOwner {
+    function claimERC20(address _token, address _to, uint256 _amount) external override onlyOwner {
         require(IERC20(_token).balanceOf(address(this)) >= _amount, "DAOVault2: not enough balance");
         IERC20(_token).safeTransfer(_to, _amount);
         emit Claimed(address(wton), _to, _amount);

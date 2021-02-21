@@ -94,7 +94,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
-    function setSeigManager(address _seigManager) public override onlyOwner {
+    function setSeigManager(address _seigManager) external override onlyOwner {
         require(_seigManager != address(0), "zero address");
         seigManager = ISeigManager(_seigManager);
     }
@@ -106,7 +106,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address[] calldata _candidateContracts,
         address _seigManager
     )
-        public
+        external
         override
         onlyOwner
     {
@@ -123,7 +123,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address[] calldata _candidateContracts,
         address _committee
     )
-        public
+        external
         override
         onlyOwner
     {
@@ -135,42 +135,42 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
     /// @notice Set DAOVault2 contract address
     /// @param _daoVault New DAOVault2 contract address
-    function setDaoVault(address _daoVault) public override onlyOwner {
+    function setDaoVault(address _daoVault) external override onlyOwner {
         require(_daoVault != address(0), "zero address");
         daoVault = IDAOVault2(_daoVault);
     }
 
     /// @notice Set Layer2Registry contract address
     /// @param _layer2Registry New Layer2Registry contract address
-    function setLayer2Registry(address _layer2Registry) public override onlyOwner {
+    function setLayer2Registry(address _layer2Registry) external override onlyOwner {
         require(_layer2Registry != address(0), "zero address");
         layer2Registry = ILayer2Registry(_layer2Registry);
     }
 
     /// @notice Set DAOAgendaManager contract address
     /// @param _agendaManager New DAOAgendaManager contract address
-    function setAgendaManager(address _agendaManager) public override onlyOwner {
+    function setAgendaManager(address _agendaManager) external override onlyOwner {
         require(_agendaManager != address(0), "zero address");
         agendaManager = IDAOAgendaManager(_agendaManager);
     }
 
     /// @notice Set CandidateFactory contract address
     /// @param _candidateFactory New CandidateFactory contract address
-    function setCandidateFactory(address _candidateFactory) public override onlyOwner {
+    function setCandidateFactory(address _candidateFactory) external override onlyOwner {
         require(_candidateFactory != address(0), "zero address");
         candidateFactory = ICandidateFactory(_candidateFactory);
     }
 
     /// @notice Set TON contract address
     /// @param _ton New TON contract address
-    function setTon(address _ton) public override onlyOwner {
+    function setTon(address _ton) external override onlyOwner {
         require(_ton != address(0), "zero address");
         ton = _ton;
     }
 
     /// @notice Set activity reward amount
     /// @param _value New activity reward per second
-    function setActivityRewardPerSecond(uint256 _value) public override onlyOwner {
+    function setActivityRewardPerSecond(uint256 _value) external override onlyOwner {
         activityRewardPerSecond = _value;
     }
 
@@ -181,7 +181,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint256 _newMaxMember,
         uint256 _quorum
     )
-        public
+        external
         override
         onlyOwner
     {
@@ -198,7 +198,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @notice Creates a candidate contract and register it on SeigManager
     /// @param _memo A memo for the candidate
     function createCandidate(string calldata _memo)
-        public
+        external
         override
         validSeigManager
         validLayer2Registry
@@ -245,7 +245,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @param _layer2 Layer2 contract address to be registered
     /// @param _memo A memo for the candidate
     function registerOperator(address _layer2, string memory _memo)
-        public
+        external
         override
         validSeigManager
         validLayer2Registry
@@ -259,7 +259,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @param _layer2 Layer2 contract address to be registered
     /// @param _memo A memo for the candidate
     function registerOperatorByOwner(address _operator, address _layer2, string memory _memo)
-        public
+        external
         override
         onlyOwner
         validSeigManager
@@ -275,7 +275,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function changeMember(
         uint256 _memberIndex
     )
-        public
+        external
         override
         returns (bool)
     {
@@ -328,7 +328,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     
     /// @notice Retires member
     /// @return Whether or not the execution succeeded
-    function retireMember() onlyMemberContract public override returns (bool) {
+    function retireMember() external override onlyMemberContract returns (bool) {
         address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = _candidateInfos[candidate];
         members[candidateInfo.indexMembers] = address(0);
@@ -348,7 +348,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint256 _reducingMemberIndex,
         uint256 _quorum
     )
-        public
+        external
         override
         onlyOwner
     {
@@ -417,7 +417,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function setCreateAgendaFees(
         uint256 _fees
     )
-        public
+        external
         override
         onlyOwner
         validAgendaManager
@@ -430,7 +430,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function setMinimumNoticePeriodSeconds(
         uint256 _minimumNoticePeriod
     )
-        public
+        external
         override
         onlyOwner
         validAgendaManager
@@ -443,7 +443,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function setMinimumVotingPeriodSeconds(
         uint256 _minimumVotingPeriod
     )
-        public
+        external
         override
         onlyOwner
         validAgendaManager
@@ -460,7 +460,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint _vote,
         string calldata _comment
     )
-        public 
+        external 
         override
         validAgendaManager
     {
@@ -493,13 +493,13 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
     /// @notice Set the agenda status as ended(denied or dismissed)
     /// @param _agendaID Agenda ID
-    function endAgendaVoting(uint256 _agendaID) public override {
+    function endAgendaVoting(uint256 _agendaID) external override {
         agendaManager.endAgendaVoting(_agendaID);
     }
 
     /// @notice Execute the accepted agenda
     /// @param _agendaID Agenda ID
-    function executeAgenda(uint256 _agendaID) public override validAgendaManager {
+    function executeAgenda(uint256 _agendaID) external override validAgendaManager {
         require(
             agendaManager.canExecuteAgenda(_agendaID),
             "DAOCommittee: can not execute the agenda"
@@ -521,7 +521,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @param _agendaID Agenda ID
     /// @param _status New status
     /// @param _result New result
-    function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) public override onlyOwner {
+    function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) external override onlyOwner {
         agendaManager.setResult(_agendaID, LibAgenda.AgendaResult(_result));
         agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus(_status));
     }
@@ -537,14 +537,14 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @notice Call updateSeigniorage on SeigManager
     /// @param _candidates Candidate addresses to be updated
     /// @return Whether or not the execution succeeded
-    function updateSeigniorages(address[] calldata _candidates) public override returns (bool) {
+    function updateSeigniorages(address[] calldata _candidates) external override returns (bool) {
         for (uint256 i = 0; i < _candidates.length; i++) {
             updateSeigniorage(_candidates[i]);
         }
     }
 
     /// @notice Claims the activity reward for member
-    function claimActivityReward() public override {
+    function claimActivityReward() external override {
         CandidateInfo storage info = _candidateInfos[msg.sender];
         uint256 amount = getClaimableActivityReward(msg.sender);
 
@@ -663,7 +663,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         return agendaID;
     }
 
-    function isCandidate(address _candidate) public view override returns (bool) {
+    function isCandidate(address _candidate) external view override returns (bool) {
         CandidateInfo storage info = _candidateInfos[_candidate];
 
         if (info.candidateContract == address(0)) {
@@ -685,7 +685,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function totalSupplyOnCandidate(
         address _candidate
     )
-        public
+        external
         view
         override
         returns (uint256 totalsupply)
@@ -698,7 +698,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address _candidate,
         address _account
     )
-        public
+        external
         view
         override
         returns (uint256 amount)
@@ -738,7 +738,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         return IERC20(coinage).balanceOf(_account);
     }
 
-    function candidatesLength() public view override returns (uint256) {
+    function candidatesLength() external view override returns (uint256) {
         return candidates.length;
     }
 
