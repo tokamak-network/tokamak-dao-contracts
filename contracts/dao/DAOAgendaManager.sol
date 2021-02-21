@@ -51,6 +51,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     }
 
     function getStatus(uint256 _status) public pure override returns (LibAgenda.AgendaStatus emnustatus) {
+        require(_status <= 6, "DAOAgendaManager: invalid status value");
         if (_status == uint256(LibAgenda.AgendaStatus.NOTICE))
             return LibAgenda.AgendaStatus.NOTICE;
         else if (_status == uint256(LibAgenda.AgendaStatus.VOTING))
