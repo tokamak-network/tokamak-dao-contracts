@@ -11,10 +11,10 @@ import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
 interface IStorageStateCommittee {
     struct CandidateInfo {
         address candidateContract;
-        uint256 memberJoinedTime;
         uint256 indexMembers;
-        uint256 rewardPeriod;
-        uint256 claimedTimestamp;
+        uint128 memberJoinedTime;
+        uint128 rewardPeriod;
+        uint128 claimedTimestamp;
     }
 
     function ton() external returns (address);
