@@ -185,7 +185,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         override
         onlyOwner
     {
-        require(maxMember < _newMaxMember, "DAOCommitteeStore: You have to call decreaseMaxMember to decrease");
+        require(maxMember < _newMaxMember, "DAOCommittee: You have to call decreaseMaxMember to decrease");
         emit ChangedSlotMaximum(maxMember, _newMaxMember);
         maxMember = _newMaxMember;
         fillMemberSlot();
@@ -225,7 +225,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         );
         require(
             _candidateInfos[msg.sender].candidateContract == address(0),
-            "DAOCommitteeStore: The candidate already has contract"
+            "DAOCommittee: The candidate already has contract"
         );
 
         _candidateInfos[msg.sender] = CandidateInfo({
@@ -313,7 +313,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
         require(
             ICandidate(msg.sender).totalStaked() > ICandidate(prevMemberContract).totalStaked(),
-            "not enough amount"
+            "DAOCommittee: not enough amount"
         );
 
         CandidateInfo storage prevCandidateInfo = _candidateInfos[prevMember];
@@ -627,8 +627,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function payCreatingAgendaFee(address _creator) internal {
         uint256 fee = agendaManager.createAgendaFees();
 
-        require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommitteeStore: failed to transfer ton from creator");
-        require(IERC20(ton).transfer(address(1), fee), "DAOCommitteeStore: failed to burn");
+        require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommittee: failed to transfer ton from creator");
+        require(IERC20(ton).transfer(address(1), fee), "DAOCommittee: failed to burn");
     }
    
     function _createAgenda(

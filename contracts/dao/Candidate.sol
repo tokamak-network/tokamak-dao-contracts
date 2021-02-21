@@ -152,7 +152,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         returns (uint256 amount)
     {
         address coinage = _getCoinageToken();
-        require(coinage != address(0), "DAOCommittee: coinage is zero");
+        require(coinage != address(0), "Candidate: coinage is zero");
         return IERC20(coinage).balanceOf(_account);
     }
 
