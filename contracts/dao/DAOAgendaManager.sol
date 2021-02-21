@@ -44,8 +44,8 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     }
     
     constructor() {
-        minimumNoticePeriodSeconds = 60 * 60 * 24 * 15; //  15 days , on seconds
-        minimumVotingPeriodSeconds = 60 * 60 * 24 * 2; //  2 days , on seconds
+        minimumNoticePeriodSeconds = 15 days;
+        minimumVotingPeriodSeconds = 2 days;
         
         createAgendaFees = 100000000000000000000; // 100 TON
     }
