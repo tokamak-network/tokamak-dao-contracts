@@ -302,6 +302,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             "DAOCommittee: The address is not a candidate"
         );
         require(
+            candidateInfo.candidateContract == msg.sender,
+            "DAOCommittee: invalid candidate contract"
+        );
+        require(
             candidateInfo.memberJoinedTime == 0,
             "DAOCommittee: already member"
         );
