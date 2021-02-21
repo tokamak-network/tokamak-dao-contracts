@@ -205,9 +205,8 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         external
         override
         onlyOwner
+        validAgenda(_agendaID)
     {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: _agendaID is invalid.");
-
         LibAgenda.Agenda storage agenda = _agendas[_agendaID];
         agenda.executed = true;
         agenda.executedTimestamp = block.timestamp;
@@ -299,13 +298,11 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         return _voterInfos[_agendaID][_candidate].isVoter;
     }
     
-    function hasVoted(uint256 _agendaID, address _user) public view override returns (bool) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
+    function hasVoted(uint256 _agendaID, address _user) public view override validAgenda(_agendaID) returns (bool) {
         return _voterInfos[_agendaID][_user].hasVoted;
     }
 
-    function getVoteStatus(uint256 _agendaID, address _user) public view override returns (bool, uint256) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
+    function getVoteStatus(uint256 _agendaID, address _user) public view override validAgenda(_agendaID) returns (bool, uint256) {
         
         LibAgenda.Voter storage voter = _voterInfos[_agendaID][_user];
 
@@ -315,18 +312,15 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         );
     }
     
-    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
+    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view override validAgenda(_agendaID) returns (uint256) {
         return _agendas[_agendaID].noticeEndTimestamp;
     }
     
-    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
+    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view override validAgenda(_agendaID) returns (uint256) {
         return _agendas[_agendaID].votingStartedTimestamp;
     }
 
-    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
+    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view override validAgenda(_agendaID) returns (uint256) {
         return _agendas[_agendaID].votingEndTimestamp;
     }
 
@@ -339,8 +333,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
             agenda.executed == false;
     }
     
-    function getAgendaStatus(uint256 _agendaID) external view override returns (uint256 status) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: invalid agend id");
+    function getAgendaStatus(uint256 _agendaID) external view override validAgenda(_agendaID) returns (uint256 status) {
         return uint256(_agendas[_agendaID].status);
     }
 
@@ -348,8 +341,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         return _agendas.length;
     }
 
-    function getAgendaResult(uint256 _agendaID) external view override returns (uint256 result, bool executed) {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid _agendaID Id");
+    function getAgendaResult(uint256 _agendaID) external view override validAgenda(_agendaID) returns (uint256 result, bool executed) {
         return (uint256(_agendas[_agendaID].result), _agendas[_agendaID].executed);
     }
    
