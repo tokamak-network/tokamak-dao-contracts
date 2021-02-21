@@ -11,8 +11,8 @@ import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
 interface IStorageStateCommittee {
     struct CandidateInfo {
         address candidateContract;
-        uint memberJoinedTime;
-        uint indexMembers;
+        uint256 memberJoinedTime;
+        uint256 indexMembers;
         uint256 rewardPeriod;
         uint256 claimedTimestamp;
     }

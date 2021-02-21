@@ -12,7 +12,7 @@ library LibAgenda {
     struct Voter {
         bool isVoter;
         bool hasVoted;
-        uint vote;
+        uint256 vote;
     }
 
     // counting abstainVotes yesVotes noVotes
@@ -37,7 +37,7 @@ library LibAgenda {
         bytes[] functionBytecodes;
     }
 
-    /*function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {
+    /*function getAgenda(Agenda[] storage agendas, uint256 index) public view returns (Agenda storage agenda) {
         return agendas[index];
     }*/
 }

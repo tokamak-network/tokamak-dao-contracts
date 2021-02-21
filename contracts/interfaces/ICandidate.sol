@@ -11,7 +11,7 @@ interface ICandidate {
     
     function changeMember(uint256 _memberIndex) external returns (bool);
     function retireMember() external returns (bool);
-    function castVote(uint256 _agendaID, uint _vote, string calldata _comment) external;
+    function castVote(uint256 _agendaID, uint256 _vote, string calldata _comment) external;
 
     // view
     function isCandidateContract() external view returns (bool);

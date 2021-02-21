@@ -37,7 +37,7 @@ interface IDAOCommittee is IStorageStateCommittee {
     function setCreateAgendaFees(uint256 _fees) external;
     function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriod) external;
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriod) external;
-    function castVote(uint256 _AgendaID, uint _vote, string calldata _comment) external;
+    function castVote(uint256 _AgendaID, uint256 _vote, string calldata _comment) external;
     function endAgendaVoting(uint256 _agendaID) external;
     function executeAgenda(uint256 _AgendaID) external;
     function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) external;
@@ -64,7 +64,7 @@ interface IDAOCommittee is IStorageStateCommittee {
     )
         external
         returns (
-            uint applyResultCode,
+            uint256 applyResultCode,
             uint256 _memberindex
         );*/
     //function retireCommittee() external returns (bool);
@@ -74,7 +74,7 @@ interface IDAOCommittee is IStorageStateCommittee {
     //function setMinimunVotingPeriodMin(uint256 _minimunVotingPeriod) external;
 
     
-    //function createAgenda(uint _group, address _target, uint _noticePeriodMin, bytes calldata functionBytecode, string calldata _description) external returns (uint256);
+    //function createAgenda(uint256 _group, address _target, uint256 _noticePeriodMin, bytes calldata functionBytecode, string calldata _description) external returns (uint256);
     //function electCommiitteeForAgenda(uint256 _AgendaID) external;
       
     //function checkRisk(address _target, bytes calldata _functionBytecode) external pure returns (bool);
