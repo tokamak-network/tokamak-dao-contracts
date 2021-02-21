@@ -84,6 +84,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint256 amount
     );
 
+    event ActivityRewardChanged(
+        uint256 newReward
+    );
+
     modifier onlyOwner() {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
         _;
@@ -172,6 +176,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @param _value New activity reward per second
     function setActivityRewardPerSecond(uint256 _value) external override onlyOwner {
         activityRewardPerSecond = _value;
+        emit ActivityRewardChanged(_value);
     }
 
     /// @notice Increases the number of member slot

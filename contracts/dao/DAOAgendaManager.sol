@@ -38,6 +38,18 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         uint256 result
     );
 
+    event CreatingAgendaFeeChanged(
+        uint256 newFee
+    );
+
+    event MinimumNoticePeriodChanged(
+        uint256 newPeriod
+    );
+
+    event MinimumVotingPeriodChanged(
+        uint256 newPeriod
+    );
+
     modifier validAgenda(uint256 _agendaID) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: invalid agenda id");
         _;
@@ -85,18 +97,21 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     /// @param _createAgendaFees New fee(TON)
     function setCreateAgendaFees(uint256 _createAgendaFees) external override onlyOwner {
         createAgendaFees = _createAgendaFees;
+        emit CreatingAgendaFeeChanged(_createAgendaFees);
     }
 
     /// @notice Set the minimum notice period in seconds
     /// @param _minimumNoticePeriodSeconds New minimum notice period in seconds
     function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriodSeconds) external override onlyOwner {
         minimumNoticePeriodSeconds = _minimumNoticePeriodSeconds;
+        emit MinimumNoticePeriodChanged(_minimumNoticePeriodSeconds);
     }
 
     /// @notice Set the minimum voting period in seconds
     /// @param _minimumVotingPeriodSeconds New minimum voting period in seconds
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriodSeconds) external override onlyOwner {
         minimumVotingPeriodSeconds = _minimumVotingPeriodSeconds;
+        emit MinimumVotingPeriodChanged(_minimumVotingPeriodSeconds);
     }
       
     /// @notice Creates an agenda
