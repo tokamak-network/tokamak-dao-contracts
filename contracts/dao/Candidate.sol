@@ -74,7 +74,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     function updateSeigniorage() public override returns (bool) {
         require(address(seigManager) != address(0), "Candidate: SeigManager is zero");
         require(
-            isLayer2Candidate == false,
+            !isLayer2Candidate,
             "Candidate: you should update seigniorage from layer2 contract"
         );
 
