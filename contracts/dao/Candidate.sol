@@ -78,7 +78,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
             "Candidate: you should update seigniorage from layer2 contract"
         );
 
-        return ISeigManager(seigManager).updateSeigniorage();
+        return seigManager.updateSeigniorage();
     }
 
     /// @notice Try to be a member
