@@ -8,7 +8,7 @@ import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
 contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
-    address public _implementation;
+    address internal _implementation;
     bool public pauseProxy;
 
     event Upgraded(address indexed implementation);
