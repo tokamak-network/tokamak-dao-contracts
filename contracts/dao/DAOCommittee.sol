@@ -231,12 +231,12 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             "DAOCommittee: deployed candidateContract is zero"
         );
         require(
-            layer2Registry.registerAndDeployCoinage(candidateContract, address(seigManager)),
-            "DAOCommittee: failed to registerAndDeployCoinage"
-        );
-        require(
             _candidateInfos[msg.sender].candidateContract == address(0),
             "DAOCommittee: The candidate already has contract"
+        );
+        require(
+            layer2Registry.registerAndDeployCoinage(candidateContract, address(seigManager)),
+            "DAOCommittee: failed to registerAndDeployCoinage"
         );
 
         _candidateInfos[msg.sender] = CandidateInfo({
