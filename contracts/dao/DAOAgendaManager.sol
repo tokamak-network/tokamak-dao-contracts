@@ -211,9 +211,9 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         agenda.executed = true;
         agenda.executedTimestamp = block.timestamp;
 
-        emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(LibAgenda.AgendaStatus.EXECUTED));
-
+        uint256 prevStatus = uint256(agenda.status);
         agenda.status = LibAgenda.AgendaStatus.EXECUTED;
+        emit AgendaStatusChanged(_agendaID, prevStatus, uint256(LibAgenda.AgendaStatus.EXECUTED));
     }
 
     /// @notice Set the agenda result
@@ -240,8 +240,9 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     {
         LibAgenda.Agenda storage agenda = _agendas[_agendaID];
 
-        emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(_status));
+        uint256 prevStatus = uint256(agenda.status);
         agenda.status = _status;
+        emit AgendaStatusChanged(_agendaID, prevStatus, uint256(_status));
     }
 
     /// @notice Set the agenda status as ended(denied or dismissed)
