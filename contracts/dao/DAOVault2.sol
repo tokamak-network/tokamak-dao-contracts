@@ -23,6 +23,10 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     event Approved(address indexed token, address indexed to, uint256 indexed amount);
 
     constructor(address _ton, address _wton) {
+        require(_ton != address(0)
+            || _wton != address(0),
+            "DAOVault2: input is zero"
+        );
         ton = IERC20(_ton);
         wton = IERC20(_wton);
     }
@@ -30,12 +34,14 @@ contract DAOVault2 is Ownable, IDAOVault2 {
     /// @notice Set TON address
     /// @param _ton TON address
     function setTON(address _ton) external override onlyOwner {
+        require(_ton != address(0), "DAOVault2: input is zero");
         ton = IERC20(_ton);
     }
 
     /// @notice Set WTON address
     /// @param _wton WTON address
     function setWTON(address _wton) external override onlyOwner {
+        require(_wton != address(0), "DAOVault2: input is zero");
         wton = IERC20(_wton);
     }
 

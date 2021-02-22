@@ -29,6 +29,15 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         address _daoVault
     )
     {
+        require(
+            _ton != address(0)
+            || _impl != address(0)
+            || _seigManager != address(0)
+            || _layer2Registry != address(0)
+            || _agendaManager != address(0)
+            || _candidateFactory != address(0),
+            "DAOCommitteeProxy: input is zero"
+        );
         ton = _ton;
         _implementation = _impl;
         seigManager = ISeigManager(_seigManager);
@@ -53,6 +62,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
     /// @notice Set implementation contract
     /// @param impl New implementation contract address
     function upgradeTo(address impl) external onlyOwner {
+        require(_implementation != address(0), "DAOCommitteeProxy: input is zero");
         require(_implementation != impl, "DAOCommitteeProxy: The input address is same as the state");
         _implementation = impl;
         emit Upgraded(impl);
