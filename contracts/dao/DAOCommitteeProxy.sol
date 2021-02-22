@@ -53,7 +53,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
     /// @notice Set implementation contract
     /// @param impl New implementation contract address
     function upgradeTo(address impl) external onlyOwner {
-        require(_implementation != impl, "DAOCommitteeProxy: implementation address is zero");
+        require(_implementation != impl, "DAOCommitteeProxy: The input address is same as the state");
         _implementation = impl;
         emit Upgraded(impl);
     }
