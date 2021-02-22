@@ -609,8 +609,12 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @return Whether or not the execution succeeded
     function updateSeigniorages(address[] calldata _candidates) external override returns (bool) {
         for (uint256 i = 0; i < _candidates.length; i++) {
-            updateSeigniorage(_candidates[i]);
+            bool result;
+            result = updateSeigniorage(_candidates[i]);
+            require(result, "DAOCommittee: failed to update seigniorage");
         }
+
+        return true;
     }
 
     /// @notice Claims the activity reward for member
