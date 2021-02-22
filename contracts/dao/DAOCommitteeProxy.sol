@@ -46,13 +46,13 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
 
     /// @notice Set pause state
     /// @param _pause true:pause or false:resume
-    function setProxyPause(bool _pause) onlyOwner public {
+    function setProxyPause(bool _pause) external onlyOwner {
         pauseProxy = _pause;
     }
 
     /// @notice Set implementation contract
     /// @param impl New implementation contract address
-    function upgradeTo(address impl) public onlyOwner {
+    function upgradeTo(address impl) external onlyOwner {
         require(_implementation != impl, "DAOCommitteeProxy: implementation address is zero");
         _implementation = impl;
         emit Upgraded(impl);

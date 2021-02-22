@@ -59,26 +59,26 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
-    function setSeigManager(address _seigManager) public override onlyOwner {
+    function setSeigManager(address _seigManager) external override onlyOwner {
         seigManager = ISeigManager(_seigManager);
     }
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @param _committee New DAOCommitteeProxy contract address
-    function setCommittee(address _committee) public override onlyOwner {
+    function setCommittee(address _committee) external override onlyOwner {
         committee = IDAOCommittee(_committee);
     }
 
     /// @notice Set memo
     /// @param _memo New memo on this candidate
-    function setMemo(string calldata _memo) public override onlyOwner {
+    function setMemo(string calldata _memo) external override onlyOwner {
         memo = _memo;
     }
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @notice Call updateSeigniorage on SeigManager
     /// @return Whether or not the execution succeeded
-    function updateSeigniorage() public override returns (bool) {
+    function updateSeigniorage() external override returns (bool) {
         require(address(seigManager) != address(0), "Candidate: SeigManager is zero");
         require(
             !isLayer2Candidate,
@@ -92,7 +92,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     /// @param _memberIndex The index of changing member slot
     /// @return Whether or not the execution succeeded
     function changeMember(uint256 _memberIndex)
-        public
+        external
         override
         onlyCandidate
         returns (bool)
@@ -102,7 +102,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
 
     /// @notice Retire a member
     /// @return Whether or not the execution succeeded
-    function retireMember() public override onlyCandidate returns (bool) {
+    function retireMember() external override onlyCandidate returns (bool) {
         return committee.retireMember();
     }
     
@@ -115,7 +115,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         uint _vote,
         string calldata _comment
     )
-        public
+        external
         override
         onlyCandidate
     {
@@ -123,7 +123,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     }
 
     function claimActivityReward()
-        public
+        external
         override
         onlyCandidate
     {
@@ -140,20 +140,20 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
 
     /// @notice Checks whether this contract is a candidate contract
     /// @return Whether or not this contract is a candidate contract
-    function isCandidateContract() public view override returns (bool) {
+    function isCandidateContract() external view override returns (bool) {
         return true;
     }
 
-    function operator() public view override returns (address) { return candidate; }
-    function isLayer2() public view override returns (bool) { return true; }
-    function currentFork() public view override returns (uint) { return 1; }
-    function lastEpoch(uint forkNumber) public view override returns (uint) { return 1; }
+    function operator() external view override returns (address) { return candidate; }
+    function isLayer2() external view override returns (bool) { return true; }
+    function currentFork() external view override returns (uint) { return 1; }
+    function lastEpoch(uint forkNumber) external view override returns (uint) { return 1; }
     function changeOperator(address _operator) external override { }
 
     /// @notice Retrieves the total staked balance on this candidate
     /// @return totalsupply Total staked amount on this candidate
     function totalStaked()
-        public
+        external
         view
         override
         returns (uint256 totalsupply)
@@ -169,7 +169,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     function stakedOf(
         address _account
     )
-        public
+        external
         view
         override
         returns (uint256 amount)
