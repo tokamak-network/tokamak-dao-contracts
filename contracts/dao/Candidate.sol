@@ -42,6 +42,12 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         address _seigManager
     ) 
     {
+        require(
+            _candidate != address(0)
+            || _committee != address(0)
+            || _seigManager != address(0),
+            "Candidate: input is zero"
+        );
         candidate = _candidate;
         isLayer2Candidate = _isLayer2Candidate;
         if (isLayer2Candidate) {
@@ -60,12 +66,14 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
     function setSeigManager(address _seigManager) external override onlyOwner {
+        require(_seigManager != address(0), "Candidate: input is zero");
         seigManager = ISeigManager(_seigManager);
     }
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @param _committee New DAOCommitteeProxy contract address
     function setCommittee(address _committee) external override onlyOwner {
+        require(_committee != address(0), "Candidate: input is zero");
         committee = IDAOCommittee(_committee);
     }
 
