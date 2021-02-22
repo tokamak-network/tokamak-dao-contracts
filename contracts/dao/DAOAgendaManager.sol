@@ -228,7 +228,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         else if (_vote == uint256(VoteChoice.NO))
             agenda.countingNo = agenda.countingNo.add(1);
         else
-            revert();
+            revert("DAOAgendaManager: invalid voting");
         
         return true;
     }
