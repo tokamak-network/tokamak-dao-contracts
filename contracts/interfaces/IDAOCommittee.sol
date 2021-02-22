@@ -40,7 +40,7 @@ interface IDAOCommittee is IStorageStateCommittee {
     function setMinimumNoticePeriodSeconds(uint256 _minimumNoticePeriod) external;
     function setMinimumVotingPeriodSeconds(uint256 _minimumVotingPeriod) external;
     function setExecutingPeriodSeconds(uint256 _executingPeriodSeconds) external;
-    function castVote(uint256 _AgendaID, uint _vote, string calldata _comment) external;
+    function castVote(uint256 _AgendaID, uint256 _vote, string calldata _comment) external;
     function endAgendaVoting(uint256 _agendaID) external;
     function executeAgenda(uint256 _AgendaID) external;
     function setAgendaStatus(uint256 _agendaID, uint256 _status, uint256 _result) external;

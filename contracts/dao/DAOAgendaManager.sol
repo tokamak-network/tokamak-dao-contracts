@@ -52,14 +52,14 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         createAgendaFees = 100000000000000000000; // 100 TON
     }
 
-    function getStatus(uint _status) public pure override returns (LibAgenda.AgendaStatus emnustatus) {
-        if (_status == uint(LibAgenda.AgendaStatus.NOTICE))
+    function getStatus(uint256 _status) public pure override returns (LibAgenda.AgendaStatus emnustatus) {
+        if (_status == uint256(LibAgenda.AgendaStatus.NOTICE))
             return LibAgenda.AgendaStatus.NOTICE;
-        else if (_status == uint(LibAgenda.AgendaStatus.VOTING))
+        else if (_status == uint256(LibAgenda.AgendaStatus.VOTING))
             return LibAgenda.AgendaStatus.VOTING;
-        else if (_status == uint(LibAgenda.AgendaStatus.EXECUTED))
+        else if (_status == uint256(LibAgenda.AgendaStatus.EXECUTED))
             return LibAgenda.AgendaStatus.EXECUTED;
-        else if (_status == uint(LibAgenda.AgendaStatus.ENDED))
+        else if (_status == uint256(LibAgenda.AgendaStatus.ENDED))
             return LibAgenda.AgendaStatus.ENDED;
         else
             return LibAgenda.AgendaStatus.NONE;
@@ -75,10 +75,10 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     /// @notice Set status of the agenda
     /// @param _agendaID agenda ID
     /// @param _status New status of the agenda
-    /*function setStatus(uint256 _agendaID, uint _status) public override onlyOwner {
+    /*function setStatus(uint256 _agendaID, uint256 _status) public override onlyOwner {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
 
-        emit AgendaStatusChanged(_agendaID, uint(_agendas[_agendaID].status), _status);
+        emit AgendaStatusChanged(_agendaID, uint256(_agendas[_agendaID].status), _status);
         _agendas[_agendaID].status = getStatus(_status);
     }*/
 
@@ -166,14 +166,14 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
     function castVote(
         uint256 _agendaID,
         address _voter,
-        uint _vote
+        uint256 _vote
     )
         external
         override
         onlyOwner
         returns (bool)
     {
-        require(_vote < uint(VoteChoice.MAX), "DAOAgendaManager: invalid vote");
+        require(_vote < uint256(VoteChoice.MAX), "DAOAgendaManager: invalid vote");
 
         require(
             isVotableStatus(_agendaID),
@@ -199,11 +199,11 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         voter.vote = _vote;
              
         // counting 0:abstainVotes 1:yesVotes 2:noVotes
-        if (_vote == uint(VoteChoice.ABSTAIN))
+        if (_vote == uint256(VoteChoice.ABSTAIN))
             agenda.countingAbstain = agenda.countingAbstain.add(1);
-        else if (_vote == uint(VoteChoice.YES))
+        else if (_vote == uint256(VoteChoice.YES))
             agenda.countingYes = agenda.countingYes.add(1);
-        else if (_vote == uint(VoteChoice.NO))
+        else if (_vote == uint256(VoteChoice.NO))
             agenda.countingNo = agenda.countingNo.add(1);
         else
             revert();
@@ -224,7 +224,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         agenda.executed = true;
         agenda.executedTimestamp = block.timestamp;
 
-        emit AgendaStatusChanged(_agendaID, uint(agenda.status), uint(LibAgenda.AgendaStatus.EXECUTED));
+        emit AgendaStatusChanged(_agendaID, uint256(agenda.status), uint256(LibAgenda.AgendaStatus.EXECUTED));
 
         agenda.status = LibAgenda.AgendaStatus.EXECUTED;
     }
@@ -295,7 +295,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
             _voterInfos[_agendaID][voter].isVoter = true;
         }
 
-        emit AgendaStatusChanged(_agendaID, uint(LibAgenda.AgendaStatus.NOTICE), uint(LibAgenda.AgendaStatus.VOTING));
+        emit AgendaStatusChanged(_agendaID, uint256(LibAgenda.AgendaStatus.NOTICE), uint256(LibAgenda.AgendaStatus.VOTING));
     }
     
     function checkAndEndVoting(uint256 _agendaID) internal {
@@ -328,17 +328,17 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         );
     }
     
-    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view override returns (uint) {
+    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].noticeEndTimestamp;
     }
     
-    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view override returns (uint) {
+    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].votingStartedTimestamp;
     }
 
-    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view override returns (uint) {
+    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view override returns (uint256) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Agenda Id");
         return _agendas[_agendaID].votingEndTimestamp;
     }
@@ -353,18 +353,18 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
             agenda.executed == false;
     }
     
-    function getAgendaStatus(uint256 _agendaID) external view override returns (uint status) {
+    function getAgendaStatus(uint256 _agendaID) external view override returns (uint256 status) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: invalid agend id");
-        return uint(_agendas[_agendaID].status);
+        return uint256(_agendas[_agendaID].status);
     }
 
     function totalAgendas() external view override returns (uint256) {
         return _agendas.length;
     }
 
-    function getAgendaResult(uint256 _agendaID) external view override returns (uint result, bool executed) {
+    function getAgendaResult(uint256 _agendaID) external view override returns (uint256 result, bool executed) {
         require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid _agendaID Id");
-        return (uint(_agendas[_agendaID].result), _agendas[_agendaID].executed);
+        return (uint256(_agendas[_agendaID].result), _agendas[_agendaID].executed);
     }
    
     function getExecutionInfo(uint256 _agendaID)

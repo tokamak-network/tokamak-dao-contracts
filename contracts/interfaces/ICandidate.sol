@@ -10,7 +10,7 @@ interface ICandidate {
     function updateSeigniorage() external returns (bool);
     function changeMember(uint256 _memberIndex) external returns (bool);
     function retireMember() external returns (bool);
-    function castVote(uint256 _agendaID, uint _vote, string calldata _comment) external;
+    function castVote(uint256 _agendaID, uint256 _vote, string calldata _comment) external;
     function isCandidateContract() external view returns (bool);
     function totalStaked() external view returns (uint256 totalsupply);
     function stakedOf(address _account) external view returns (uint256 amount);

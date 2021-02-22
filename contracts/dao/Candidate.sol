@@ -112,7 +112,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     /// @param _comment voting comment
     function castVote(
         uint256 _agendaID,
-        uint _vote,
+        uint256 _vote,
         string calldata _comment
     )
         external
@@ -146,8 +146,8 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
 
     function operator() external view override returns (address) { return candidate; }
     function isLayer2() external view override returns (bool) { return true; }
-    function currentFork() external view override returns (uint) { return 1; }
-    function lastEpoch(uint forkNumber) external view override returns (uint) { return 1; }
+    function currentFork() external view override returns (uint256) { return 1; }
+    function lastEpoch(uint256 forkNumber) external view override returns (uint256) { return 1; }
     function changeOperator(address _operator) external override { }
 
     /// @notice Retrieves the total staked balance on this candidate

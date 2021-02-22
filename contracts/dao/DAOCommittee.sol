@@ -46,7 +46,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     event AgendaVoteCasted(
         address indexed from,
         uint256 indexed id,
-        uint voting,
+        uint256 voting,
         string comment
     );
 
@@ -513,7 +513,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @param _comment voting comment
     function castVote(
         uint256 _agendaID,
-        uint _vote,
+        uint256 _vote,
         string calldata _comment
     )
         external 

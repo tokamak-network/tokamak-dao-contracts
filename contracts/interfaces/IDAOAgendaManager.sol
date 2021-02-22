@@ -24,7 +24,7 @@ interface IDAOAgendaManager  {
     )
         external
         returns (uint256 agendaID);
-    function castVote(uint256 _agendaID, address voter, uint _vote) external returns (bool);
+    function castVote(uint256 _agendaID, address voter, uint256 _vote) external returns (bool);
     function setExecutedAgenda(uint256 _agendaID) external;
     function setResult(uint256 _agendaID, LibAgenda.AgendaResult _result) external;
     function setStatus(uint256 _agendaID, LibAgenda.AgendaStatus _status) external;
@@ -34,14 +34,14 @@ interface IDAOAgendaManager  {
     function isVoter(uint256 _agendaID, address _user) external view returns (bool);
     function hasVoted(uint256 _agendaID, address _user) external view returns (bool);
     function getVoteStatus(uint256 _agendaID, address _user) external view returns (bool, uint256);
-    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view returns (uint);
-    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view returns (uint);
-    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view returns (uint) ;
+    function getAgendaNoticeEndTimeSeconds(uint256 _agendaID) external view returns (uint256);
+    function getAgendaVotingStartTimeSeconds(uint256 _agendaID) external view returns (uint256);
+    function getAgendaVotingEndTimeSeconds(uint256 _agendaID) external view returns (uint256) ;
 
     function canExecuteAgenda(uint256 _agendaID) external view returns (bool);
-    function getAgendaStatus(uint256 _agendaID) external view returns (uint status);
+    function getAgendaStatus(uint256 _agendaID) external view returns (uint256 status);
     function totalAgendas() external view returns (uint256);
-    function getAgendaResult(uint256 _agendaID) external view returns (uint result, bool executed);
+    function getAgendaResult(uint256 _agendaID) external view returns (uint256 result, bool executed);
     function getExecutionInfo(uint256 _agendaID)
         external
         view
