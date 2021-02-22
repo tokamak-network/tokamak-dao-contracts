@@ -68,7 +68,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
 
     function _fallback() internal {
         address _impl = implementation();
-        require(_impl != address(0) && pauseProxy == false, "DAOCommitteeProxy: impl is zero OR proxy is false");
+        require(_impl != address(0) && !pauseProxy, "DAOCommitteeProxy: impl is zero OR proxy is false");
 
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly
