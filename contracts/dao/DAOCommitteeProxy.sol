@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import "./StorageStateCommittee.sol";
 //import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
@@ -34,7 +35,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         layer2Registry = ILayer2Registry(_layer2Registry);
         agendaManager = IDAOAgendaManager(_agendaManager);
         candidateFactory = ICandidateFactory(_candidateFactory);
-        daoVault = IDAOVault2(_daoVault);
+        daoVault = IDAOVault(_daoVault);
         quorum = 2;
         activityRewardPerSecond = 1e18;
 

@@ -708,9 +708,9 @@ describe('Test 1', function () {
         voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(_vote));
 
         const agenda2 = await agendaManager.agendas(_agendaID);
-        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(_vote === VOTE_YES ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(toBN(beforeCountingYes).add(_vote === VOTE_YES ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(toBN(beforeCountingNo).add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(toBN(beforeCountingAbstain).add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
 
         const result = await agendaManager.getVoteStatus(_agendaID, voter);
         result[0].should.be.equal(true);
@@ -873,7 +873,7 @@ describe('Test 1', function () {
         it('increase block time', async function () {
           const agenda = await agendaManager.agendas(agendaID);  
           const noticeEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
-          await time.increaseTo(noticeEndTimestamp.add(toBN("1")));
+          await time.increaseTo(toBN(noticeEndTimestamp).add(toBN("1")));
           (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
         });
 
@@ -951,12 +951,12 @@ describe('Test 1', function () {
           const agenda = await agendaManager.agendas(agendaID);  
 
           const votingEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
-          await time.increaseTo(votingEndTimestamp.add(toBN("1")));
+          await time.increaseTo(toBN(votingEndTimestamp).add(toBN("1")));
 
           (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
 
           const executableLimitTimestamp = agenda[AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP];
-          await time.increaseTo(executableLimitTimestamp.add(toBN("1")));
+          await time.increaseTo(toBN(executableLimitTimestamp).add(toBN("1")));
         });
 
         it("check executable limit", async function () {

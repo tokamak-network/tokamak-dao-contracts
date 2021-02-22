@@ -10,20 +10,19 @@ import { ISeigManager } from "../interfaces/ISeigManager.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
 import { ILayer2 } from "../interfaces/ILayer2.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
-import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
 /// @title Managing a candidate
 /// @notice Either a user or layer2 contract can be a candidate
-contract Candidate is Ownable, ERC165 {
+contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     using SafeMath for uint256;
 
-    bool public isLayer2Candidate;
-    address public candidate;
-    string public memo;
+    bool public override isLayer2Candidate;
+    address public override candidate;
+    string public override memo;
 
-    IDAOCommittee public committee;
-    ISeigManager public seigManager;
+    IDAOCommittee public override committee;
+    ISeigManager public override seigManager;
 
     modifier onlyCandidate() {
         if (isLayer2Candidate) {
@@ -60,26 +59,26 @@ contract Candidate is Ownable, ERC165 {
     
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
-    function setSeigManager(address _seigManager) public onlyOwner {
+    function setSeigManager(address _seigManager) public override onlyOwner {
         seigManager = ISeigManager(_seigManager);
     }
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @param _committee New DAOCommitteeProxy contract address
-    function setCommittee(address _committee) public onlyOwner {
+    function setCommittee(address _committee) public override onlyOwner {
         committee = IDAOCommittee(_committee);
     }
 
     /// @notice Set memo
     /// @param _memo New memo on this candidate
-    function setMemo(string calldata _memo) public onlyOwner {
+    function setMemo(string calldata _memo) public override onlyOwner {
         memo = _memo;
     }
 
     /// @notice Set DAOCommitteeProxy contract address
     /// @notice Call updateSeigniorage on SeigManager
     /// @return Whether or not the execution succeeded
-    function updateSeigniorage() public returns (bool) {
+    function updateSeigniorage() public override returns (bool) {
         require(address(seigManager) != address(0), "Candidate: SeigManager is zero");
         require(
             isLayer2Candidate == false,
@@ -94,6 +93,7 @@ contract Candidate is Ownable, ERC165 {
     /// @return Whether or not the execution succeeded
     function changeMember(uint256 _memberIndex)
         public
+        override
         onlyCandidate
         returns (bool)
     {
@@ -102,7 +102,7 @@ contract Candidate is Ownable, ERC165 {
 
     /// @notice Retire a member
     /// @return Whether or not the execution succeeded
-    function retireMember() public onlyCandidate returns (bool) {
+    function retireMember() public override onlyCandidate returns (bool) {
         return committee.retireMember();
     }
     
@@ -116,6 +116,7 @@ contract Candidate is Ownable, ERC165 {
         string calldata _comment
     )
         public
+        override
         onlyCandidate
     {
         committee.castVote(_agendaID, _vote, _comment);
@@ -123,6 +124,7 @@ contract Candidate is Ownable, ERC165 {
 
     function claimActivityReward()
         public
+        override
         onlyCandidate
     {
         address receiver;
@@ -138,20 +140,22 @@ contract Candidate is Ownable, ERC165 {
 
     /// @notice Checks whether this contract is a candidate contract
     /// @return Whether or not this contract is a candidate contract
-    function isCandidateContract() public view returns (bool) {
+    function isCandidateContract() public view override returns (bool) {
         return true;
     }
 
-    function operator() public view returns (address) { return candidate; }
-    function isLayer2() public view returns (bool) { return true; }
-    function currentFork() public view returns (uint) { return 1; }
-    function lastEpoch(uint forkNumber) public view returns (uint) { return 1; }
+    function operator() public view override returns (address) { return candidate; }
+    function isLayer2() public view override returns (bool) { return true; }
+    function currentFork() public view override returns (uint) { return 1; }
+    function lastEpoch(uint forkNumber) public view override returns (uint) { return 1; }
+    function changeOperator(address _operator) external override { }
 
     /// @notice Retrieves the total staked balance on this candidate
     /// @return totalsupply Total staked amount on this candidate
     function totalStaked()
         public
         view
+        override
         returns (uint256 totalsupply)
     {
         address coinage = _getCoinageToken();
@@ -167,6 +171,7 @@ contract Candidate is Ownable, ERC165 {
     )
         public
         view
+        override
         returns (uint256 amount)
     {
         address coinage = _getCoinageToken();

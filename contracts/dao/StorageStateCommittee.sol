@@ -1,41 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
+import { IStorageStateCommittee } from "../interfaces/IStorageStateCommittee.sol";
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
-import { IDAOVault2 } from "../interfaces/IDAOVault2.sol";
+import { IDAOVault } from "../interfaces/IDAOVault.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
 
-contract StorageStateCommittee {
+contract StorageStateCommittee is IStorageStateCommittee {
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }
     enum AgendaResult { UNDEFINED, ACCEPT, REJECT, DISMISS }
 
-    struct CandidateInfo {
-        address candidateContract;
-        uint memberJoinedTime;
-        uint indexMembers;
-        uint256 rewardPeriod;
-        uint256 claimedTimestamp;
-    }
-    
-    address public ton;
-    IDAOVault2 public daoVault;
-    IDAOAgendaManager public agendaManager;
-    ICandidateFactory public candidateFactory;
-    ILayer2Registry public layer2Registry;
-    ISeigManager public seigManager;
+    address public override ton;
+    IDAOVault public override daoVault;
+    IDAOAgendaManager public override agendaManager;
+    ICandidateFactory public override candidateFactory;
+    ILayer2Registry public override layer2Registry;
+    ISeigManager public override seigManager;
 
-    address[] public candidates;
-    address[] public members;
-    uint256 public maxMember;
+    address[] public override candidates;
+    address[] public override members;
+    uint256 public override maxMember;
 
     // candidate EOA => candidate information
-    mapping(address => CandidateInfo) public candidateInfos;
-    uint256 public quorum;
+    mapping(address => CandidateInfo) internal _candidateInfos;
+    uint256 public override quorum;
 
-    uint256 public activityRewardPerSecond;
+    uint256 public override activityRewardPerSecond;
 
     modifier validAgendaManager() {
         require(address(agendaManager) != address(0), "StorageStateCommittee: AgendaManager is zero");
@@ -68,12 +62,16 @@ contract StorageStateCommittee {
         _;
     }
     
-    function isMember(address _candidate) public view returns (bool) {
-        return candidateInfos[_candidate].memberJoinedTime > 0;
+    function isMember(address _candidate) public view override returns (bool) {
+        return _candidateInfos[_candidate].memberJoinedTime > 0;
     }
 
-    function candidateContract(address _candidate) public view returns (address) {
-        return candidateInfos[_candidate].candidateContract;
+    function candidateContract(address _candidate) public view override returns (address) {
+        return _candidateInfos[_candidate].candidateContract;
+    }
+
+    function candidateInfos(address _candidate) external override returns (CandidateInfo memory) {
+        return _candidateInfos[_candidate];
     }
 
     /*function getCandidate() public view returns (address) {
