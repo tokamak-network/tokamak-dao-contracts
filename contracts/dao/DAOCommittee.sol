@@ -22,8 +22,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
     struct AgendaCreatingData {
         address[] target;
-        uint256 noticePeriodSeconds;
-        uint256 votingPeriodSeconds;
+        uint128 noticePeriodSeconds;
+        uint128 votingPeriodSeconds;
         bytes[] functionBytecode;
     }
 
@@ -39,8 +39,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address indexed from,
         uint256 indexed id,
         address[] targets,
-        uint256 noticePeriodSeconds,
-        uint256 votingPeriodSeconds
+        uint128 noticePeriodSeconds,
+        uint128 votingPeriodSeconds
     );
 
     event AgendaVoteCasted(
@@ -314,7 +314,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address prevMember = members[_memberIndex];
         address prevMemberContract = candidateContract(prevMember);
 
-        candidateInfo.memberJoinedTime = block.timestamp;
+        candidateInfo.memberJoinedTime = uint128(block.timestamp);
         candidateInfo.indexMembers = _memberIndex;
 
         members[_memberIndex] = newMember;
@@ -331,7 +331,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
         CandidateInfo storage prevCandidateInfo = _candidateInfos[prevMember];
         prevCandidateInfo.indexMembers = 0;
-        prevCandidateInfo.rewardPeriod = prevCandidateInfo.rewardPeriod.add(block.timestamp.sub(prevCandidateInfo.memberJoinedTime));
+        prevCandidateInfo.rewardPeriod = uint128(uint256(prevCandidateInfo.rewardPeriod).add(block.timestamp.sub(prevCandidateInfo.memberJoinedTime)));
         prevCandidateInfo.memberJoinedTime = 0;
 
         emit ChangedMember(_memberIndex, prevMember, newMember);
@@ -345,7 +345,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = _candidateInfos[candidate];
         members[candidateInfo.indexMembers] = address(0);
-        candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
+        candidateInfo.rewardPeriod = uint128(uint256(candidateInfo.rewardPeriod).add(block.timestamp.sub(candidateInfo.memberJoinedTime)));
         candidateInfo.memberJoinedTime = 0;
 
         uint256 prevIndex = candidateInfo.indexMembers;
@@ -416,7 +416,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             members[_reducingMemberIndex] = tailmember;
         }
         reducingCandidate.indexMembers = 0;
-        reducingCandidate.rewardPeriod = reducingCandidate.rewardPeriod.add(block.timestamp.sub(reducingCandidate.memberJoinedTime));
+        reducingCandidate.rewardPeriod = uint128(uint256(reducingCandidate.rewardPeriod).add(block.timestamp.sub(reducingCandidate.memberJoinedTime)));
         reducingCandidate.memberJoinedTime = 0;
 
         members.pop();
@@ -618,7 +618,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         require(amount > 0, "DAOCommittee: you don't have claimable ton");
 
         daoVault.claimTON(_receiver, amount);
-        candidateInfo.claimedTimestamp = block.timestamp;
+        candidateInfo.claimedTimestamp = uint128(block.timestamp);
         candidateInfo.rewardPeriod = 0;
 
         emit ClaimedActivityReward(candidate, _receiver, amount);
@@ -688,7 +688,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         returns (AgendaCreatingData memory data)
     {
         (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
-            abi.decode(input, (address[], uint256, uint256, bytes[]));
+            abi.decode(input, (address[], uint128, uint128, bytes[]));
     }
 
     function payCreatingAgendaFee(address _creator) internal {
@@ -701,8 +701,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function _createAgenda(
         address _creator,
         address[] memory _targets,
-        uint256 _noticePeriodSeconds,
-        uint256 _votingPeriodSeconds,
+        uint128 _noticePeriodSeconds,
+        uint128 _votingPeriodSeconds,
         bytes[] memory _functionBytecodes
     )
         internal
