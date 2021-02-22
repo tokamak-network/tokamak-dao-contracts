@@ -191,10 +191,11 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         onlyOwner
     {
         require(maxMember < _newMaxMember, "DAOCommittee: You have to call decreaseMaxMember to decrease");
-        emit ChangedSlotMaximum(maxMember, _newMaxMember);
+        uint256 prevMaxMember = maxMember;
         maxMember = _newMaxMember;
         fillMemberSlot();
         setQuorum(_quorum);
+        emit ChangedSlotMaximum(prevMaxMember, _newMaxMember);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -340,9 +341,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
 
-        emit ChangedMember(candidateInfo.indexMembers, candidate, address(0));
-
+        uint256 prevIndex = candidateInfo.indexMembers;
         candidateInfo.indexMembers = 0;
+        emit ChangedMember(prevIndex, candidate, address(0));
+
         return true;
     }
 
