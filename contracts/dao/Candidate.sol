@@ -158,9 +158,8 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         override
         returns (uint256 totalsupply)
     {
-        address coinage = _getCoinageToken();
-        require(coinage != address(0), "Candidate: coinage is zero");
-        return IERC20(coinage).totalSupply();
+        IERC20 coinage = _getCoinageToken();
+        return coinage.totalSupply();
     }
 
     /// @notice Retrieves the staked balance of the account on this candidate
@@ -174,12 +173,11 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         override
         returns (uint256 amount)
     {
-        address coinage = _getCoinageToken();
-        require(coinage != address(0), "Candidate: coinage is zero");
-        return IERC20(coinage).balanceOf(_account);
+        IERC20 coinage = _getCoinageToken();
+        return coinage.balanceOf(_account);
     }
 
-    function _getCoinageToken() internal view returns (address) {
+    function _getCoinageToken() internal view returns (IERC20) {
         address c;
         if (isLayer2Candidate) {
             c = candidate;
@@ -187,6 +185,8 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
             c = address(this);
         }
 
-        return seigManager.coinages(c);
+        require(c != address(0), "Candidate: coinage is zero");
+
+        return IERC20(seigManager.coinages(c));
     }
 }
