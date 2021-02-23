@@ -345,6 +345,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function retireMember() onlyMemberContract external override returns (bool) {
         address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = _candidateInfos[candidate];
+        require(
+            candidateInfo.candidateContract == msg.sender,
+            "DAOCommittee: invalid candidate contract"
+        );
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.rewardPeriod = uint128(uint256(candidateInfo.rewardPeriod).add(block.timestamp.sub(candidateInfo.memberJoinedTime)));
         candidateInfo.memberJoinedTime = 0;
@@ -533,6 +537,11 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         validAgendaManager
     {
         address candidate = ICandidate(msg.sender).candidate();
+        CandidateInfo storage candidateInfo = _candidateInfos[candidate];
+        require(
+            candidateInfo.candidateContract == msg.sender,
+            "DAOCommittee: invalid candidate contract"
+        );
         
         agendaManager.castVote(
             _agendaID,
@@ -640,6 +649,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function claimActivityReward(address _receiver) external override {
         address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = _candidateInfos[candidate];
+        require(
+            candidateInfo.candidateContract == msg.sender,
+            "DAOCommittee: invalid candidate contract"
+        );
 
         uint256 amount = getClaimableActivityReward(candidate);
         require(amount > 0, "DAOCommittee: you don't have claimable ton");
