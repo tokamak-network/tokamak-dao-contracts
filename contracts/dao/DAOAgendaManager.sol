@@ -232,6 +232,8 @@ contract DAOAgendaManager is Ownable {
         public
         onlyOwner
     {
+        require(_agendaID < agendas.length, "DAOAgendaManager: _agendaID is invalid.");
+
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
         agenda.result = _result;
 
@@ -292,6 +294,7 @@ contract DAOAgendaManager is Ownable {
     }
     
     function isVoter(uint256 _agendaID, address _candidate) public view returns (bool) {
+        require(_agendaID < agendas.length, "DAOAgendaManager: _agendaID is invalid.");
         require(_candidate != address(0), "DAOAgendaManager: user address is zero");
         return voterInfos[_agendaID][_candidate].isVoter;
     }
@@ -359,6 +362,8 @@ contract DAOAgendaManager is Ownable {
             bytes[] memory functionBytecode
         )
     {
+        require(_agendaID < agendas.length, "DAOAgendaManager: _agendaID is invalid.");
+
         LibAgenda.AgendaExecutionInfo storage agenda = executionInfos[_agendaID];
         return (
             agenda.targets,
@@ -367,6 +372,8 @@ contract DAOAgendaManager is Ownable {
     }
 
     function isVotableStatus(uint256 _agendaID) public view returns (bool) {
+        require(_agendaID < agendas.length, "DAOAgendaManager: _agendaID is invalid.");
+
         LibAgenda.Agenda storage agenda = agendas[_agendaID];
 
         return block.timestamp <= agenda.votingEndTimestamp ||
