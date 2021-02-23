@@ -100,13 +100,17 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         _;
     }
 
+    modifier nonZero(address _addr) {
+        require(_addr != address(0), "DAOCommittee: zero address");
+        _;
+    }
+
     //////////////////////////////////////////////////////////////////////
     // setters
 
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
-    function setSeigManager(address _seigManager) external override onlyOwner {
-        require(_seigManager != address(0), "zero address");
+    function setSeigManager(address _seigManager) external override onlyOwner nonZero(_seigManager) {
         seigManager = ISeigManager(_seigManager);
     }
      
@@ -120,8 +124,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         external
         override
         onlyOwner
+        nonZero(_seigManager)
     {
-        require(_seigManager != address(0), "zero address");
         for (uint256 i = 0; i < _candidateContracts.length; i++) {
             ICandidate(_candidateContracts[i]).setSeigManager(_seigManager);
         }
@@ -137,8 +141,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         external
         override
         onlyOwner
+        nonZero(_committee)
     {
-        require(_committee != address(0), "zero address");
         for (uint256 i = 0; i < _candidateContracts.length; i++) {
             ICandidate(_candidateContracts[i]).setCommittee(_committee);
         }
@@ -146,36 +150,31 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
     /// @notice Set DAOVault2 contract address
     /// @param _daoVault New DAOVault2 contract address
-    function setDaoVault(address _daoVault) external override onlyOwner {
-        require(_daoVault != address(0), "zero address");
+    function setDaoVault(address _daoVault) external override onlyOwner nonZero(_daoVault) {
         daoVault = IDAOVault2(_daoVault);
     }
 
     /// @notice Set Layer2Registry contract address
     /// @param _layer2Registry New Layer2Registry contract address
-    function setLayer2Registry(address _layer2Registry) external override onlyOwner {
-        require(_layer2Registry != address(0), "zero address");
+    function setLayer2Registry(address _layer2Registry) external override onlyOwner nonZero(_layer2Registry) {
         layer2Registry = ILayer2Registry(_layer2Registry);
     }
 
     /// @notice Set DAOAgendaManager contract address
     /// @param _agendaManager New DAOAgendaManager contract address
-    function setAgendaManager(address _agendaManager) external override onlyOwner {
-        require(_agendaManager != address(0), "zero address");
+    function setAgendaManager(address _agendaManager) external override onlyOwner nonZero(_agendaManager) {
         agendaManager = IDAOAgendaManager(_agendaManager);
     }
 
     /// @notice Set CandidateFactory contract address
     /// @param _candidateFactory New CandidateFactory contract address
-    function setCandidateFactory(address _candidateFactory) external override onlyOwner {
-        require(_candidateFactory != address(0), "zero address");
+    function setCandidateFactory(address _candidateFactory) external override onlyOwner nonZero(_candidateFactory) {
         candidateFactory = ICandidateFactory(_candidateFactory);
     }
 
     /// @notice Set TON contract address
     /// @param _ton New TON contract address
-    function setTon(address _ton) external override onlyOwner {
-        require(_ton != address(0), "zero address");
+    function setTon(address _ton) external override onlyOwner nonZero(_ton) {
         ton = _ton;
     }
 
