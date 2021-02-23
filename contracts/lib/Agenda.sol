@@ -36,6 +36,8 @@ library LibAgenda {
     struct AgendaExecutionInfo {
         address[] targets;
         bytes[] functionBytecodes;
+        bool atomicExecute;
+        uint256 executeStartFrom;
     }
 
     /*function getAgenda(Agenda[] storage agendas, uint256 index) public view returns (Agenda storage agenda) {

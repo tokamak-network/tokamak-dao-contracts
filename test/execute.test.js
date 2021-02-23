@@ -536,9 +536,9 @@ describe('Test 1', function () {
     voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(vote));
 
     const agenda2 = await agendaManager.agendas(_agendaID);
-    agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(vote === VOTE_YES ? toBN(1) : toBN(0)));
-    agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(vote === VOTE_NO ? toBN(1) : toBN(0)));
-    agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(toBN(beforeCountingYes).add(vote === VOTE_YES ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(toBN(beforeCountingNo).add(vote === VOTE_NO ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(toBN(beforeCountingAbstain).add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
   }
 
   async function getCandidateContract(candidate) {
@@ -885,8 +885,8 @@ describe('Test 1', function () {
               );
 
               const param = web3.eth.abi.encodeParameters(
-                ["address[]", "uint256", "uint256", "bytes[]"],
-                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+                ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
               );
 
               const agendaFee = await agendaManager.createAgendaFees();
@@ -959,8 +959,8 @@ describe('Test 1', function () {
             }
 
             const param = web3.eth.abi.encodeParameters(
-              ["address[]", "uint256", "uint256", "bytes[]"],
-              [targets, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+              ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+              [targets, noticePeriod.toString(), votingPeriod.toString(), true, functionBytecode]
             );
 
             const agendaFee = await agendaManager.createAgendaFees();

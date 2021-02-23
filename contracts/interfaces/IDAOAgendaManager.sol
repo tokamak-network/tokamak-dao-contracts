@@ -20,6 +20,7 @@ interface IDAOAgendaManager  {
         address[] memory _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
+        bool _atomicExecute,
         bytes[] calldata _functionBytecodes
     )
         external
@@ -29,6 +30,7 @@ interface IDAOAgendaManager  {
     function setResult(uint256 _agendaID, LibAgenda.AgendaResult _result) external;
     function setStatus(uint256 _agendaID, LibAgenda.AgendaStatus _status) external;
     function endAgendaVoting(uint256 _agendaID) external;
+    function setExecutedCount(uint256 _agendaID, uint256 _count) external;
      
     // -- view functions
     function isVoter(uint256 _agendaID, address _user) external view returns (bool);
@@ -47,7 +49,9 @@ interface IDAOAgendaManager  {
         view
         returns(
             address[] memory target,
-            bytes[] memory functionBytecode
+            bytes[] memory functionBytecode,
+            bool atomicExecute,
+            uint256 executeStartFrom
         );
     function isVotableStatus(uint256 _agendaID) external view returns (bool);
     function getVotingCount(uint256 _agendaID)
