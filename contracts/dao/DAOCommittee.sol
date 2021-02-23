@@ -323,6 +323,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
     function retireMember() onlyMemberContract public returns (bool) {
         address candidate = ICandidate(msg.sender).candidate();
         CandidateInfo storage candidateInfo = candidateInfos[candidate];
+        require(
+            candidateInfo.candidateContract == msg.sender,
+            "DAOCommittee: invalid candidate contract"
+        );
         members[candidateInfo.indexMembers] = address(0);
         candidateInfo.rewardPeriod = candidateInfo.rewardPeriod.add(block.timestamp.sub(candidateInfo.memberJoinedTime));
         candidateInfo.memberJoinedTime = 0;
