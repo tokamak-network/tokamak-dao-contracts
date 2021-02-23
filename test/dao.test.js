@@ -694,8 +694,8 @@ describe('Test 1', function () {
             const functionBytecode = selector.concat(data);
 
             const param = web3.eth.abi.encodeParameters(
-              ["address[]", "uint256", "uint256", "bytes[]"],
-              [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+              ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+              [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
             );
 
             const beforeBalance = await ton.balanceOf(user1);
@@ -793,8 +793,8 @@ describe('Test 1', function () {
           const functionBytecode = selector.concat(data);
 
           const param = web3.eth.abi.encodeParameters(
-            ["address[]", "uint256", "uint256", "bytes[]"],
-            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+            ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
           );
 
           const beforeBalance = await ton.balanceOf(user1);
@@ -852,6 +852,116 @@ describe('Test 1', function () {
           agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_DISMISSED));
           agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_ENDED));
           (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+        });
+      });
+
+      describe("non-atomic agenda", async function () {
+        let agendaID;
+        it('create new agenda', async function () {
+          const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+          const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
+
+          let targets = [];
+          let functionBytecodes = [];
+          for (let i = 0; i < 10; i++) {
+            const selector1 = web3.eth.abi.encodeFunctionSignature("setMinimumNoticePeriodSeconds(uint256)");
+            const newMinimumNoticePeriod = 1000000 * (i+1);
+            const data1 = padLeft(newMinimumNoticePeriod.toString(16), 64);
+            const functionBytecode1 = selector1.concat(data1);
+            targets.push(agendaManager.address);
+            functionBytecodes.push(functionBytecode1);
+          }
+
+          const param = web3.eth.abi.encodeParameters(
+            ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+            [targets,
+                noticePeriod.toString(),
+                votingPeriod.toString(),
+                false,
+                functionBytecodes
+            ]
+          );
+
+          const beforeBalance = await ton.balanceOf(user1);
+          const agendaFee = await agendaManager.createAgendaFees();
+          agendaFee.should.be.bignumber.gt(toBN("0"));
+
+          // create agenda
+          await ton.approveAndCall(
+            committeeProxy.address,
+            agendaFee,
+            param,
+            {from: user1}
+          );
+          const afterBalance = await ton.balanceOf(user1);
+          afterBalance.should.be.bignumber.lt(beforeBalance);
+          beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
+
+          agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+          //const executionInfo = await agendaManager.executionInfos(agendaID);
+          const executionInfo = await agendaManager.getExecutionInfo(agendaID);
+          //executionInfo[0][0].should.be.equal(agendaManager.address);
+          //executionInfo[1][0].should.be.equal(functionBytecode1);
+        });
+
+        it('increase block time and check votable', async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+          await time.increaseTo(noticeEndTimestamp);
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(true);
+        });
+
+        it(`cast vote`, async function () {
+          await castVote(agendaID, candidates[0], VOTE_YES);
+          await castVote(agendaID, candidates[1], VOTE_YES);
+        });
+
+        it("check vote result/status", async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_ACCEPTED));
+          agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
+        });
+
+        it('increase block time', async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+          await time.increaseTo(toBN(noticeEndTimestamp).add(toBN("1")));
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+        });
+
+        it("execute", async function () {
+          const beforeValue = await agendaManager.minimumNoticePeriodSeconds();
+          const executeTx = await committeeProxy.executeAgenda(agendaID, {gas: 180000});
+          const afterValue = await agendaManager.minimumNoticePeriodSeconds();
+          beforeValue.should.be.bignumber.not.equal(afterValue);
+
+          const afterAgenda = await agendaManager.agendas(agendaID);
+          afterAgenda[AGENDA_INDEX_EXECUTED].should.be.equal(false);
+          //afterAgenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.gt(toBN("0"));
+        });
+
+        it("check executed result/status", async function () {
+          const executedInfo = await agendaManager.getExecutionInfo(agendaID);
+          toBN(executedInfo.executeStartFrom).should.be.bignumber.lt(toBN("10"));
+          (await agendaManager.minimumNoticePeriodSeconds()).should.be.bignumber.lt(toBN("10000000"));
+        });
+
+        it("execute again", async function () {
+          const beforeValue = await agendaManager.minimumNoticePeriodSeconds();
+          const executeTx = await committeeProxy.executeAgenda(agendaID, {gas: 180000});
+          const afterValue = await agendaManager.minimumNoticePeriodSeconds();
+          beforeValue.should.be.bignumber.not.equal(afterValue);
+
+          const afterAgenda = await agendaManager.agendas(agendaID);
+          const test = await agendaManager.getExecutionInfo(agendaID);
+          afterAgenda[AGENDA_INDEX_EXECUTED].should.be.equal(true);
+          afterAgenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.gt(toBN("0"));
+        });
+
+        it("check executed result/status", async function () {
+          const executedInfo = await agendaManager.getExecutionInfo(agendaID);
+          toBN(executedInfo.executeStartFrom).should.be.bignumber.equal(toBN("10"));
+          (await agendaManager.minimumNoticePeriodSeconds()).should.be.bignumber.equal(toBN("10000000"));
         });
       });
     });

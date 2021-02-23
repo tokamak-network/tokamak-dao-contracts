@@ -25,6 +25,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint128 noticePeriodSeconds;
         uint128 votingPeriodSeconds;
         address[] target;
+        bool atomicExecute;
         bytes[] functionBytecode;
     }
 
@@ -41,7 +42,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint256 indexed id,
         address[] targets,
         uint128 noticePeriodSeconds,
-        uint128 votingPeriodSeconds
+        uint128 votingPeriodSeconds,
+        bool atomicExecute
     );
 
     event AgendaVoteCasted(
@@ -404,6 +406,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             agendaData.target,
             agendaData.noticePeriodSeconds,
             agendaData.votingPeriodSeconds,
+            agendaData.atomicExecute,
             agendaData.functionBytecode
         );
 
@@ -519,13 +522,33 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             "DAOCommittee: can not execute the agenda"
         );
         
-        (address[] memory target, bytes[] memory functionBytecode) = agendaManager.getExecutionInfo(_agendaID);
-       
-        agendaManager.setExecutedAgenda(_agendaID);
+        (address[] memory target,
+             bytes[] memory functionBytecode,
+             bool atomicExecute,
+             uint256 executeStartFrom
+         ) = agendaManager.getExecutionInfo(_agendaID);
 
-        for (uint256 i = 0; i < target.length; i++) {
-            (bool success, ) = address(target[i]).call(functionBytecode[i]);
-            require(success, "DAOCommittee: Failed to execute the agenda");
+        if (atomicExecute) {
+            agendaManager.setExecutedAgenda(_agendaID);
+            for (uint256 i = 0; i < target.length; i++) {
+                (bool success, ) = address(target[i]).call(functionBytecode[i]);
+                require(success, "DAOCommittee: Failed to execute the agenda");
+            }
+        } else {
+            uint256 succeeded = 0;
+            for (uint256 i = executeStartFrom; i < target.length; i++) {
+                bool success = _call(target[i], functionBytecode[i].length, functionBytecode[i]);
+                if (success) {
+                    succeeded = succeeded.add(1);
+                } else {
+                    break;
+                }
+            }
+
+            agendaManager.setExecutedCount(_agendaID, succeeded);
+            if (executeStartFrom.add(succeeded) == target.length) {
+                agendaManager.setExecutedAgenda(_agendaID);
+            }
         }
 
         emit AgendaExecuted(_agendaID, target);
@@ -638,8 +661,8 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         view
         returns (AgendaCreatingData memory data)
     {
-        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.functionBytecode) = 
-            abi.decode(input, (address[], uint128, uint128, bytes[]));
+        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.atomicExecute, data.functionBytecode) = 
+            abi.decode(input, (address[], uint128, uint128, bool, bytes[]));
     }
 
     function payCreatingAgendaFee(address _creator) internal {
@@ -654,6 +677,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address[] memory _targets,
         uint128 _noticePeriodSeconds,
         uint128 _votingPeriodSeconds,
+        bool _atomicExecute,
         bytes[] memory _functionBytecodes
     )
         internal
@@ -667,6 +691,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             _targets,
             _noticePeriodSeconds,
             _votingPeriodSeconds,
+            _atomicExecute,
             _functionBytecodes
         );
           
@@ -675,10 +700,21 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             agendaID,
             _targets,
             _noticePeriodSeconds,
-            _votingPeriodSeconds
+            _votingPeriodSeconds,
+            _atomicExecute
         );
 
         return agendaID;
+    }
+
+    function _call(address target, uint256 paramLength, bytes memory param) internal returns (bool) {
+        bool result;
+        assembly {
+            let data := add(param, 32)
+            result := call(sub(gas(), 40000), target, 0, data, paramLength, 0, 0)
+        }
+
+        return result;
     }
 
     function isCandidate(address _candidate) external view override returns (bool) {

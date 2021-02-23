@@ -124,6 +124,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         address[] calldata _targets,
         uint256 _noticePeriodSeconds,
         uint256 _votingPeriodSeconds,
+        bool _atomicExecute,
         bytes[] calldata _functionBytecodes
     )
         external
@@ -152,6 +153,8 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         _agendas.push(p);
 
         LibAgenda.AgendaExecutionInfo storage executionInfo = _executionInfos[agendaID];
+        executionInfo.atomicExecute = _atomicExecute;
+        executionInfo.executeStartFrom = 0;
         for (uint256 i = 0; i < _targets.length; i++) {
             executionInfo.targets.push(_targets[i]);
             executionInfo.functionBytecodes.push(_functionBytecodes[i]);
@@ -372,14 +375,23 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         validAgenda(_agendaID)
         returns(
             address[] memory target,
-            bytes[] memory functionBytecode
+            bytes[] memory functionBytecode,
+            bool atomicExecute,
+            uint256 executeStartFrom
         )
     {
         LibAgenda.AgendaExecutionInfo storage agenda = _executionInfos[_agendaID];
         return (
             agenda.targets,
-            agenda.functionBytecodes
+            agenda.functionBytecodes,
+            agenda.atomicExecute,
+            agenda.executeStartFrom
         );
+    }
+
+    function setExecutedCount(uint256 _agendaID, uint256 _count) external override {
+        LibAgenda.AgendaExecutionInfo storage agenda = _executionInfos[_agendaID];
+        agenda.executeStartFrom = agenda.executeStartFrom.add(_count);
     }
 
     function isVotableStatus(uint256 _agendaID) public view override validAgenda(_agendaID) returns (bool) {
