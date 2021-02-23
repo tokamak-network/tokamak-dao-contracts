@@ -323,15 +323,6 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         emit AgendaStatusChanged(_agendaID, uint256(LibAgenda.AgendaStatus.NOTICE), uint256(LibAgenda.AgendaStatus.VOTING));
     }
     
-    function checkAndEndVoting(uint256 _agendaID) internal validAgenda(_agendaID) {
-        LibAgenda.Agenda storage agenda = _agendas[_agendaID];
-
-        require(
-            agenda.status == LibAgenda.AgendaStatus.VOTING,
-            "DAOAgendaManager: status is not voting."
-        );
-    }
-
     function isVoter(uint256 _agendaID, address _candidate) public view override validAgenda(_agendaID) returns (bool) {
         require(_candidate != address(0), "DAOAgendaManager: user address is zero");
         return _voterInfos[_agendaID][_candidate].isVoter;
