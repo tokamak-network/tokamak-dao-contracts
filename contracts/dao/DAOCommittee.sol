@@ -299,10 +299,6 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             "DAOCommittee: sender is not a candidate contract"
         );
         require(
-            candidateInfo.candidateContract != address(0),
-            "DAOCommittee: The address is not a candidate"
-        );
-        require(
             candidateInfo.candidateContract == msg.sender,
             "DAOCommittee: invalid candidate contract"
         );
@@ -575,9 +571,10 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     /// @return Whether or not the execution succeeded
     function updateSeigniorages(address[] calldata _candidates) external override returns (bool) {
         for (uint256 i = 0; i < _candidates.length; i++) {
-            bool result;
-            result = updateSeigniorage(_candidates[i]);
-            require(result, "DAOCommittee: failed to update seigniorage");
+            require(
+                updateSeigniorage(_candidates[i]),
+                "DAOCommittee: failed to update seigniorage"
+            );
         }
 
         return true;
