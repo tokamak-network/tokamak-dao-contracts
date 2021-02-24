@@ -37,17 +37,17 @@ contract StorageStateCommittee is IStorageStateCommittee {
     }
     
     modifier validCommitteeL2Factory() {
-        require(address(candidateFactory) != address(0), "StorageStateCommittee: unvalid CommitteeL2Factory");
+        require(address(candidateFactory) != address(0), "StorageStateCommittee: invalid CommitteeL2Factory");
         _;
     }
 
     modifier validLayer2Registry() {
-        require(address(layer2Registry) != address(0), "StorageStateCommittee: unvalid Layer2Registry");
+        require(address(layer2Registry) != address(0), "StorageStateCommittee: invalid Layer2Registry");
         _;
     }
 
     modifier validSeigManager() {
-        require(address(seigManager) != address(0), "StorageStateCommittee: unvalid SeigManagere");
+        require(address(seigManager) != address(0), "StorageStateCommittee: invalid SeigManagere");
         _;
     }
 
