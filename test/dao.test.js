@@ -642,6 +642,16 @@ describe('Test 1', function () {
     });
   });
 
+  describe('Quorum', function () {
+    it('quorum must exceed half of maxMember', async function () {
+        (await committeeProxy.maxMember()).should.be.bignumber.gt(toBN("2"));
+        await expectRevert(
+          committeeProxy.setQuorum(1),
+          "DAOCommittee: invalid quorum"
+        );
+    });
+  });
+
   describe('Agenda behavior', function () {
     describe('Create', function () {
       const votesList = [

@@ -400,7 +400,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl {
         onlyOwner
         validAgendaManager
     {
-        require(_quorum > 0, "DAOCommittee: invalid quorum");
+        require(_quorum > maxMember.div(2), "DAOCommittee: invalid quorum");
         require(_quorum <= maxMember, "DAOCommittee: quorum exceed max member");
         quorum = _quorum;
         emit QuorumChanged(quorum);
