@@ -14,8 +14,40 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
+const {
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_PENDING,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE
+} = require('../utils/constants.js');
+
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -31,7 +63,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 const EtherToken = contract.fromArtifact('EtherToken');
 const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -58,7 +90,7 @@ const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
+/*const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
 const CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME = 1;
 const CANDIDATE_INFO_INDEX_MEMBER_INDEX = 2;
 const CANDIDATE_INFO_INDEX_REWARD_PERIOD = 3;
@@ -97,7 +129,7 @@ const AGENDA_RESULT_DISMISSED = 3;
 
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
+const VOTER_INFO_VOTE = 2;*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -120,7 +152,7 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 
 const owner= defaultSender;
 let daoCommitteeProxy;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -132,7 +164,7 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
@@ -146,13 +178,13 @@ describe('Test 1', function () {
       registry,
       depositManager,
       coinageFactory,
-      daoVault,
+      oldDaoVault,
       seigManager,
       powerton
     ] = await deployPlasmaEvmContracts(owner);*/
 
     /*[
-      daoVault2,
+      daoVault,
       agendaManager,
       candidateFactory,
       committee,
@@ -247,7 +279,7 @@ describe('Test 1', function () {
     factory = await CoinageFactory.new();
 
     currentTime = await time.latest();
-    daoVault = await DAOVault.new(wton.address, currentTime);
+    oldDaoVault = await OldDAOVaultMock.new(wton.address, currentTime);
     seigManager = await SeigManager.new(
       ton.address,
       wton.address,
@@ -265,7 +297,7 @@ describe('Test 1', function () {
 
     await seigManager.setPowerTON(powerton.address);
     await powerton.start();
-    await seigManager.setDao(daoVault.address);
+    await seigManager.setDao(oldDaoVault.address);
     await wton.addMinter(seigManager.address);
     await ton.addMinter(wton.address);
     
@@ -283,7 +315,7 @@ describe('Test 1', function () {
     seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    await wton.mint(oldDaoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
 
@@ -295,8 +327,8 @@ describe('Test 1', function () {
     if(debugLog) console.log('ton :', ton.address) ;
 
     //===================================================
-    daoVault2 = await DAOVault2.new(ton.address, wton.address);
-    if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
+    daoVault = await DAOVault.new(ton.address, wton.address);
+    if(debugLog)  console.log('daoVault :', daoVault.address) ;
     //===================================================
     agendaManager = await DAOAgendaManager.new();
     if(debugLog)  console.log('agendaManager :', agendaManager.address) ;
@@ -315,7 +347,7 @@ describe('Test 1', function () {
       registry.address,
       agendaManager.address,
       candidateFactory.address,
-      daoVault2.address
+      daoVault.address
     );
     if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
    
@@ -336,13 +368,13 @@ describe('Test 1', function () {
     await committeeProxy.setActivityRewardPerSecond(toBN("1"));
     await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
     await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
-    await ton.mint(daoVault2.address, toBN("99999999999999999999999999999999999"));
-    await wton.mint(daoVault2.address, toBN("99999999999999999999999999999999999"));
+    await ton.mint(daoVault.address, toBN("99999999999999999999999999999999999"));
+    await wton.mint(daoVault.address, toBN("99999999999999999999999999999999999"));
 
     ////////////////////////////////////////////////////////////////////////
     // permissions
-    await daoVault2.approveTON(committeeProxy.address, toBN("9999999999999999999999999999"));
-    await daoVault2.approveWTON(committeeProxy.address, toBN("9999999999999999999999999999999999999"));
+    await daoVault.approveTON(committeeProxy.address, toBN("9999999999999999999999999999"));
+    await daoVault.approveWTON(committeeProxy.address, toBN("9999999999999999999999999999999999999"));
 
     await ton.addMinter(committeeProxy.address);
     await ton.transferOwnership(committeeProxy.address);
@@ -356,7 +388,7 @@ describe('Test 1', function () {
     await seigManager.transferOwnership(committeeProxy.address);
     await depositManager.transferOwnership(committeeProxy.address);
 
-    await daoVault2.transferOwnership(committeeProxy.address);
+    await daoVault.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     //await committee.transferOwnership(committeeProxy.address);
@@ -504,9 +536,9 @@ describe('Test 1', function () {
     voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(vote));
 
     const agenda2 = await agendaManager.agendas(_agendaID);
-    agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(vote === VOTE_YES ? toBN(1) : toBN(0)));
-    agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(vote === VOTE_NO ? toBN(1) : toBN(0)));
-    agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(toBN(beforeCountingYes).add(vote === VOTE_YES ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(toBN(beforeCountingNo).add(vote === VOTE_NO ? toBN(1) : toBN(0)));
+    agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(toBN(beforeCountingAbstain).add(vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
   }
 
   async function getCandidateContract(candidate) {
@@ -528,7 +560,7 @@ describe('Test 1', function () {
 
     describe(`Agendas`, async function () {
       let testCases;
-      const testContracts = ["TON", "WTON", "DepositManager", "SeigManager", "DAOCommitteeProxy", "DAOCommittee", "DAOVault2"];
+      const testContracts = ["TON", "WTON", "DepositManager", "SeigManager", "DAOCommitteeProxy", "DAOCommittee", "DAOVault"];
       testCases = [{
         name: "TON",
         functions: [{
@@ -558,11 +590,11 @@ describe('Test 1', function () {
         }, {
           sig: "transferFrom(address,address,uint256)",
           paramTypes: ["address", "address", "uint256"],
-          params: ["$DAOVault2", user1, "12345"]
+          params: ["$DAOVault", user1, "12345"]
         }, {
           sig: "burnFrom(address,uint256)",
           paramTypes: ["address", "uint256"],
-          params: ["$DAOVault2", "12345"]
+          params: ["$DAOVault", "12345"]
         }, {
           sig: "addMinter(address)",
           paramTypes: ["address"],
@@ -652,7 +684,7 @@ describe('Test 1', function () {
         }, {
           sig: "setDao(address)",
           paramTypes: ["address"],
-          params: ["$DAOVault2"]
+          params: ["$DAOVault"]
         }, {
           sig: "setDaoSeigRate(uint256)",
           paramTypes: ["uint256"],
@@ -709,7 +741,7 @@ describe('Test 1', function () {
           params: ["12345"]
         }]
       }, {
-        name: "DAOVault2",
+        name: "DAOVault",
         functions: [{
           sig: "approveTON(address,uint256)",
           paramTypes: ["address", "uint256"],
@@ -816,7 +848,7 @@ describe('Test 1', function () {
           Layer2Registry: registry,
           DAOCommitteeProxy: daoCommitteeProxy,
           DAOCommittee: committeeProxy,
-          DAOVault2: daoVault2
+          DAOVault: daoVault
         }
       });
 
@@ -853,8 +885,8 @@ describe('Test 1', function () {
               );
 
               const param = web3.eth.abi.encodeParameters(
-                ["address[]", "uint256", "uint256", "bytes[]"],
-                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+                ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+                [[testContract.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
               );
 
               const agendaFee = await agendaManager.createAgendaFees();
@@ -927,8 +959,8 @@ describe('Test 1', function () {
             }
 
             const param = web3.eth.abi.encodeParameters(
-              ["address[]", "uint256", "uint256", "bytes[]"],
-              [targets, noticePeriod.toString(), votingPeriod.toString(), functionBytecode]
+              ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+              [targets, noticePeriod.toString(), votingPeriod.toString(), true, functionBytecode]
             );
 
             const agendaFee = await agendaManager.createAgendaFees();

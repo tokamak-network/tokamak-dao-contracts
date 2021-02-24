@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
+pragma abicoder v2;
 
 import "./StorageStateCommittee.sol";
 //import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
@@ -7,7 +8,7 @@ import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 
 contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
-    address public _implementation;
+    address internal _implementation;
     bool public pauseProxy;
 
     event Upgraded(address indexed implementation);
@@ -28,15 +29,24 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         address _daoVault
     )
     {
+        require(
+            _ton != address(0)
+            || _impl != address(0)
+            || _seigManager != address(0)
+            || _layer2Registry != address(0)
+            || _agendaManager != address(0)
+            || _candidateFactory != address(0),
+            "DAOCommitteeProxy: input is zero"
+        );
         ton = _ton;
         _implementation = _impl;
         seigManager = ISeigManager(_seigManager);
         layer2Registry = ILayer2Registry(_layer2Registry);
         agendaManager = IDAOAgendaManager(_agendaManager);
         candidateFactory = ICandidateFactory(_candidateFactory);
-        daoVault = IDAOVault2(_daoVault);
+        daoVault = IDAOVault(_daoVault);
         quorum = 2;
-        activityRewardPerSecond = 1e18;
+        activityRewardPerSecond = 3170979198376458;
 
         _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -45,14 +55,15 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
 
     /// @notice Set pause state
     /// @param _pause true:pause or false:resume
-    function setProxyPause(bool _pause) onlyOwner public {
+    function setProxyPause(bool _pause) external onlyOwner {
         pauseProxy = _pause;
     }
 
     /// @notice Set implementation contract
     /// @param impl New implementation contract address
-    function upgradeTo(address impl) public onlyOwner {
-        require(_implementation != impl, "DAOCommitteeProxy: implementation address is zero");
+    function upgradeTo(address impl) external onlyOwner {
+        require(_implementation != address(0), "DAOCommitteeProxy: input is zero");
+        require(_implementation != impl, "DAOCommitteeProxy: The input address is same as the state");
         _implementation = impl;
         emit Upgraded(impl);
     }
@@ -67,7 +78,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
 
     function _fallback() internal {
         address _impl = implementation();
-        require(_impl != address(0) && pauseProxy == false, "DAOCommitteeProxy: impl is zero OR proxy is false");
+        require(_impl != address(0) && !pauseProxy, "DAOCommitteeProxy: impl is zero OR proxy is false");
 
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly

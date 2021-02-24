@@ -13,7 +13,7 @@ const DepositManager = artifacts.require('DepositManager');
 const SeigManager = artifacts.require('SeigManager');
 const CoinageFactory = artifacts.require('CoinageFactory');
 const PowerTON = artifacts.require('PowerTON');
-const DAOVault = artifacts.require('DAOVault');
+const OldDAOVaultMock = artifacts.require('OldDAOVaultMock');
 
 // 1024 blocks
 // 93046 blocks (= 2 weeks)
@@ -128,10 +128,10 @@ module.exports = async function (deployer, network) {
       );
     }
 
-    daoVaultAddress = load(network, "DAOVault");
+    daoVaultAddress = load(network, "OldDAOVaultMock");
     if (daoVaultAddress === undefined) {
-      console.log("deploy DAOVault");
-      await deployer.deploy(DAOVault, wtonAddress, 1609416000)
+      console.log("deploy OldDAOVaultMock");
+      await deployer.deploy(OldDAOVaultMock, wtonAddress, 1609416000)
         .then((_daoVault) => {
           daoVault = _daoVault;
           daoVaultAddress = daoVault.address;
@@ -139,7 +139,7 @@ module.exports = async function (deployer, network) {
 
       save(
         network, {
-          name: "DAOVault",
+          name: "OldDAOVaultMock",
           address: daoVault.address
         }
       );
@@ -193,13 +193,17 @@ module.exports = async function (deployer, network) {
     }
 
     depositManager = await DepositManager.at(depositManagerAddress);
+    ton = await TON.at(tonAddress);
     wton = await WTON.at(wtonAddress);
     seigManager = await SeigManager.at(seigManagerAddress);
     await depositManager.setSeigManager(seigManagerAddress);
     await wton.setSeigManager(seigManagerAddress);
+    await wton.addMinter(seigManagerAddress);
+    await ton.addMinter(wtonAddress);
 
     await seigManager.setPowerTONSeigRate(toBN("100000000000000000000000000"));
     await seigManager.setDaoSeigRate(toBN("500000000000000000000000000"));
     await seigManager.setPseigRate(toBN("400000000000000000000000000"));
+    await seigManager.setMinimumAmount(toBN("1000000000000000000000000000000"));
   }
 };

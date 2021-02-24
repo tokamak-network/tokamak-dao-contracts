@@ -12,7 +12,7 @@ library LibAgenda {
     struct Voter {
         bool isVoter;
         bool hasVoted;
-        uint vote;
+        uint256 vote;
     }
 
     // counting abstainVotes yesVotes noVotes
@@ -22,6 +22,7 @@ library LibAgenda {
         uint256 votingPeriodInSeconds;
         uint256 votingStartedTimestamp;
         uint256 votingEndTimestamp;
+        uint256 executableLimitTimestamp;
         uint256 executedTimestamp;
         uint256 countingYes;
         uint256 countingNo;
@@ -35,9 +36,11 @@ library LibAgenda {
     struct AgendaExecutionInfo {
         address[] targets;
         bytes[] functionBytecodes;
+        bool atomicExecute;
+        uint256 executeStartFrom;
     }
 
-    /*function getAgenda(Agenda[] storage agendas, uint index) public view returns (Agenda storage agenda) {
+    /*function getAgenda(Agenda[] storage agendas, uint256 index) public view returns (Agenda storage agenda) {
         return agendas[index];
     }*/
 }

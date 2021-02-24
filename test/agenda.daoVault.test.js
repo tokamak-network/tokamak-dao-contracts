@@ -1,7 +1,6 @@
 const {
     defaultSender, accounts, contract, web3,
 } = require('@openzeppelin/test-environment');
-
 const {
   BN, constants, expectEvent, expectRevert, time, ether,
 } = require('@openzeppelin/test-helpers');
@@ -14,6 +13,8 @@ const { createCurrency, createCurrencyRatio } = require('@makerdao/currency');
 const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
+
+const DaoContracts = require('../utils/plasma_test_deploy.js');
 
 const {
   AGENDA_INDEX_CREATED_TIMESTAMP,
@@ -47,7 +48,6 @@ const {
   VOTER_INFO_VOTE
 } = require('../utils/constants.js');
 
-const DaoContracts = require('../utils/plasma_test_deploy.js');
 // dao-contracts
 const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
@@ -156,7 +156,7 @@ const TON_USER_STAKE_AMOUNT = _TON('10');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0;
 let debugLog=true;
@@ -168,19 +168,18 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
 //
 let noticePeriod, votingPeriod , agendaFee;
 let layer2s=[];
-let _committeeProxy, _newton , _newWton, _newLayer2 ;
+let _committeeProxy, _newton , _newWton ;
 let AbiObject, DaoContractsDeployed ;
 
 
-  describe('Agenda - Layer2Registry', function () {
-
+  describe('Agenda - DAOVault', function () {
       before(async function () {
           this.timeout(1000000);
 
@@ -200,6 +199,7 @@ let AbiObject, DaoContractsDeployed ;
           await layer2s[4].changeMember(2, {from: candidate3});
 
       });
+
       async function initializeContracts(){
 
           DaoContractsDeployed = new DaoContracts();
@@ -211,12 +211,12 @@ let AbiObject, DaoContractsDeployed ;
           registry = returnData.registry;
           depositManager = returnData.depositManager;
           factory = returnData.coinageFactory;
-          daoVault = returnData.daoVault;
+          oldDaoVault = returnData.oldDaoVault;
           seigManager = returnData.seigManager;
           powerton = returnData.powerton;
 
           let returnData1 = await DaoContractsDeployed.initializeDaoContracts(owner);
-          daoVault2 = returnData1.daoVault2;
+          daoVault = returnData1.daoVault;
           agendaManager = returnData1.agendaManager;
           candidateFactory = returnData1.candidateFactory;
           committee = returnData1.committee;
@@ -231,101 +231,115 @@ let AbiObject, DaoContractsDeployed ;
         layer2s.push(_layer2);
       }
 
-      async function newLayer2(operator){
-          const etherToken = await EtherToken.new(true, ton.address, true, {from: operator});
-
-          const epochHandler = await EpochHandler.new({from: operator});
-          const submitHandler = await SubmitHandler.new(epochHandler.address, {from: operator});
-
-          const dummyStatesRoot = '0xdb431b544b2f5468e3f771d7843d9c5df3b4edcf8bc1c599f18f0b4ea8709bc3';
-          const dummyTransactionsRoot = '0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421';
-          const dummyReceiptsRoot = '0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421';
-
-          const layer2 = await Layer2.new(
-              epochHandler.address,
-              submitHandler.address,
-              etherToken.address,
-              true,
-              1,
-              dummyStatesRoot,
-              dummyTransactionsRoot,
-              dummyReceiptsRoot,
-              {from: operator}
-          );
-
-          await layer2.setSeigManager( seigManager.address, {from: operator});
-
-          return layer2;
-      }
       beforeEach(async function () {
           this.timeout(1000000);
       });
 
-      it('Layer2Registry.register deployCoinage ', async function () {
+
+      it('DAOVault.setTON ', async function () {
           this.timeout(1000000);
-          expect(await registry.owner()).to.equal(committeeProxy.address);
-          _newLayer2 = await newLayer2(user1);
-          let params = [_newLayer2.address] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.Layer2Registry.register,params);
-          let params1 = [_newLayer2.address, seigManager.address ] ;
-          let functionBytecode1 =  web3.eth.abi.encodeFunctionCall( AbiObject.Layer2Registry.deployCoinage,params1);
-          await DaoContractsDeployed.executeAgenda(
-              [registry.address,registry.address], [functionBytecode,functionBytecode1 ]);
-          expect(await registry.layer2s(_newLayer2.address)).to.equal(true);
+          expect(await daoVault.owner()).to.equal(committeeProxy.address);
+          _newton = await TON.new({from:owner});
+          let params = [_newton.address] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.setTON,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          expect(await daoVault.ton()).to.equal(_newton.address);
+
+          params = [ton.address] ;
+          functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.setTON,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+      });
+
+      it('DAOVault.setWTON  ', async function () {
+          this.timeout(1000000);
+          _newWton = await WTON.new(_newton.address,{from:owner});
+          let params = [_newWton.address] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.setWTON,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          expect(await daoVault.wton()).to.equal(_newWton.address);
+
+          params = [wton.address] ;
+          functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.setWTON,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
 
       });
 
-      it('Layer2Registry.registerAndDeployCoinage ', async function () {
+      it('DAOVault.approveTON  ', async function () {
           this.timeout(1000000);
-          expect(await registry.owner()).to.equal(committeeProxy.address);
-          let _newLayer2_1 = await newLayer2(user2);
-          let params = [_newLayer2_1.address, seigManager.address] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.Layer2Registry.registerAndDeployCoinage,params);
-
-          await DaoContractsDeployed.executeAgenda(
-              registry.address, functionBytecode);
-          expect(await registry.layer2s(_newLayer2_1.address)).to.equal(true);
+          await ton.transfer(daoVault.address, TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT),{from:user1});
+          let balance = await ton.balanceOf(daoVault.address);
+          (toBN(balance)).should.be.bignumber.equal(toBN(TON_MINIMUM_STAKE_AMOUNT.toFixed(TON_UNIT)));
+          let params = [user2, TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.approveTON,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          let allowance =await ton.allowance(daoVault.address,user2);
+          (toBN(allowance)).should.be.bignumber.equal(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)));
       });
 
-
-      it('Layer2Registry.registerAndDeployCoinageAndSetCommissionRate ', async function () {
+      it('DAOVault.approveWTON  ', async function () {
           this.timeout(1000000);
-          const COMMISION_RATE = _WTON('0.01').toFixed(WTON_UNIT);
+          let allowanceBefore =await wton.allowance(daoVault.address, user3);
+          let params2 = [user3, TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT)] ;
+          let functionBytecode2 =  web3.eth.abi.encodeFunctionCall(  AbiObject.DAOVault.approveWTON,params2);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode2);
+          let allowance =await wton.allowance(daoVault.address,user3);
+          (toBN(allowance)).should.be.bignumber.equal(toBN(allowanceBefore).add(toBN(TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))));
 
-          expect(await registry.owner()).to.equal(committeeProxy.address);
-          let _newLayer2_1 = await newLayer2(user3);
-          //10 ** 25 isCommissionRateNegative
-          let params = [_newLayer2_1.address, seigManager.address, COMMISION_RATE, true ] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.Layer2Registry.registerAndDeployCoinageAndSetCommissionRate,params);
-
-          await DaoContractsDeployed.executeAgenda(registry.address, functionBytecode);
-          expect(await registry.layer2s(_newLayer2_1.address)).to.equal(true);
       });
 
-      it('Layer2Registry.unregister ', async function () {
+      it('DAOVault.approveERC20  ', async function () {
           this.timeout(1000000);
-          expect(await registry.owner()).to.equal(committeeProxy.address);
-          let params = [_newLayer2.address ] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.Layer2Registry.unregister,params);
-          await DaoContractsDeployed.executeAgenda(
-              registry.address, functionBytecode);
-          expect(await registry.layer2s(_newLayer2.address)).to.equal(false);
+          await ton.transfer(daoVault.address, TON_INITIAL_HOLDERS.toFixed(TON_UNIT),{from:user3});
+          let params = [ton.address, user4, TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.approveERC20,params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          let allowance = await ton.allowance(daoVault.address,user4);
+          (toBN(allowance)).should.be.bignumber.equal(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)));
       });
 
-      it('Layer2Registry.transferOwnership', async function () {
+      it('DAOVault.claimTON  ', async function () {
+          this.timeout(1000000);
+          let balanceBefore = await ton.balanceOf(user5);
+          let params = [user5 , TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.claimTON, params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          let balanceAfter = await ton.balanceOf(user5);
+          (toBN(balanceAfter)).should.be.bignumber.equal(toBN(balanceBefore).add(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT))));
+      });
+
+      it('DAOVault.claimWTON  ', async function () {
+          this.timeout(1000000);
+          let balanceBefore = await wton.balanceOf(user5);
+          let params = [user5 , TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT)] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.claimWTON, params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          let balanceAfter = await wton.balanceOf(user5);
+          (toBN(balanceAfter)).should.be.bignumber.equal(toBN(balanceBefore).add(toBN(TON_USER_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))));
+      });
+
+      it('DAOVault.claimERC20  ', async function () {
+          this.timeout(1000000);
+          let balanceBefore = await ton.balanceOf(user5);
+          let params = [ ton.address, user5 , TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT)] ;
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.claimERC20, params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          let balanceAfter = await ton.balanceOf(user5);
+          (toBN(balanceAfter)).should.be.bignumber.equal(toBN(balanceBefore).add(toBN(TON_USER_STAKE_AMOUNT.toFixed(TON_UNIT))));
+      });
+
+      it('DAOVault.transferOwnership', async function () {
           this.timeout(1000000);
           let params = [user1] ;
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Layer2Registry.transferOwnership, params);
-          await DaoContractsDeployed.executeAgenda(registry.address, functionBytecode);
-          expect(await registry.owner()).to.equal(user1);
-
-          await registry.transferOwnership(committeeProxy.address, {from:user1} );
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall( AbiObject.DAOVault.transferOwnership, params);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          expect(await daoVault.owner()).to.equal(user1);
+          await daoVault.transferOwnership(committeeProxy.address, {from:user1} );
       });
 
-      it('Layer2Registry.renounceOwnership', async function () {
+      it('DAOVault.renounceOwnership', async function () {
           this.timeout(1000000);
-          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Layer2Registry.renounceOwnership, []);
-          await DaoContractsDeployed.executeAgenda(registry.address, functionBytecode);
-          expect(await registry.owner()).to.equal(ZERO_ADDRESS);
+          let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.DAOVault.renounceOwnership, []);
+          await DaoContractsDeployed.executeAgenda(daoVault.address, functionBytecode);
+          expect(await daoVault.owner()).to.equal(ZERO_ADDRESS);
       });
-  });
+});

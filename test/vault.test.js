@@ -14,11 +14,43 @@ const chai = require('chai');
 const { expect } = chai;
 chai.use(require('chai-bn')(BN)).should();
 
+const {
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_PENDING,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE
+} = require('../utils/constants.js');
+
 //const { deployPlasmaEvmContracts, deployDaoContracts } = require('./utils/deploy');
 //const deployPlasmaEvmContracts = require('./utils/deploy.js');
 
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 //const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
@@ -37,7 +69,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 let o;
 process.on('exit', function () {
@@ -60,7 +92,7 @@ const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const AGENDA_INDEX_CREATED_TIMESTAMP = 0;
+/*const AGENDA_INDEX_CREATED_TIMESTAMP = 0;
 const AGENDA_INDEX_NOTICE_END_TIMESTAMP = 1;
 const AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS = 2;
 const AGENDA_INDEX_VOTING_STARTED_TIMESTAMP = 3;
@@ -95,7 +127,7 @@ const AGENDA_RESULT_DISMISSED = 3;
 
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
+const VOTER_INFO_VOTE = 2;*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -117,7 +149,7 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -129,11 +161,11 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
-describe('DAOVault2', function () {
+describe('DAOVault', function () {
   beforeEach(async function () {
     this.timeout(1000000);
 
@@ -224,7 +256,7 @@ describe('DAOVault2', function () {
     factory = await CoinageFactory.new();
 
     currentTime = await time.latest();
-    daoVault = await DAOVault.new(wton.address, currentTime);
+    oldDaoVault = await OldDAOVaultMock.new(wton.address, currentTime);
     seigManager = await SeigManager.new(
       ton.address,
       wton.address,
@@ -242,7 +274,7 @@ describe('DAOVault2', function () {
 
     await seigManager.setPowerTON(powerton.address);
     await powerton.start();
-    await seigManager.setDao(daoVault.address);
+    await seigManager.setDao(oldDaoVault.address);
     await wton.addMinter(seigManager.address);
     await ton.addMinter(wton.address);
     
@@ -260,7 +292,7 @@ describe('DAOVault2', function () {
     seigManager.setPseigRate(PSEIG_RATE.toFixed(WTON_UNIT));
     await candidates.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));
     await users.map(account => ton.transfer(account, TON_INITIAL_HOLDERS.toFixed(TON_UNIT)));  
-    await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    await wton.mint(oldDaoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     await seigManager.setMinimumAmount(TON_MINIMUM_STAKE_AMOUNT.times(WTON_TON_RATIO).toFixed(WTON_UNIT))
   }
@@ -269,8 +301,8 @@ describe('DAOVault2', function () {
     debugLog =false;
     if(debugLog) console.log('ton :', ton.address) ;
 
-    daoVault2 = await DAOVault2.new(ton.address, wton.address);
-    if(debugLog)  console.log('daoVault2 :', daoVault2.address) ;
+    daoVault = await DAOVault.new(ton.address, wton.address);
+    if(debugLog)  console.log('daoVault :', daoVault.address) ;
 
     //===================================================
     agendaManager = await DAOAgendaManager.new();
@@ -290,7 +322,7 @@ describe('DAOVault2', function () {
       registry.address,
       agendaManager.address,
       candidateFactory.address,
-      daoVault2.address
+      daoVault.address
     );
     if(debugLog)  console.log('daoCommitteeProxy :', daoCommitteeProxy.address) ;
    
@@ -307,13 +339,13 @@ describe('DAOVault2', function () {
     await agendaManager.setMinimumNoticePeriodSeconds(toBN("10000"));
     await agendaManager.setMinimumVotingPeriodSeconds(toBN("10000"));
 
-    //await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-    //await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+    //await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+    //await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
 
     ////////////////////////////////////////////////////////////////////////
 
     await registry.transferOwnership(committeeProxy.address);
-    //await daoVault2.transferOwnership(committeeProxy.address);
+    //await daoVault.transferOwnership(committeeProxy.address);
     await agendaManager.setCommittee(committeeProxy.address);
     await agendaManager.transferOwnership(committeeProxy.address);
     //await committee.transferOwnership(committeeProxy.address);
@@ -330,8 +362,8 @@ describe('DAOVault2', function () {
     beforeEach(async function () {
       this.timeout(1000000);
 
-      await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-      await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+      await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+      await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
     });
 
     it('approveTON', async function () {
@@ -339,8 +371,8 @@ describe('DAOVault2', function () {
       const balanceBefore = await ton.balanceOf(user1);
 
       const amount = _TON("10").toFixed(TON_UNIT);
-      await daoVault2.approveTON(user1, amount);
-      await ton.transferFrom(daoVault2.address, user1, amount, {from: user1});
+      await daoVault.approveTON(user1, amount);
+      await ton.transferFrom(daoVault.address, user1, amount, {from: user1});
 
       const balanceAfter = await ton.balanceOf(user1);
       balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
@@ -351,8 +383,8 @@ describe('DAOVault2', function () {
       const balanceBefore = await wton.balanceOf(user1);
 
       const amount = _WTON("10").toFixed(WTON_UNIT);
-      await daoVault2.approveWTON(user1, amount);
-      await wton.transferFrom(daoVault2.address, user1, amount, {from: user1});
+      await daoVault.approveWTON(user1, amount);
+      await wton.transferFrom(daoVault.address, user1, amount, {from: user1});
 
       const balanceAfter = await wton.balanceOf(user1);
       balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
@@ -364,8 +396,8 @@ describe('DAOVault2', function () {
       const balanceBefore = await token.balanceOf(user1);
 
       const amount = _TON("10").toFixed(TON_UNIT);
-      await daoVault2.approveERC20(token.address, user1, amount);
-      await token.transferFrom(daoVault2.address, user1, amount, {from: user1});
+      await daoVault.approveERC20(token.address, user1, amount);
+      await token.transferFrom(daoVault.address, user1, amount, {from: user1});
 
       const balanceAfter = await token.balanceOf(user1);
       balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
@@ -373,21 +405,21 @@ describe('DAOVault2', function () {
 
     it('can not approveTON from others', async function () {
       await expectRevert(
-        daoVault2.approveTON(user1, toBN("1"), {from: user1}),
+        daoVault.approveTON(user1, toBN("1"), {from: user1}),
         "Ownable: caller is not the owner"
       );
     });
 
     it('can not approveWTON from others', async function () {
       await expectRevert(
-        daoVault2.approveWTON(user1, toBN("1"), {from: user1}),
+        daoVault.approveWTON(user1, toBN("1"), {from: user1}),
         "Ownable: caller is not the owner"
       );
     });
 
     it('can not approveERC20 from others', async function () {
       await expectRevert(
-        daoVault2.approveERC20(ton.address, user1, toBN("1"), {from: user1}),
+        daoVault.approveERC20(ton.address, user1, toBN("1"), {from: user1}),
         "Ownable: caller is not the owner"
       );
     });
@@ -395,14 +427,14 @@ describe('DAOVault2', function () {
 
   async function testClaimTon(tonAmount, expectedTonAmount, expectedWtonAmount) {
     const balanceBefore = await ton.balanceOf(user1);
-    const balanceVaultTonBefore = await ton.balanceOf(daoVault2.address);
-    const balanceVaultWtonBefore = await wton.balanceOf(daoVault2.address);
+    const balanceVaultTonBefore = await ton.balanceOf(daoVault.address);
+    const balanceVaultWtonBefore = await wton.balanceOf(daoVault.address);
 
-    await daoVault2.claimTON(user1, tonAmount);
+    await daoVault.claimTON(user1, tonAmount);
 
     const balanceAfter = await ton.balanceOf(user1);
-    const balanceVaultTonAfter = await ton.balanceOf(daoVault2.address);
-    const balanceVaultWtonAfter = await wton.balanceOf(daoVault2.address);
+    const balanceVaultTonAfter = await ton.balanceOf(daoVault.address);
+    const balanceVaultWtonAfter = await wton.balanceOf(daoVault.address);
 
     balanceAfter.sub(balanceBefore).should.be.bignumber.equal(tonAmount);
     balanceVaultTonBefore.sub(balanceVaultTonAfter).should.be.bignumber.equal(expectedTonAmount);
@@ -411,14 +443,14 @@ describe('DAOVault2', function () {
 
   async function testClaimWton(wtonAmount, expectedTonAmount, expectedWtonAmount) {
     const balanceBefore = await wton.balanceOf(user1);
-    const balanceVaultTonBefore = await ton.balanceOf(daoVault2.address);
-    const balanceVaultWtonBefore = await wton.balanceOf(daoVault2.address);
+    const balanceVaultTonBefore = await ton.balanceOf(daoVault.address);
+    const balanceVaultWtonBefore = await wton.balanceOf(daoVault.address);
 
-    await daoVault2.claimWTON(user1, wtonAmount);
+    await daoVault.claimWTON(user1, wtonAmount);
 
     const balanceAfter = await wton.balanceOf(user1);
-    const balanceVaultTonAfter = await ton.balanceOf(daoVault2.address);
-    const balanceVaultWtonAfter = await wton.balanceOf(daoVault2.address);
+    const balanceVaultTonAfter = await ton.balanceOf(daoVault.address);
+    const balanceVaultWtonAfter = await wton.balanceOf(daoVault.address);
 
     balanceAfter.sub(balanceBefore).should.be.bignumber.equal(wtonAmount);
     balanceVaultTonBefore.sub(balanceVaultTonAfter).should.be.bignumber.equal(expectedTonAmount);
@@ -432,7 +464,7 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+        await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
       });
 
       it('claimTON', async function () {
@@ -450,7 +482,7 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
       });
 
       it('claimTON', async function () {
@@ -469,8 +501,8 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await ton.mint(daoVault2.address, tonInVault);
-        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+        await ton.mint(daoVault.address, tonInVault);
+        await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
       });
 
       it('claimTON', async function () {
@@ -489,8 +521,8 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-        await wton.mint(daoVault2.address, wtonInVault);
+        await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await wton.mint(daoVault.address, wtonInVault);
       });
 
       it('claimTON', async function () {
@@ -508,8 +540,8 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
-        await wton.mint(daoVault2.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
+        await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await wton.mint(daoVault.address, TON_VAULT_AMOUNT.toFixed(WTON_UNIT));
       });
 
       it('claimTON', async function () {
@@ -527,7 +559,7 @@ describe('DAOVault2', function () {
       beforeEach(async function () {
         this.timeout(1000000);
 
-        await ton.mint(daoVault2.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
+        await ton.mint(daoVault.address, TON_VAULT_AMOUNT.div(WTON_TON_RATIO).toFixed(TON_UNIT));
       });
 
       it('claimERC20', async function () {
@@ -535,7 +567,7 @@ describe('DAOVault2', function () {
         const balanceBefore = await token.balanceOf(user1);
 
         const amount = _TON("10").toFixed(TON_UNIT);
-        await daoVault2.claimERC20(token.address, user1, amount);
+        await daoVault.claimERC20(token.address, user1, amount);
 
         const balanceAfter = await token.balanceOf(user1);
         balanceAfter.sub(balanceBefore).should.be.bignumber.equal(amount);
@@ -545,21 +577,21 @@ describe('DAOVault2', function () {
     describe('Authority', function () {
       it('can not claimTON from others', async function () {
         await expectRevert(
-          daoVault2.claimTON(user1, toBN("1"), {from: user1}),
+          daoVault.claimTON(user1, toBN("1"), {from: user1}),
           "Ownable: caller is not the owner"
         );
       });
 
       it('can not claimWTON from others', async function () {
         await expectRevert(
-          daoVault2.claimWTON(user1, toBN("1"), {from: user1}),
+          daoVault.claimWTON(user1, toBN("1"), {from: user1}),
           "Ownable: caller is not the owner"
         );
       });
 
       it('can not claimERC20 from others', async function () {
         await expectRevert(
-          daoVault2.claimERC20(ton.address, user1, toBN("1"), {from: user1}),
+          daoVault.claimERC20(ton.address, user1, toBN("1"), {from: user1}),
           "Ownable: caller is not the owner"
         );
       });

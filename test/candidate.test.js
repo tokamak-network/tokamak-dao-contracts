@@ -16,8 +16,39 @@ chai.use(require('chai-bn')(BN)).should();
 
 const DaoContracts = require('../utils/plasma_test_deploy.js');
 
+const { 
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE
+} = require('../utils/constants.js');
+
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 //const DAOActivityRewardManager = contract.fromArtifact('DAOActivityRewardManager');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
@@ -36,7 +67,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 let o;
 process.on('exit', function () {
@@ -59,42 +90,6 @@ const WTON_UNIT = 'ray';
 const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
-
-const AGENDA_INDEX_CREATED_TIMESTAMP = 0;
-const AGENDA_INDEX_NOTICE_END_TIMESTAMP = 1;
-const AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS = 2;
-const AGENDA_INDEX_VOTING_STARTED_TIMESTAMP = 3;
-const AGENDA_INDEX_VOTING_END_TIMESTAMP = 4;
-const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
-const AGENDA_INDEX_COUNTING_YES = 6;
-const AGENDA_INDEX_COUNTING_NO = 7;
-const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_STATUS = 9;
-const AGENDA_INDEX_RESULT = 10;
-//const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 11;
-
-const AGENDA_STATUS_NONE = 0;
-const AGENDA_STATUS_NOTICE = 1;
-const AGENDA_STATUS_VOTING = 2;
-const AGENDA_STATUS_WAITING_EXEC = 3;
-const AGENDA_STATUS_EXECUTED = 4;
-const AGENDA_STATUS_ENDED = 5;
-//const AGENDA_STATUS_PENDING = 6;
-//const AGENDA_STATUS_RISK = 7;
-
-const VOTE_ABSTAIN = 0;
-const VOTE_YES = 1;
-const VOTE_NO = 2;
-
-const AGENDA_RESULT_ACCEPTED = 1;
-const AGENDA_RESULT_REJECTED = 2;
-const AGENDA_RESULT_DISMISSED = 3;
-
-
-const VOTER_INFO_ISVOTER = 0;
-const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -264,6 +259,46 @@ describe('Candidate', function () {
       for (let i = 0; i < slotLength; i++) {
         (await committeeProxy.members(i)).should.be.equal(ZERO_ADDRESS);
       }
+    });
+
+    it('Memo on dao candidate', async function () {
+      const candidate = candidates[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(candidate);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidate(candidate, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
+    });
+
+    it('Memo on layer2 candidate', async function () {
+      const candidate = operators[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(layer2s[0].address);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidate(layer2s[0].address, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
+    });
+
+    it('Memo on dao candidate contract', async function () {
+      const candidate = candidates[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(candidate);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidateContract(candidateContract.address, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
+    });
+
+    it('Memo on layer2 candidate contract', async function () {
+      const candidate = operators[0];
+      const candidateContract = await daoContractsDeployed.getCandidateContract(layer2s[0].address);
+      const prevMemo = await candidateContract.memo();
+      const newMemo = "new memo1234";
+      newMemo.should.be.not.equal(prevMemo);
+      await committeeProxy.setMemoOnCandidateContract(candidateContract.address, newMemo, {from: candidate});
+      (await candidateContract.memo()).should.be.equal(newMemo);
     });
 
     it('changeMember from candidate', async function () {
@@ -467,6 +502,10 @@ describe('Candidate', function () {
       });
 
       it('cast vote', async function () {
+        console.log(`member 0: ${await committeeProxy.members(0)}`);
+        console.log(`member 1: ${await committeeProxy.members(1)}`);
+        console.log(`member 2: ${await committeeProxy.members(2)}`);
+        console.log(`candidates[0]: ${candidates[0]}`);
         await castVote(agendaID, candidates[0], VOTE_YES);
         await castVoteOperator(agendaID, operators[0], layer2s[0].address, VOTE_YES);
 

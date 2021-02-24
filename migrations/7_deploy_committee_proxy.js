@@ -11,7 +11,7 @@ module.exports = async function (deployer, network) {
     const layer2registryAddress = load(network, "Layer2Registry");
     const agendaManagerAddress = load(network, "DAOAgendaManager");
     const candidateFactoryAddress = load(network, "CandidateFactory");
-    const vaule2Address = load(network, "DAOVault2");
+    const vauleAddress = load(network, "DAOVault");
 
     let committeeProxy;
     await deployer.deploy(
@@ -22,7 +22,7 @@ module.exports = async function (deployer, network) {
       layer2registryAddress,
       agendaManagerAddress,
       candidateFactoryAddress,
-      vaule2Address
+      vauleAddress
     ).then((_committeeProxy) => {
       committeeProxy = _committeeProxy
     });
