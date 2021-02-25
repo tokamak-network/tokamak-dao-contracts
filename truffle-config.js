@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 // const HDWalletProvider = require("@truffle/hdwallet-provider");
 const PrivateKeyProvider = require('truffle-privatekey-provider');
-const pk = '05300d3675ece67111294fe8964f6a6db4e6026883a6fc60df29e158367e7e6c';
+const pk = '2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501201';
 const infura = 'https://rinkeby.infura.io/v3/f6429583907549eca57832ec1a60b44f';
 
 module.exports = {

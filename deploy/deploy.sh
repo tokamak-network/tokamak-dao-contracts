@@ -5,7 +5,7 @@ if [ "$3" == "plasma" ]
 then
   export DEPLOY_PLASMA_EVM=true
 
-elif [ "$3" == "vault" ]
+elif [ "$3" == "vault" -a $# -eq 3 ]
 then
   export DEPLOY_VAULT=true
 
@@ -28,6 +28,18 @@ then
 elif [ "$3" == "set-dao" -a $# -eq 3 ]
 then
   export SET_DAO=true
+
+elif [ "$3" == "deploy-candidate" -a $# -eq 4 ]
+then
+  export DEPLOY_CANDIDATE=true
+  export CANDIDATE_NAME="$4"
+
+elif [ "$3" == "register-layer2" -a $# -eq 5 ]
+then
+  export REGISTER_LAYER2=true
+  export CANDIDATE_NAME="$4"
+  export LAYER2="$5"
+
 fi
 
 truffle migrate --network rinkeby 
