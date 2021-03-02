@@ -346,13 +346,13 @@ let DAOCommitteeAbiObj, DaoContractsDeployed, WTONAbiObj ;
     it('committeeProxy.increaseMaxMember', async function () {
       this.timeout(1000000);
       let maxNum = await committeeProxy.maxMember();
-      let params = [4,2] ;
+      let params = [4,3] ;
       let functionBytecode =  web3.eth.abi.encodeFunctionCall(AbiObject.Committee.increaseMaxMember,params);
       await DaoContractsDeployed.executeAgenda(committeeProxy.address, functionBytecode);
       maxNum = await committeeProxy.maxMember();
       maxNum.should.be.bignumber.equal(toBN("4"));
       let quorum = await committeeProxy.quorum();
-      quorum.should.be.bignumber.equal(toBN("2"));
+      quorum.should.be.bignumber.equal(toBN("3"));
 
     });
 

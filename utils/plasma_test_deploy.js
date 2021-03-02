@@ -643,14 +643,15 @@ class DaoContracts {
       let param = null;
       if ( Array.isArray(_target)){
         param = web3.eth.abi.encodeParameters(
-          ["address[]", "uint256", "uint256", "bytes[]"],
-          [_target, noticePeriod.toString(), votingPeriod.toString(), _functionBytecode]
+          ["address[]", "uint256", "uint256", "bool", "bytes[]"],
+          [_target, noticePeriod.toString(), votingPeriod.toString(), true, _functionBytecode]
         );
       }
       else {
+
         param = web3.eth.abi.encodeParameters(
-          ["address[]", "uint256", "uint256", "bytes[]"],
-          [[_target], noticePeriod.toString(), votingPeriod.toString(), [_functionBytecode]]
+          ["address[]", "uint256", "uint256","bool", "bytes[]"],
+          [[_target], noticePeriod.toString(), votingPeriod.toString(),true, [_functionBytecode]]
         );
       }
 
