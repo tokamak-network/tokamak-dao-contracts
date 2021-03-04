@@ -414,11 +414,11 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         CandidateInfo storage reducingCandidate = _candidateInfos[reducingMember];
 
         if (_reducingMemberIndex != members.length - 1) {
-            address tailmember = members[members.length - 1];
-            CandidateInfo storage tailCandidate = _candidateInfos[tailmember];
+            address tailMember = members[members.length - 1];
+            CandidateInfo storage tailCandidate = _candidateInfos[tailMember];
 
             tailCandidate.indexMembers = _reducingMemberIndex;
-            members[_reducingMemberIndex] = tailmember;
+            members[_reducingMemberIndex] = tailMember;
         }
         reducingCandidate.indexMembers = 0;
         reducingCandidate.rewardPeriod = uint128(uint256(reducingCandidate.rewardPeriod).add(block.timestamp.sub(reducingCandidate.memberJoinedTime)));
@@ -559,7 +559,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             // no
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.REJECT);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
-        } else if (quorum <= abstain.add(no) ) {
+        } else if (quorum <= abstain.add(no)) {
             // dismiss
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);

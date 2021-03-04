@@ -18,7 +18,7 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
 
     IDAOCommittee public override committee;
     
-    uint256 public override createAgendaFees; // 아젠다생성비용(TON)
+    uint256 public override createAgendaFees;
     
     uint256 public override minimumNoticePeriodSeconds;
     uint256 public override minimumVotingPeriodSeconds;
@@ -88,16 +88,6 @@ contract DAOAgendaManager is Ownable, IDAOAgendaManager {
         require(_committee != address(0), "DAOAgendaManager: address is zero");
         committee = IDAOCommittee(_committee);
     }
-
-    /// @notice Set status of the agenda
-    /// @param _agendaID agenda ID
-    /// @param _status New status of the agenda
-    /*function setStatus(uint256 _agendaID, uint256 _status) public override onlyOwner {
-        require(_agendaID < _agendas.length, "DAOAgendaManager: Not a valid Proposal Id");
-
-        emit AgendaStatusChanged(_agendaID, uint256(_agendas[_agendaID].status), _status);
-        _agendas[_agendaID].status = getStatus(_status);
-    }*/
 
     /// @notice Set the fee(TON) of creating an agenda
     /// @param _createAgendaFees New fee(TON)
