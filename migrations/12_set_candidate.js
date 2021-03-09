@@ -14,7 +14,7 @@ module.exports = async function (deployer, network) {
   }
   if (process.env.REGISTER_LAYER2) {
     console.log('register layer2');
-    committeeProxy.registerLayer2Candidate(process.env.LAYER2, process.env.CANDIDATE_NAME)
+    await committeeProxy.registerLayer2Candidate(process.env.LAYER2, process.env.CANDIDATE_NAME)
     console.log('done');
   }
 };

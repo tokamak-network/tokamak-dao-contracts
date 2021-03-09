@@ -1,4 +1,4 @@
-export MAINNET_PROVIDER_URL=$1
+export RINKEBY_PROVIDER_URL=$1
 export MAINNET_PRIVATE_KEY=$2
 
 if [ "$3" == "plasma" ]
