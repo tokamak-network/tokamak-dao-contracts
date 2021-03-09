@@ -16,8 +16,40 @@ chai.use(require('chai-bn')(BN)).should();
 
 const DaoContracts = require('../utils/plasma_test_deploy.js');
 
+const { 
+  AGENDA_INDEX_CREATED_TIMESTAMP,
+  AGENDA_INDEX_NOTICE_END_TIMESTAMP,
+  AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS,
+  AGENDA_INDEX_VOTING_STARTED_TIMESTAMP,
+  AGENDA_INDEX_VOTING_END_TIMESTAMP,
+  AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP,
+  AGENDA_INDEX_EXECUTED_TIMESTAMP,
+  AGENDA_INDEX_COUNTING_YES,
+  AGENDA_INDEX_COUNTING_NO,
+  AGENDA_INDEX_COUNTING_ABSTAIN,
+  AGENDA_INDEX_STATUS,
+  AGENDA_INDEX_RESULT,
+  AGENDA_INDEX_EXECUTED,
+  AGENDA_STATUS_NONE,
+  AGENDA_STATUS_NOTICE,
+  AGENDA_STATUS_VOTING,
+  AGENDA_STATUS_WAITING_EXEC,
+  AGENDA_STATUS_EXECUTED,
+  AGENDA_STATUS_ENDED,
+  VOTE_ABSTAIN,
+  VOTE_YES,
+  VOTE_NO,
+  AGENDA_RESULT_PENDING,
+  AGENDA_RESULT_ACCEPTED,
+  AGENDA_RESULT_REJECTED,
+  AGENDA_RESULT_DISMISSED,
+  VOTER_INFO_ISVOTER,
+  VOTER_INFO_HAS_VOTED,
+  VOTER_INFO_VOTE
+} = require('../utils/constants.js');
+
 // dao-contracts
-const DAOVault2 = contract.fromArtifact('DAOVault2');
+const DAOVault = contract.fromArtifact('DAOVault');
 const DAOCommittee = contract.fromArtifact('DAOCommittee');
 const DAOAgendaManager = contract.fromArtifact('DAOAgendaManager');
 const CandidateFactory = contract.fromArtifact('CandidateFactory');
@@ -33,7 +65,7 @@ const CoinageFactory = contract.fromArtifact('CoinageFactory');
 const Layer2Registry = contract.fromArtifact('Layer2Registry');
 const AutoRefactorCoinage = contract.fromArtifact('AutoRefactorCoinage');
 const PowerTON = contract.fromArtifact('PowerTON');
-const DAOVault = contract.fromArtifact('DAOVault');
+const OldDAOVaultMock = contract.fromArtifact('OldDAOVaultMock');
 
 const EtherToken = contract.fromArtifact('EtherToken');
 const EpochHandler = contract.fromArtifact('EpochHandler');
@@ -60,7 +92,7 @@ const WTON_TON_RATIO = _WTON_TON('1');
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
+/*const CANDIDATE_INFO_INDEX_CANDIDATE_CONTRACT = 0;
 const CANDIDATE_INFO_INDEX_MEMBER_JOINED_TIME = 1;
 const CANDIDATE_INFO_INDEX_MEMBER_INDEX = 2;
 const CANDIDATE_INFO_INDEX_REWARD_PERIOD = 3;
@@ -70,14 +102,14 @@ const AGENDA_INDEX_NOTICE_END_TIMESTAMP = 1;
 const AGENDA_INDEX_VOTING_PERIOD_IN_SECONDS = 2;
 const AGENDA_INDEX_VOTING_STARTED_TIMESTAMP = 3;
 const AGENDA_INDEX_VOTING_END_TIMESTAMP = 4;
-const AGENDA_INDEX_EXECUTED_TIMESTAMP = 5;
-const AGENDA_INDEX_COUNTING_YES = 6;
-const AGENDA_INDEX_COUNTING_NO = 7;
-const AGENDA_INDEX_COUNTING_ABSTAIN = 8;
-const AGENDA_INDEX_STATUS = 9;
-const AGENDA_INDEX_RESULT = 10;
-//const AGENDA_INDEX_VOTERS = 12;
-const AGENDA_INDEX_EXECUTED = 11;
+const AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP = 5;
+const AGENDA_INDEX_EXECUTED_TIMESTAMP = 6;
+const AGENDA_INDEX_COUNTING_YES = 7;
+const AGENDA_INDEX_COUNTING_NO = 8;
+const AGENDA_INDEX_COUNTING_ABSTAIN = 9;
+const AGENDA_INDEX_STATUS = 10;
+const AGENDA_INDEX_RESULT = 11;
+const AGENDA_INDEX_EXECUTED = 12;
 
 const AGENDA_STATUS_NONE = 0;
 const AGENDA_STATUS_NOTICE = 1;
@@ -100,7 +132,7 @@ const AGENDA_RESULT_DISMISSED = 3;
 
 const VOTER_INFO_ISVOTER = 0;
 const VOTER_INFO_HAS_VOTED = 1;
-const VOTER_INFO_VOTE = 2;
+const VOTER_INFO_VOTE = 2;*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // test settings
@@ -122,7 +154,8 @@ const TON_MINIMUM_STAKE_AMOUNT = _TON('1000');
 ////////////////////////////////////////////////////////////////////////////////
 
 const owner= defaultSender;
-let daoVault2, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let daoVault, committeeProxy, committee, activityRewardManager , agendaManager, candidateFactory;
+let layer2s = []
 let gasUsedRecords = [];
 let gasUsedTotal = 0; 
 let debugLog=true;
@@ -134,7 +167,7 @@ let wton;
 let registry;
 let depositManager;
 let factory;
-let daoVault;
+let oldDaoVault;
 let seigManager;
 let powerton;
 
@@ -152,12 +185,12 @@ describe('Test 1', function () {
     registry = returnData.registry;
     depositManager = returnData.depositManager;
     factory = returnData.coinageFactory;
-    daoVault = returnData.daoVault;
+    oldDaoVault = returnData.oldDaoVault;
     seigManager = returnData.seigManager;
     powerton = returnData.powerton; 
 
     const returnData1 = await daoContractsDeployed.initializeDaoContracts(owner);
-    daoVault2 = returnData1.daoVault2;
+    daoVault = returnData1.daoVault;
     agendaManager = returnData1.agendaManager;
     candidateFactory = returnData1.candidateFactory;
     committee = returnData1.committee;
@@ -357,6 +390,7 @@ describe('Test 1', function () {
 
     await layer2.setSeigManager(seigManager.address, {from: operator});
     await registry.registerAndDeployCoinage(layer2.address, seigManager.address, {from: operator});
+    layer2s.push(layer2.address);
     return layer2;
   }
 
@@ -434,7 +468,7 @@ describe('Test 1', function () {
         layer2 = await addOperator(user1);
         layer2.should.be.not.equal(ZERO_ADDRESS);
          
-        await committeeProxy.registerOperator(layer2.address, "memo", {from: user1});
+        await committeeProxy.registerLayer2Candidate(layer2.address, "memo", {from: user1});
 
         (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(layer2.address);
@@ -464,7 +498,7 @@ describe('Test 1', function () {
         layer2.should.be.not.equal(ZERO_ADDRESS);
 
         (await layer2.operator()).should.be.equal(user2);
-        await committeeProxy.registerOperatorByOwner(user2, layer2.address, "memo");
+        await committeeProxy.registerLayer2CandidateByOwner(user2, layer2.address, "memo");
 
         (await committeeProxy.isExistCandidate(layer2.address)).should.be.equal(true);
         const candidateInfo = await committeeProxy.candidateInfos(layer2.address);
@@ -576,7 +610,7 @@ describe('Test 1', function () {
         const candidateContract = await getCandidateContract(candidate2);
         expectRevert(
           candidateContract.changeMember(3, {from: candidate2}),
-          "DAOCommittee: index is not available"
+          "DAOCommittee: invalid member index"
         );
       });
 
@@ -605,6 +639,16 @@ describe('Test 1', function () {
       const afterBalance = await totalBalanceOfCandidate(candidate1);
 
       afterBalance.should.be.bignumber.gt(beforeBalance);
+    });
+  });
+
+  describe('Quorum', function () {
+    it('quorum must exceed half of maxMember', async function () {
+        (await committeeProxy.maxMember()).should.be.bignumber.gt(toBN("2"));
+        await expectRevert(
+          committeeProxy.setQuorum(1),
+          "DAOCommittee: invalid quorum"
+        );
     });
   });
 
@@ -674,9 +718,9 @@ describe('Test 1', function () {
         voterInfo2[VOTER_INFO_VOTE].should.be.bignumber.equal(toBN(_vote));
 
         const agenda2 = await agendaManager.agendas(_agendaID);
-        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(beforeCountingYes.add(_vote === VOTE_YES ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(beforeCountingNo.add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
-        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(beforeCountingAbstain.add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_YES].should.be.bignumber.equal(toBN(beforeCountingYes).add(_vote === VOTE_YES ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_NO].should.be.bignumber.equal(toBN(beforeCountingNo).add(_vote === VOTE_NO ? toBN(1) : toBN(0)));
+        agenda2[AGENDA_INDEX_COUNTING_ABSTAIN].should.be.bignumber.equal(toBN(beforeCountingAbstain).add(_vote === VOTE_ABSTAIN ? toBN(1) : toBN(0)));
 
         const result = await agendaManager.getVoteStatus(_agendaID, voter);
         result[0].should.be.equal(true);
@@ -694,8 +738,8 @@ describe('Test 1', function () {
             const functionBytecode = selector.concat(data);
 
             const param = web3.eth.abi.encodeParameters(
-              ["address[]", "uint256", "uint256", "bytes[]"],
-              [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+              ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+              [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
             );
 
             const beforeBalance = await ton.balanceOf(user1);
@@ -793,8 +837,8 @@ describe('Test 1', function () {
           const functionBytecode = selector.concat(data);
 
           const param = web3.eth.abi.encodeParameters(
-            ["address[]", "uint256", "uint256", "bytes[]"],
-            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), [functionBytecode]]
+            ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
           );
 
           const beforeBalance = await ton.balanceOf(user1);
@@ -839,7 +883,7 @@ describe('Test 1', function () {
         it('increase block time', async function () {
           const agenda = await agendaManager.agendas(agendaID);  
           const noticeEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
-          await time.increaseTo(noticeEndTimestamp.add(toBN("1")));
+          await time.increaseTo(toBN(noticeEndTimestamp).add(toBN("1")));
           (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
         });
 
@@ -854,40 +898,276 @@ describe('Test 1', function () {
           (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
         });
       });
+
+      describe("non-atomic agenda", async function () {
+        let agendaID;
+        it('create new agenda', async function () {
+          const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+          const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
+
+          let targets = [];
+          let functionBytecodes = [];
+          for (let i = 0; i < 10; i++) {
+            const selector1 = web3.eth.abi.encodeFunctionSignature("setMinimumNoticePeriodSeconds(uint256)");
+            const newMinimumNoticePeriod = 1000000 * (i+1);
+            const data1 = padLeft(newMinimumNoticePeriod.toString(16), 64);
+            const functionBytecode1 = selector1.concat(data1);
+            targets.push(agendaManager.address);
+            functionBytecodes.push(functionBytecode1);
+          }
+
+          const param = web3.eth.abi.encodeParameters(
+            ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+            [targets, 
+                noticePeriod.toString(),
+                votingPeriod.toString(),
+                false,
+                functionBytecodes
+            ]
+          );
+
+          const beforeBalance = await ton.balanceOf(user1);
+          const agendaFee = await agendaManager.createAgendaFees();
+          agendaFee.should.be.bignumber.gt(toBN("0"));
+
+          // create agenda
+          await ton.approveAndCall(
+            committeeProxy.address,
+            agendaFee,
+            param,
+            {from: user1}
+          );
+          const afterBalance = await ton.balanceOf(user1);
+          afterBalance.should.be.bignumber.lt(beforeBalance);
+          beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
+
+          agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+          //const executionInfo = await agendaManager.executionInfos(agendaID);
+          const executionInfo = await agendaManager.getExecutionInfo(agendaID);
+          //executionInfo[0][0].should.be.equal(agendaManager.address);
+          //executionInfo[1][0].should.be.equal(functionBytecode1);
+        });
+
+        it('increase block time and check votable', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+          await time.increaseTo(noticeEndTimestamp);
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(true);
+        });
+
+        it(`cast vote`, async function () {
+          await castVote(agendaID, candidates[0], VOTE_YES);
+          await castVote(agendaID, candidates[1], VOTE_YES);
+        });
+
+        it("check vote result/status", async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_ACCEPTED));
+          agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
+        });
+
+        it('increase block time', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+          await time.increaseTo(toBN(noticeEndTimestamp).add(toBN("1")));
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+        });
+
+        it("execute", async function () {
+          const beforeValue = await agendaManager.minimumNoticePeriodSeconds();
+          const executeTx = await committeeProxy.executeAgenda(agendaID, {gas: 180000});
+          const afterValue = await agendaManager.minimumNoticePeriodSeconds();
+          beforeValue.should.be.bignumber.not.equal(afterValue);
+
+          const afterAgenda = await agendaManager.agendas(agendaID); 
+          afterAgenda[AGENDA_INDEX_EXECUTED].should.be.equal(false);
+          //afterAgenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.gt(toBN("0")); 
+        });
+
+        it("check executed result/status", async function () {
+          const executedInfo = await agendaManager.getExecutionInfo(agendaID);
+          toBN(executedInfo.executeStartFrom).should.be.bignumber.lt(toBN("10"));
+          (await agendaManager.minimumNoticePeriodSeconds()).should.be.bignumber.lt(toBN("10000000"));
+        });
+
+        it("execute again", async function () {
+          const beforeValue = await agendaManager.minimumNoticePeriodSeconds();
+          const executeTx = await committeeProxy.executeAgenda(agendaID, {gas: 180000});
+          const afterValue = await agendaManager.minimumNoticePeriodSeconds();
+          beforeValue.should.be.bignumber.not.equal(afterValue);
+
+          const afterAgenda = await agendaManager.agendas(agendaID); 
+          const test = await agendaManager.getExecutionInfo(agendaID);
+          afterAgenda[AGENDA_INDEX_EXECUTED].should.be.equal(true);
+          afterAgenda[AGENDA_INDEX_EXECUTED_TIMESTAMP].should.be.bignumber.gt(toBN("0")); 
+        });
+
+        it("check executed result/status", async function () {
+          const executedInfo = await agendaManager.getExecutionInfo(agendaID);
+          toBN(executedInfo.executeStartFrom).should.be.bignumber.equal(toBN("10"));
+          (await agendaManager.minimumNoticePeriodSeconds()).should.be.bignumber.equal(toBN("10000000"));
+        });
+      });
+
+      describe("executing period of agenda", async function () {
+        let agendaID;
+        it('create new agenda', async function () {
+          const noticePeriod = await agendaManager.minimumNoticePeriodSeconds();
+          const votingPeriod = await agendaManager.minimumVotingPeriodSeconds();
+          const selector = web3.eth.abi.encodeFunctionSignature("setMinimumNoticePeriodSeconds(uint256)");
+          const newMinimumNoticePeriod = 20;
+          const data = padLeft(newMinimumNoticePeriod.toString(16), 64);
+          const functionBytecode = selector.concat(data);
+
+          const param = web3.eth.abi.encodeParameters(
+            ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+            [[agendaManager.address], noticePeriod.toString(), votingPeriod.toString(), true, [functionBytecode]]
+          );
+
+          const beforeBalance = await ton.balanceOf(user1);
+          const agendaFee = await agendaManager.createAgendaFees();
+          agendaFee.should.be.bignumber.gt(toBN("0"));
+
+          // create agenda
+          await ton.approveAndCall(
+            committeeProxy.address,
+            agendaFee,
+            param,
+            {from: user1}
+          );
+          const afterBalance = await ton.balanceOf(user1);
+          afterBalance.should.be.bignumber.lt(beforeBalance);
+          beforeBalance.sub(afterBalance).should.be.bignumber.equal(agendaFee);
+
+          agendaID = (await agendaManager.numAgendas()).sub(toBN("1"));
+          //const executionInfo = await agendaManager.executionInfos(agendaID);
+          const executionInfo = await agendaManager.getExecutionInfo(agendaID);
+          executionInfo[0][0].should.be.equal(agendaManager.address);
+          executionInfo[1][0].should.be.equal(functionBytecode);
+        });
+
+        it('increase block time and check votable', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+          const noticeEndTimestamp = agenda[AGENDA_INDEX_NOTICE_END_TIMESTAMP];
+          await time.increaseTo(noticeEndTimestamp);
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(true);
+        });
+
+        it(`cast vote`, async function () {
+          await castVote(agendaID, candidates[0], VOTE_YES);
+          await castVote(agendaID, candidates[1], VOTE_YES);
+          await castVote(agendaID, candidates[2], VOTE_YES);
+        });
+
+        it("check vote result/status", async function () {
+          const agenda = await agendaManager.agendas(agendaID);
+          agenda[AGENDA_INDEX_RESULT].should.be.bignumber.equal(toBN(AGENDA_RESULT_ACCEPTED));
+          agenda[AGENDA_INDEX_STATUS].should.be.bignumber.equal(toBN(AGENDA_STATUS_WAITING_EXEC));
+          (await time.latest()).should.be.bignumber.lt(agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP]);
+          (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(false);
+        });
+
+        it('increase block time', async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+
+          const votingEndTimestamp = agenda[AGENDA_INDEX_VOTING_END_TIMESTAMP];
+          await time.increaseTo(toBN(votingEndTimestamp).add(toBN("1")));
+
+          (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(true);
+
+          const executableLimitTimestamp = agenda[AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP];
+          await time.increaseTo(toBN(executableLimitTimestamp).add(toBN("1")));
+        });
+
+        it("check executable limit", async function () {
+          const agenda = await agendaManager.agendas(agendaID);  
+
+          (await agendaManager.isVotableStatus(agendaID)).should.be.equal(false);
+          (await time.latest()).should.be.bignumber.gt(agenda[AGENDA_INDEX_EXECUTABLE_LIMIT_TIMESTAMP]);
+          (await agendaManager.canExecuteAgenda(agendaID)).should.be.equal(false);
+          await expectRevert(
+            committeeProxy.executeAgenda(agendaID),
+            "DAOCommittee: can not execute the agenda"
+          );
+        });
+      });
     });
   });
 
   describe('Vault', function () {
-    it('claim from DAOVault', async function () {
-      let amount = await wton.balanceOf(daoVault.address);
+    it('claim from OldDAOVaultMock', async function () {
+      let amount = await wton.balanceOf(oldDaoVault.address);
       amount.should.be.bignumber.gt(toBN('0'));
-      beforeBalance = await wton.balanceOf(daoVault2.address);
-      const owner = await daoVault.owner();
+      beforeBalance = await wton.balanceOf(daoVault.address);
+      console.log(`beforeBalance: ${beforeBalance}`);
+      const owner = await oldDaoVault.owner();
       currentTime = await time.latest();
-      await daoVault.claim(daoVault2.address);
-      afterBalance = await ton.balanceOf(daoVault2.address);
+      await oldDaoVault.claim(daoVault.address);
+      afterBalance = await ton.balanceOf(daoVault.address);
+      console.log(`afterBalance: ${afterBalance}`);
 
-      amount = await wton.balanceOf(daoVault.address);
+      amount = await wton.balanceOf(oldDaoVault.address);
       amount.should.be.bignumber.equal(toBN('0'));
     });
 
-    it('Claim activity reward', async function () {
-      for (let i = 0; i < candidates.length; i++) {
-        const candidate = candidates[i];
-        const beforeBalance = await ton.balanceOf(candidate);
+    describe('Claim activity reward', function () {
+      it('dao candidate', async function () {
+        for (let i = 0; i < candidates.length; i++) {
+          const candidate = candidates[i];
+          const candidateContract = await getCandidateContract(candidate);
+          const beforeBalance = await ton.balanceOf(candidate);
 
-        const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          const fee = await committeeProxy.activityRewardPerSecond();
+
+          const beforeBalanceTV = await ton.balanceOf(daoVault.address);
+          const beforeBalanceWV = await wton.balanceOf(daoVault.address);
+
+          const claimableAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAmount.should.be.bignumber.gt(toBN("0"));
+
+          await candidateContract.claimActivityReward({from: candidate});
+
+          const afterBalanceTV = await ton.balanceOf(daoVault.address);
+          const afterBalanceWV = await wton.balanceOf(daoVault.address);
+
+          const afterBalance = await ton.balanceOf(candidate);
+          afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
+          
+          const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(candidate);
+          claimableAfterAmount.should.be.bignumber.equal(toBN("0")); 
+        }
+      });
+
+      it('operator', async function () {
+        const operator = user1;
+        const layer2 = layer2s[0];
+        const candidateContract = await getCandidateContract(layer2);
+
+        await deposit(layer2, operator, _TON("9999").toFixed(TON_UNIT));
+        await candidateContract.changeMember(0, {from: operator});
+        await time.increase(10000);
+
+        const beforeBalance = await ton.balanceOf(operator);
+
+        const fee = await committeeProxy.activityRewardPerSecond();
+
+        const beforeBalanceTV = await ton.balanceOf(daoVault.address);
+        const beforeBalanceWV = await wton.balanceOf(daoVault.address);
+
+        const claimableAmount = await committeeProxy.getClaimableActivityReward(layer2s[0]);
         claimableAmount.should.be.bignumber.gt(toBN("0"));
 
-        await committeeProxy.claimActivityReward({from: candidate});
+        await candidateContract.claimActivityReward({from: operator});
 
-        const afterBalance = await ton.balanceOf(candidate);
+        const afterBalanceTV = await ton.balanceOf(daoVault.address);
+        const afterBalanceWV = await wton.balanceOf(daoVault.address);
+
+        const afterBalance = await ton.balanceOf(operator);
         afterBalance.sub(beforeBalance).should.be.bignumber.gte(claimableAmount);
         
-        const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(candidate);
+        const claimableAfterAmount = await committeeProxy.getClaimableActivityReward(layer2s[0]);
         claimableAfterAmount.should.be.bignumber.equal(toBN("0")); 
-
-      }
+      });
     });
   });
 });

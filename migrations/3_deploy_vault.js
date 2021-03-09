@@ -3,7 +3,7 @@ const fs = require('fs');
 const save = require('../utils/save_deployed');
 const load = require('../utils/load_deployed');
 
-const DAOVault2 = artifacts.require('DAOVault2');
+const DAOVault = artifacts.require('DAOVault');
 
 module.exports = async function (deployer, network) {
   if (process.env.DEPLOY_VAULT) {
@@ -12,7 +12,7 @@ module.exports = async function (deployer, network) {
 
     let vault2;
     await deployer.deploy(
-      DAOVault2,
+      DAOVault,
       tonAddress,
       wtonAddress
     ).then((_vault2) => {
@@ -21,7 +21,7 @@ module.exports = async function (deployer, network) {
 
     save(
       network, {
-        name: "DAOVault2",
+        name: "DAOVault",
         address: vault2.address
       }
     );

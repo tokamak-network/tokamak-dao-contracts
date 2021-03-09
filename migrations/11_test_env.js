@@ -82,31 +82,44 @@ async function addOperator(deployer, operator, network) {
     data
   );
 
+  console.log(`layer2: ${layer2.address}, operator: ${operator}`);
   await layer2.changeOperator(operator);
 }
 
 module.exports = async function (deployer, network) {
   if (process.env.TEST_ENV) {
     const tonAddress = load(network, "TON");
-    let etherToken;
-    await deployer.deploy(
-      EtherToken,
-      true,
-      tonAddress,
-      true
-    ).then((_etherToken) => {
-        etherToken = _etherToken
-      });
+    let etherToken, etherTokenAddress;
 
-    save(
-      network, {
-        name: "EtherToken",
-        address: etherToken.address
-      }
-    );
+    etherTokenAddress = load(network, "EtherToken");
+    if (etherTokenAddress === undefined) {
+      await deployer.deploy(
+        EtherToken,
+        true,
+        tonAddress,
+        true
+      ).then((_etherToken) => {
+          etherToken = _etherToken
+        });
 
+      save(
+        network, {
+          name: "EtherToken",
+          address: etherToken.address
+        }
+      );
+    }
+
+    await addOperator(deployer, "0x6704Fbfcd5Ef766B287262fA2281C105d57246a6", network);
+    await addOperator(deployer, "0x9E1Ef1eC212F5DFfB41d35d9E5c14054F26c6560", network);
+    await addOperator(deployer, "0xce42bdB34189a93c55De250E011c68FaeE374Dd3", network);
+    await addOperator(deployer, "0x97A3FC5Ee46852C1Cf92A97B7BaD42F2622267cC", network);
     await addOperator(deployer, "0xB9dcBf8A52Edc0C8DD9983fCc1d97b1F5d975Ed7", network);
+
+    await addOperator(deployer, "0x6704Fbfcd5Ef766B287262fA2281C105d57246a6", network);
+    await addOperator(deployer, "0x9E1Ef1eC212F5DFfB41d35d9E5c14054F26c6560", network);
+    await addOperator(deployer, "0xce42bdB34189a93c55De250E011c68FaeE374Dd3", network);
+    await addOperator(deployer, "0x97A3FC5Ee46852C1Cf92A97B7BaD42F2622267cC", network);
     await addOperator(deployer, "0xB9dcBf8A52Edc0C8DD9983fCc1d97b1F5d975Ed7", network);
-    await addOperator(deployer, "0x26064a2E2b568D9A6D01B93D039D1da9Cf2A58CD", network);
   }
 };

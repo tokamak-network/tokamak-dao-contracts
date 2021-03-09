@@ -2,6 +2,7 @@
 pragma solidity ^0.7.6;
 
 interface IWTON {
+    function balanceOf(address account) external view returns (uint256);
     function onApprove(address owner, address spender, uint256 tonAmount, bytes calldata data) external returns (bool);
     function burnFrom(address account, uint256 amount) external;
     function swapToTON(uint256 wtonAmount) external returns (bool);
