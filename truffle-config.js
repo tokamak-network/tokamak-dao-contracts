@@ -49,9 +49,9 @@ module.exports = {
       skipDryRun: true,
     },
     mainnet: {
-      provider: () => new HDWalletProvider([process.env.MAINNET_PRIVATE_KEY], process.env.MAINNET_PROVIDER_URL),
+      provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
       network_id: 1, // eslint-disable-line camelcase
-      gasPrice: 20e9,
+      gasPrice: 100e9,
       skipDryRun: true,
     },
   //   ropsten: {
