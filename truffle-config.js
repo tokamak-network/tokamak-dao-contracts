@@ -1,6 +1,6 @@
 require('dotenv').config();
 const path = require('path');
-// const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 const PrivateKeyProvider = require('truffle-privatekey-provider');
 
 module.exports = {
@@ -47,7 +47,8 @@ module.exports = {
       skipDryRun: true,
     },
     mainnet: {
-      provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
+      //provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
+      provider: () => new HDWalletProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
       network_id: 1, // eslint-disable-line camelcase
       gasPrice: 100e9,
       skipDryRun: true,
