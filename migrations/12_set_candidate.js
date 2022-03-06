@@ -3,7 +3,7 @@ const load = require('../utils/load_deployed');
 const DAOCommitteeProxy = artifacts.require('DAOCommittee');
 
 module.exports = async function (deployer, network) {
-  const committeeProxyAddress = '0xEcd5E344d0649FF76AdBC10f5e3C0c100479559D'
+  const committeeProxyAddress = '0xDD9f0cCc044B0781289Ee318e5971b0139602C26'
   // const committeeAddress = load(network, "DAOCommittee");
   const committeeProxy = await DAOCommitteeProxy.at(committeeProxyAddress);
 
