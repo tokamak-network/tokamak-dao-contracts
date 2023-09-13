@@ -11,7 +11,7 @@
   },
   "include": [
     "./deploy_hardhat",
-    "./test"
+    "test-old"
   ],
   "files": ["./hardhat.config.ts"]
 }

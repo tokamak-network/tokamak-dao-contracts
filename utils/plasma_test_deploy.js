@@ -6,7 +6,7 @@ const {
 } = require('@openzeppelin/test-helpers');
 
 const { padLeft, toBN } = require('web3-utils');
-const { marshalString, unmarshalString } = require('../test/helpers/marshal');
+const { marshalString, unmarshalString } = require('../test-old/helpers/marshal');
 
 const { createCurrency, createCurrencyRatio } = require('@makerdao/currency');
 
