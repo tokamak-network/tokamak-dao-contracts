@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
-pragma abicoder v2;
+pragma solidity ^0.8.4;
 
 import "./StorageStateCommittee.sol";
-//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC165Storage } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
-contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
+contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165Storage {
     address internal _implementation;
     bool public pauseProxy;
 
@@ -17,7 +15,7 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommitteeProxy: msg.sender is not an admin");
         _;
     }
-     
+
     constructor(
         address _ton,
         address _impl,
@@ -51,6 +49,10 @@ contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
         _registerInterface(bytes4(keccak256("onApprove(address,address,uint256,bytes)")));
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(DEFAULT_ADMIN_ROLE, address(this));
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Storage, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId) ;
     }
 
     /// @notice Set pause state

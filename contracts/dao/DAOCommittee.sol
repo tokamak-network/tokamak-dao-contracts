@@ -1,23 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
-pragma abicoder v2;
+pragma solidity ^0.8.4;
 
-import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./StorageStateCommittee.sol";
 
-import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
-import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import { IERC20 } from  "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
 import { ILayer2 } from "../interfaces/ILayer2.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { LibAgenda } from "../lib/Agenda.sol";
-import { ERC165Checker } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165Checker.sol";
+import { ERC165Checker } from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     using SafeMath for uint256;
     using LibAgenda for *;
-     
+
     enum ApplyResult { NONE, SUCCESS, NOT_ELECTION, ALREADY_COMMITTEE, SLOT_INVALID, ADDMEMBER_FAIL, LOW_BALANCE }
 
     struct AgendaCreatingData {
@@ -94,7 +93,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     event ActivityRewardChanged(
         uint256 newReward
     );
-    
+
     modifier onlyOwner() {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "DAOCommittee: msg.sender is not an admin");
         _;
@@ -118,7 +117,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
     function setSeigManager(address _seigManager) external override onlyOwner nonZero(_seigManager) {
         seigManager = ISeigManager(_seigManager);
     }
-     
+
     /// @notice Set SeigManager contract address on candidate contracts
     /// @param _candidateContracts Candidate contracts to be set
     /// @param _seigManager New SeigManager contract address
@@ -254,7 +253,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         });
 
         candidates.push(msg.sender);
-       
+
         emit CandidateContractCreated(msg.sender, candidateContract, _memo);
     }
 
@@ -311,7 +310,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             candidateInfo.memberJoinedTime == 0,
             "DAOCommittee: already member"
         );
-        
+
         address prevMember = members[_memberIndex];
         address prevMemberContract = candidateContract(prevMember);
 
@@ -339,7 +338,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
         return true;
     }
-    
+
     /// @notice Retires member
     /// @return Whether or not the execution succeeded
     function retireMember() onlyMemberContract external override returns (bool) {
@@ -532,7 +531,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         uint256 _vote,
         string calldata _comment
     )
-        external 
+        external
         override
         validAgendaManager
     {
@@ -542,7 +541,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             candidateInfo.candidateContract == msg.sender,
             "DAOCommittee: invalid candidate contract"
         );
-        
+
         agendaManager.castVote(
             _agendaID,
             candidate,
@@ -564,7 +563,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             agendaManager.setResult(_agendaID, LibAgenda.AgendaResult.DISMISS);
             agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus.ENDED);
         }
-        
+
         emit AgendaVoteCasted(msg.sender, _agendaID, _vote, _comment);
     }
 
@@ -581,13 +580,13 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             agendaManager.canExecuteAgenda(_agendaID),
             "DAOCommittee: can not execute the agenda"
         );
-        
+
          (address[] memory target,
              bytes[] memory functionBytecode,
              bool atomicExecute,
              uint256 executeStartFrom
          ) = agendaManager.getExecutionInfo(_agendaID);
-       
+
         if (atomicExecute) {
             agendaManager.setExecutedAgenda(_agendaID);
             for (uint256 i = 0; i < target.length; i++) {
@@ -622,7 +621,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         agendaManager.setResult(_agendaID, LibAgenda.AgendaResult(_result));
         agendaManager.setStatus(_agendaID, LibAgenda.AgendaStatus(_status));
     }
-     
+
     /// @notice Call updateSeigniorage on SeigManager
     /// @param _candidate Candidate address to be updated
     /// @return Whether or not the execution succeeded
@@ -712,7 +711,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         });
 
         candidates.push(_layer2);
-       
+
         emit Layer2Registered(_layer2, candidateContract, _memo);
     }
 
@@ -727,7 +726,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         view
         returns (AgendaCreatingData memory data)
     {
-        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.atomicExecute, data.functionBytecode) = 
+        (data.target, data.noticePeriodSeconds, data.votingPeriodSeconds, data.atomicExecute, data.functionBytecode) =
             abi.decode(input, (address[], uint128, uint128, bool, bytes[]));
     }
 
@@ -737,7 +736,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         require(IERC20(ton).transferFrom(_creator, address(this), fee), "DAOCommittee: failed to transfer ton from creator");
         require(IERC20(ton).transfer(address(1), fee), "DAOCommittee: failed to burn");
     }
-   
+
     function _createAgenda(
         address _creator,
         address[] memory _targets,
@@ -760,7 +759,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
             _atomicExecute,
             _functionBytecodes
         );
-          
+
         emit AgendaCreated(
             _creator,
             agendaID,
@@ -801,7 +800,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
 
         return ICandidate(info.candidateContract).isCandidateContract();
     }
-    
+
     function totalSupplyOnCandidate(
         address _candidate
     )
@@ -826,7 +825,7 @@ contract DAOCommittee is StorageStateCommittee, AccessControl, IDAOCommittee {
         address candidateContract = candidateContract(_candidate);
         return balanceOfOnCandidateContract(candidateContract, _account);
     }
-    
+
     function totalSupplyOnCandidateContract(
         address _candidateContract
     )

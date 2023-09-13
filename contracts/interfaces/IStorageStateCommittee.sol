@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
-pragma abicoder v2;
+pragma solidity ^0.8.4;
 
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";

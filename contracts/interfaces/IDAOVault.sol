@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
+pragma solidity ^0.8.4;
 
 interface IDAOVault {
     function setTON(address _ton) external;

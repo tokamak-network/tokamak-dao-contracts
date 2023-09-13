@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
+pragma solidity ^0.8.4;
 
-import { Ownable } from "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { IWTON } from "../interfaces/IWTON.sol";
 
 contract OldDAOVaultMock is Ownable {

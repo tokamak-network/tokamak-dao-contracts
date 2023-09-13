@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
+pragma solidity ^0.8.4;
 
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-
+import "@openzeppelin/contracts/access/Ownable.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
-import { IERC20 } from  "../../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeMath } from "../../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
+import { IERC20 } from  "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
 import { ILayer2 } from "../interfaces/ILayer2.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
-import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
+import { ERC165Storage } from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 /// @title Managing a candidate
 /// @notice Either a user or layer2 contract can be a candidate
-contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
+contract Candidate is Ownable, ERC165Storage, ICandidate, ILayer2 {
     using SafeMath for uint256;
 
     bool public override isLayer2Candidate;
@@ -40,7 +39,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
         string memory _memo,
         address _committee,
         address _seigManager
-    ) 
+    )
     {
         require(
             _candidate != address(0)
@@ -62,7 +61,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
 
         _registerInterface(ICandidate(address(this)).isCandidateContract.selector);
     }
-    
+
     /// @notice Set SeigManager contract address
     /// @param _seigManager New SeigManager contract address
     function setSeigManager(address _seigManager) external override onlyOwner {
@@ -113,7 +112,7 @@ contract Candidate is Ownable, ERC165, ICandidate, ILayer2 {
     function retireMember() external override onlyCandidate returns (bool) {
         return committee.retireMember();
     }
-    
+
     /// @notice Vote on an agenda
     /// @param _agendaID The agenda ID
     /// @param _vote voting type

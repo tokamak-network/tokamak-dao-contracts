@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
+pragma solidity ^0.8.4;
 
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";

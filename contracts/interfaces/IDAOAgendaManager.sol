@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
-pragma abicoder v2;
+pragma solidity ^0.8.4;
 
 import { LibAgenda } from "../lib/Agenda.sol";
 import { IDAOCommittee } from "../interfaces/IDAOCommittee.sol";
@@ -31,7 +30,7 @@ interface IDAOAgendaManager  {
     function setStatus(uint256 _agendaID, LibAgenda.AgendaStatus _status) external;
     function endAgendaVoting(uint256 _agendaID) external;
     function setExecutedCount(uint256 _agendaID, uint256 _count) external;
-     
+
     // -- view functions
     function isVoter(uint256 _agendaID, address _user) external view returns (bool);
     function hasVoted(uint256 _agendaID, address _user) external view returns (bool);

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
-pragma abicoder v2;
+pragma solidity ^0.8.4;
 
 import { IStorageStateCommittee } from "../interfaces/IStorageStateCommittee.sol";
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
@@ -35,7 +34,7 @@ contract StorageStateCommittee is IStorageStateCommittee {
         require(address(agendaManager) != address(0), "StorageStateCommittee: AgendaManager is zero");
         _;
     }
-    
+
     modifier validCommitteeL2Factory() {
         require(address(candidateFactory) != address(0), "StorageStateCommittee: invalid CommitteeL2Factory");
         _;
@@ -61,7 +60,7 @@ contract StorageStateCommittee is IStorageStateCommittee {
         require(isMember(candidate), "StorageStateCommittee: not a member");
         _;
     }
-    
+
     function isMember(address _candidate) public view override returns (bool) {
         return _candidateInfos[_candidate].memberJoinedTime > 0;
     }
