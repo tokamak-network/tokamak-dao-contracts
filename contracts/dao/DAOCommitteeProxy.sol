@@ -2,10 +2,9 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import "./StorageStateCommittee.sol";
-//import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import {ERC165} from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
 import "../../node_modules/@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC165 } from "../../node_modules/@openzeppelin/contracts/introspection/ERC165.sol";
+import "./StorageStateCommittee.sol";
 
 contract DAOCommitteeProxy is StorageStateCommittee, AccessControl, ERC165 {
     address internal _implementation;

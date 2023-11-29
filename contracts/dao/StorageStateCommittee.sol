@@ -2,13 +2,13 @@
 pragma solidity ^0.7.6;
 pragma abicoder v2;
 
-import { IStorageStateCommittee } from "../interfaces/IStorageStateCommittee.sol";
 import { ICandidateFactory } from "../interfaces/ICandidateFactory.sol";
 import { ILayer2Registry } from "../interfaces/ILayer2Registry.sol";
 import { ISeigManager } from "../interfaces/ISeigManager.sol";
 import { IDAOAgendaManager } from "../interfaces/IDAOAgendaManager.sol";
 import { IDAOVault } from "../interfaces/IDAOVault.sol";
 import { ICandidate } from "../interfaces/ICandidate.sol";
+import { IStorageStateCommittee } from "../interfaces/IStorageStateCommittee.sol";
 
 contract StorageStateCommittee is IStorageStateCommittee {
     enum AgendaStatus { NONE, NOTICE, VOTING, EXEC, ENDED, PENDING, RISK }

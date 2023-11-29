@@ -1,4 +1,4 @@
-
+.env
 build/
 plasma-evm-contracts/
 node_modules/
