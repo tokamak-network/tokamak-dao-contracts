@@ -83,8 +83,38 @@ module.exports = {
       skipDryRun: true,
       verify: {
         apiUrl: "https://api-holesky.etherscan.io/api",
-        apiKey: "YY46TZ8HN26I7RKV3PKH1YE6Y9CJN7VMMS",
+        apiKey: process.env.API_KEY,
         explorerUrl: "https://holesky.etherscan.io/",
+      },
+    },
+    holesky: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MAINNET_PRIVATE_KEY,
+          process.env.MAINNET_PROVIDER_URL
+        ),
+      network_id: 17000, // eslint-disable-line camelcase
+      gasPrice: 100e9,
+      skipDryRun: true,
+      verify: {
+        apiUrl: "https://api-holesky.etherscan.io/api",
+        apiKey: process.env.API_KEY,
+        explorerUrl: "https://holesky.etherscan.io/",
+      },
+    },
+    sepolia: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MAINNET_PRIVATE_KEY,
+          process.env.SEPOLIA_PROVIDER_URL
+        ),
+      network_id: 11155111, // eslint-disable-line camelcase
+      gasPrice: 100e9,
+      skipDryRun: true,
+      verify: {
+        apiUrl: "https://api-sepolia.etherscan.io/api",
+        apiKey: process.env.API_KEY,
+        explorerUrl: "https://sepolia.etherscan.io/",
       },
     },
 
