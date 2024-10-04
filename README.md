@@ -43,6 +43,19 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 * RefactorCoinageSnapshot : [0xef12310ff8a6e96357b7d2c4a759b19ce94f7dfb](https://etherscan.io/address/0xef12310ff8a6e96357b7d2c4a759b19ce94f7dfb)
 * CoinageFactory : [0xe8fae91b80dd515c3d8b9fc02cb5b2ecfddabf43](https://etherscan.io/address/0xe8fae91b80dd515c3d8b9fc02cb5b2ecfddabf43)
 
+# Deployed contracts on sepolia
+
+## DAO contracts
+* DAOVault: [0xB9F6c9E75418D7E5a536ADe08f0218196BB3eBa4](https://sepolia.etherscan.io/address/0xB9F6c9E75418D7E5a536ADe08f0218196BB3eBa4)
+* DAOAgendaManager: [0x1444f7a8bC26a3c9001a13271D56d6fF36B44f08](https://sepolia.etherscan.io/address/0x1444f7a8bC26a3c9001a13271D56d6fF36B44f08)
+* Candidate : [0xc462834ea537c23C6aAb31c2564dfE16e7CD37BD](https://sepolia.etherscan.io/address/0xc462834ea537c23C6aAb31c2564dfE16e7CD37BD)
+* CandidateFactory : [0xc004ae9c774A27d6bE6C860d8c414AC697D4dc28](https://sepolia.etherscan.io/address/0xc004ae9c774A27d6bE6C860d8c414AC697D4dc28)
+* CandidateFactoryProxy : [0x04e3C2B720FB8896A7f9Ea59DdcA85fD45189C7f](https://sepolia.etherscan.io/address/0x04e3C2B720FB8896A7f9Ea59DdcA85fD45189C7f)
+* DAOCommitteeOwner : [0x34B6e334D88436Fbbb9c316865A1BA454769C090](https://sepolia.etherscan.io/address/0x34B6e334D88436Fbbb9c316865A1BA454769C090)
+* DAOCommittee_V1 : [0xB800a42D9A8e5036B75246aeDA578DCe58f85B18](https://sepolia.etherscan.io/address/0xB800a42D9A8e5036B75246aeDA578DCe58f85B18)
+* DAOCommitteeProxy: [0xA2101482b28E3D99ff6ced517bA41EFf4971a386](https://sepolia.etherscan.io/address/0xA2101482b28E3D99ff6ced517bA41EFf4971a386)
+* DAOCommitteeProxy2: [0x0cb4E974302864D1059028de86757Ca55D121Cb8](https://sepolia.etherscan.io/address/0x0cb4E974302864D1059028de86757Ca55D121Cb8)
+
 # How it works
 
 * Agendas: Anyone can create an agenda. An agenda has one or more function executions.
