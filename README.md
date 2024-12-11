@@ -9,13 +9,19 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 * DAOVault: [0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303](https://etherscan.io/address/0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303)
 * DAOAgendaManager: [0xcD4421d082752f363E1687544a09d5112cD4f484](https://etherscan.io/address/0xcD4421d082752f363E1687544a09d5112cD4f484)
 
-<s> CandidateFactory: [0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942](https://etherscan.io/address/0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942)</s>
+<s> * CandidateFactory: [0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942](https://etherscan.io/address/0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942)</s>
 * Candidate : [0x1a8f59017e0434efc27e89640ac4b7d7d194c0a3](https://etherscan.io/address/0x1a8f59017e0434efc27e89640ac4b7d7d194c0a3)
 * CandidateFactory : [0xc5eb1c5ce7196bdb49ea7500ca18a1b9f1fa3ffb](https://etherscan.io/address/0xc5eb1c5ce7196bdb49ea7500ca18a1b9f1fa3ffb)
 * CandidateFactoryProxy : [0x9fc7100a16407ee24a79c834a56e6eca555a5d7c](https://etherscan.io/address/0x9fc7100a16407ee24a79c834a56e6eca555a5d7c)
-* DAOCommitteeOwner : [0xe070fFD0E25801392108076ed5291fA9524c3f44](https://etherscan.io/address/0xe070fFD0E25801392108076ed5291fA9524c3f44)
-* DAOCommittee_V1 : [0xdF2eCda32970DB7dB3428FC12Bc1697098418815](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815)
-* DAOCommitteeProxy: [0xDD9f0cCc044B0781289Ee318e5971b0139602C26](https://etherscan.io/address/0xDD9f0cCc044B0781289Ee318e5971b0139602C26)
+<s> * DAOCommitteeOwner : [0xe070fFD0E25801392108076ed5291fA9524c3f44](https://etherscan.io/address/0xe070fFD0E25801392108076ed5291fA9524c3f44)
+* DAOCommittee_V1 : [0xdF2eCda32970DB7dB3428FC12Bc1697098418815](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815) </s>
+* DAOCommitteeProxy : [0xDD9f0cCc044B0781289Ee318e5971b0139602C26](https://etherscan.io/address/0xDD9f0cCc044B0781289Ee318e5971b0139602C26)
+* DAOCommitteeProxy2 : [0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a](https://etherscan.io/address/0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a)
+* DAOCommitteeOwner : [0x5991Aebb5271522d33C457bf6DF26d83c0dAa221](https://etherscan.io/address/0x5991Aebb5271522d33C457bf6DF26d83c0dAa221)
+* DAOCommittee_V1 : [0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe](https://etherscan.io/address/0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe)
+* CandidateAddOnFactoryProxy : [0x61a80Dcf8269f18Ed9bb6C563035651A1756B263](https://etherscan.io/address/0x61a80Dcf8269f18Ed9bb6C563035651A1756B263)
+* CandidateAddOnFactory : [0xBda1647ED13483BA68957874BAFB2E5A6E508900](https://etherscan.io/address/0xBda1647ED13483BA68957874BAFB2E5A6E508900)
+* CandidateAddOnV1_1 : [0x324b3C030A76c85AaC0B4B85bDc560D0df32f58B](https://etherscan.io/address/0x324b3C030A76c85AaC0B4B85bDc560D0df32f58B)
 
 ## plasma-evm-contracts
 
