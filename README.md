@@ -13,6 +13,7 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 * Candidate : [0x1a8f59017e0434efc27e89640ac4b7d7d194c0a3](https://etherscan.io/address/0x1a8f59017e0434efc27e89640ac4b7d7d194c0a3)
 * CandidateFactory : [0xc5eb1c5ce7196bdb49ea7500ca18a1b9f1fa3ffb](https://etherscan.io/address/0xc5eb1c5ce7196bdb49ea7500ca18a1b9f1fa3ffb)
 * CandidateFactoryProxy : [0x9fc7100a16407ee24a79c834a56e6eca555a5d7c](https://etherscan.io/address/0x9fc7100a16407ee24a79c834a56e6eca555a5d7c)
+  
 <s> * DAOCommitteeOwner : [0xe070fFD0E25801392108076ed5291fA9524c3f44](https://etherscan.io/address/0xe070fFD0E25801392108076ed5291fA9524c3f44)
 * DAOCommittee_V1 : [0xdF2eCda32970DB7dB3428FC12Bc1697098418815](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815) </s>
 * DAOCommitteeProxy : [0xDD9f0cCc044B0781289Ee318e5971b0139602C26](https://etherscan.io/address/0xDD9f0cCc044B0781289Ee318e5971b0139602C26)
