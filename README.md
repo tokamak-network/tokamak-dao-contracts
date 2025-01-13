@@ -14,6 +14,7 @@
 - [Repository](#repository)
 - [Deployed Contracts Addresses](#deployed-contracts-addresses)
 - [DAO Contract Upgraded Work Contents](#dao-upgraded-work-contents)
+- [How it work](#how-it-work)
 
 ## tokamak-dao-contracts
 
@@ -31,7 +32,7 @@ All repositories related to development for TokamakDAO is provided here.
 
 | Type     | Name | Branch | Status                        |
 |----------|------|--------|-----------------------|
-|     Contract    |   [tokamakDAO](https://github.com/tokamak-network/plasma-evm-contracts) |  `tokamakDAO` | :heavy_check_mark: Completed on Version 1.0
+|     Contract    |   [tokamakDAO](https://github.com/tokamak-network/plasma-evm-contracts) |  `tokamakDAO` | :heavy_check_mark: Completed on Original Version 
 |     Contract    |   [tokamakDAOV1](https://github.com/tokamak-network/ton-staking-v2/tree/mainnet-agenda-test/contracts/dao) |  `tokamakDAOV1` | :heavy_exclamation_mark: External audit in preparation on Version 1.0
 
 ## Deployed Contracts Addresses
@@ -46,43 +47,6 @@ All repositories related to development for TokamakDAO is provided here.
 5. [2024-03-21] Upgrade to DAOCommittee_V1 separated the logic that is used separately from DAOCommitteeOwner. founded a calculation error in the Member Claim function and fixed that part. ([0xdF2eCda32970DB7dB3428FC12Bc1697098418815](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815)) 
 6. [createAgenda] Upgraded the structure because there were some inconveniences in using two types of logic in the existing DAO structure, and added functions that are compatible with StakingV2.5. Please refer to the [link](https://github.com/tokamak-network/ton-staking-v2/blob/mainnet-agenda-test/doc/en/dao-upgraded-en.md) for details. [DAOCommiteeProxy2 : [0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a](https://etherscan.io/address/0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a), DAOCommitte_V1 : [0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe](https://etherscan.io/address/0x5991aebb5271522d33c457bf6df26d83c0daa221), DAOCommitteeOwner: [0x5991Aebb5271522d33C457bf6DF26d83c0dAa221](https://etherscan.io/address/0x5991Aebb5271522d33C457bf6DF26d83c0dAa221)]
 
-# Deployed contracts on mainnet
-
-## DAO contracts
-
-* DAOVault: [0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303](https://etherscan.io/address/0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303)
-* DAOAgendaManager: [0xcD4421d082752f363E1687544a09d5112cD4f484](https://etherscan.io/address/0xcD4421d082752f363E1687544a09d5112cD4f484)
-* CandidateFactory: [0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942](https://etherscan.io/address/0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942)
-* DAOCommittee: [0xd1A3fDDCCD09ceBcFCc7845dDba666B7B8e6D1fb](https://etherscan.io/address/0xd1A3fDDCCD09ceBcFCc7845dDba666B7B8e6D1fb)
-* DAOCommitteeProxy: [0xDD9f0cCc044B0781289Ee318e5971b0139602C26](https://etherscan.io/address/0xDD9f0cCc044B0781289Ee318e5971b0139602C26)
-
-## plasma-evm-contracts
-
-* TON: [0x2be5e8c109e2197D077D13A82dAead6a9b3433C5](https://etherscan.io/address/0x2be5e8c109e2197D077D13A82dAead6a9b3433C5)
-* WTON: [0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2](https://etherscan.io/address/0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2)
-* DepositManager: [0x56E465f654393fa48f007Ed7346105c7195CEe43](https://etherscan.io/address/0x56E465f654393fa48f007Ed7346105c7195CEe43)
-* SeigManager: [0x710936500aC59e8551331871Cbad3D33d5e0D909](https://etherscan.io/address/0x710936500aC59e8551331871Cbad3D33d5e0D909)
-* PowerTON: [0xd86d8950A4144D8a258930F6DD5f90CCE249E1CF](https://etherscan.io/address/0xd86d8950A4144D8a258930F6DD5f90CCE249E1CF)
-* Layer2Registry: [0x0b3E174A2170083e770D5d4Cf56774D221b7063e](https://etherscan.io/address/0x0b3E174A2170083e770D5d4Cf56774D221b7063e)
-* CoinageFactory: [0x5b40841eeCfB429452AB25216Afc1e1650C07747](https://etherscan.io/address/0x5b40841eeCfB429452AB25216Afc1e1650C07747)
-
-# How it works
-
-* Agendas: Anyone can create an agenda. An agenda has one or more function executions.
-* Members: Members can vote on agendas. And they get rewards based on activity period.
-* Candidates: Anyone can be a candidate. The amount of votes a candidate gets is deposited TON amount on the candidate.
-* Users: Users can deposit on candidates and get seigniorage.
-
-# Build
-
-```
-$ npm install
-$ npm run compile:plasma
-$ truffle compile
-```
-
-# Test
-
-```
-$ npm test
-```
+# How-it-work
+- [Original Test](/docs/test/original-test.md)
+- [V1 Test](/docs/test/v1-test.md)
