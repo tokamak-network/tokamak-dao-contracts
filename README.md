@@ -20,7 +20,7 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 
 
 ## Documentation 
-- Etherscan guide: Interact with DAO contracts using [Etherscan guide](./docs/etherscan-guide/README.md).
+- Etherscan guide: Interact with DAO contracts using Etherscan guide(will update this part).
 - Contract Description: For detailed contract specifications, please refer to [the contract description document](./docs/developer-guide/README.md).
 - Changes in DAOCommitteeV1 : What's added or changed in V1 can be found in [this document](https://github.com/tokamak-network/ton-staking-v2/blob/deploy-ton-staking-v2.5/docs/en/ton-staking-v2.md).
 
