@@ -2,7 +2,7 @@
 <div align="center">
   <br />
   <br />
-  <a href="https://github.com/tokamak-network/ton-staking-v2"><img alt="TonStaking" src="./docs/img/tokamak_DAO.png" width=600></a>
+  <a href="https://github.com/tokamak-network/tokamak-dao-contracts"><img alt="TonStaking" src="./docs/img/tokamak_DAO.png" width=600></a>
   <br />
   <h3>The Tokamak Network DAO contract creates policies related to Tokamak Network through the Agenda and decides on the execution of the Agenda through voting by the Members.</h3>
   <br />
@@ -22,7 +22,7 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 ## Documentation 
 - Etherscan guide: Interact with DAO contracts using Etherscan guide(will update this part).
 - Contract Description: For detailed contract specifications, please refer to [the contract description document](./docs/developer-guide/README.md).
-- Changes in DAOCommitteeV1 : What's added or changed in V1 can be found in [this document](https://github.com/tokamak-network/ton-staking-v2/blob/deploy-ton-staking-v2.5/docs/en/ton-staking-v2.md).
+- Changes in DAOCommitteeV1 : What's added or changed in V1 can be found in [this document](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-upgraded-en.md).
 
 # Deployed contracts on mainnet
 
