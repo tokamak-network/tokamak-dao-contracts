@@ -14,3 +14,5 @@ migrations/old/
 truffle-config.js
 old_test/
 deployed.rinkeby.json
+
+.env
