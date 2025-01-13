@@ -8,9 +8,21 @@
   <br />
 </div>
 
-# tokamak-dao-contracts
+**Table of Contents**
+- [What is tokamak-dao-contracts?](#tokamak-dao-contracts)
+- [Documentation](#documentation)
+- [Repository](#repository)
+- [Deployed Contracts Addresses](#deployed-contracts-addresses)
+
+## tokamak-dao-contracts
 
 This repository contains the DAO contracts of Tokamak Network. Tokamak Network DAO supports all functionality in Tokamak Network contracts. All functions of all contracts are executed only by the DAO. And Tokamak Network foundation doesn't own any contracts(except dao itself. It will be renounced later).
+
+
+## Documentation 
+- Etherscan guide: Interact with DAO contracts using [Etherscan guide](./docs/etherscan-guide/README.md).
+- Contract Description: For detailed contract specifications, please refer to [the contract description document](./docs/developer-guide/README.md).
+- Changes in DAOCommitteeV1 : What's added or changed in V1 can be found in [this document](https://github.com/tokamak-network/ton-staking-v2/blob/deploy-ton-staking-v2.5/docs/en/ton-staking-v2.md).
 
 # Deployed contracts on mainnet
 
