@@ -1,7 +1,7 @@
 require('dotenv').config();
 const path = require('path');
-// const HDWalletProvider = require("@truffle/hdwallet-provider");
-const PrivateKeyProvider = require('truffle-privatekey-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+// const PrivateKeyProvider = require('truffle-privatekey-provider');
 
 module.exports = {
   contracts_build_directory : path.join(__dirname, "build/contracts"),
@@ -28,27 +28,38 @@ module.exports = {
       gasPrice: 1e9,
       network_id: '*', // eslint-disable-line camelcase
     },
-    faraday: {
-      provider: () => new HDWalletProvider([process.env.FARADAY_PRIVATE_KEY], process.env.FARADAY_PROVIDER_URL),
-      network_id: 16, // eslint-disable-line camelcase
-      production: true,
-    },
-    rinkeby: {
-      provider: () => new PrivateKeyProvider(process.env.RINKEBY_PRIVATE_KEY, process.env.RINKEBY_PROVIDER_URL),
-      network_id: 4, // eslint-disable-line camelcase
-      gasPrice: 5e9,
-      skipDryRun: true,
-    },
-    ropsten: {
-      provider: () => new HDWalletProvider([process.env.ROPSTEN_PRIVATE_KEY], process.env.ROPSTEN_PROVIDER_URL),
-      network_id: 3, // eslint-disable-line camelcase
-      gasPrice: 100e9,
-      production: true,
-      skipDryRun: true,
-    },
-    mainnet: {
-      provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
-      network_id: 1, // eslint-disable-line camelcase
+    // faraday: {
+    //   provider: () => new HDWalletProvider([process.env.FARADAY_PRIVATE_KEY], process.env.FARADAY_PROVIDER_URL),
+    //   network_id: 16, // eslint-disable-line camelcase
+    //   production: true,
+    // },
+    // rinkeby: {
+    //   provider: () => new PrivateKeyProvider(process.env.RINKEBY_PRIVATE_KEY, process.env.RINKEBY_PROVIDER_URL),
+    //   network_id: 4, // eslint-disable-line camelcase
+    //   gasPrice: 5e9,
+    //   skipDryRun: true,
+    // },
+    // ropsten: {
+    //   provider: () => new HDWalletProvider([process.env.ROPSTEN_PRIVATE_KEY], process.env.ROPSTEN_PROVIDER_URL),
+    //   network_id: 3, // eslint-disable-line camelcase
+    //   gasPrice: 100e9,
+    //   production: true,
+    //   skipDryRun: true,
+    // },
+    // mainnet: {
+    //   provider: () => new PrivateKeyProvider(process.env.MAINNET_PRIVATE_KEY, process.env.MAINNET_PROVIDER_URL),
+    //   network_id: 1, // eslint-disable-line camelcase
+    //   gasPrice: 100e9,
+    //   skipDryRun: true,
+    // },
+    goerli: {
+      provider: function() {
+        return new HDWalletProvider(
+            `${process.env.PRIVATE_KEY}`, 
+            `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`
+        )
+      },
+      network_id: 5, // eslint-disable-line camelcase
       gasPrice: 100e9,
       skipDryRun: true,
     },
@@ -81,6 +92,10 @@ module.exports = {
     bail: true, 
     // Here is 2min but can be whatever timeout is suitable for you.
   },
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY,
+  },
+  plugins: ['truffle-plugin-verify'],
   compilers: {
     solc: {
       version: '0.7.6',
