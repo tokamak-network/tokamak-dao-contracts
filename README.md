@@ -47,6 +47,6 @@ All repositories related to development for TokamakDAO is provided here.
 5. [2024-03-21] Upgrade to DAOCommittee_V1 separated the logic that is used separately from DAOCommitteeOwner. founded a calculation error in the Member Claim function and fixed that part. ([0xdF2eCda32970DB7dB3428FC12Bc1697098418815](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815)) 
 6. [createAgenda] Upgraded the structure because there were some inconveniences in using two types of logic in the existing DAO structure, and added functions that are compatible with StakingV2.5. Please refer to the [link](https://github.com/tokamak-network/ton-staking-v2/blob/mainnet-agenda-test/doc/en/dao-upgraded-en.md) for details. [DAOCommiteeProxy2 : [0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a](https://etherscan.io/address/0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a), DAOCommitte_V1 : [0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe](https://etherscan.io/address/0x5991aebb5271522d33c457bf6df26d83c0daa221), DAOCommitteeOwner: [0x5991Aebb5271522d33C457bf6DF26d83c0dAa221](https://etherscan.io/address/0x5991Aebb5271522d33C457bf6DF26d83c0dAa221)]
 
-# How-it-work
+## How-it-work
 - [Original Test](/docs/test/original-test.md)
 - [V1 Test](/docs/test/v1-test.md)
