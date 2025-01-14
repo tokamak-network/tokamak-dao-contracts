@@ -23,7 +23,7 @@ This repository contains the DAO contracts of Tokamak Network. Tokamak Network D
 
 ## Documentation 
 - Etherscan guide: Interact with DAO contracts using Etherscan guide(will update this part).
-- Contract Description: For detailed contract specifications, please refer to the contract description document[EN](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-en.md), [KR](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-kr.md).
+- Contract Description: For detailed contract specifications, please refer to the contract description document[[EN](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-en.md), [KR](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-kr.md)].
 - Changes in DAOCommitteeV1 : What's added or changed in V1 can be found in [this document](https://github.com/tokamak-network/tokamak-dao-contracts/blob/guide-document-for-user/docs/en/dao-upgraded-en.md).
 
 ## Repository
