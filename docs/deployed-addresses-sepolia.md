@@ -9,6 +9,7 @@
 
 
 ## DAO contracts
+
 | Name     | Address | link |
 |----------|------|-------------------------------|
 |  DAOVault |   0xB9F6c9E75418D7E5a536ADe08f0218196BB3eBa4    | [link](https://sepolia.etherscan.io/address/0xB9F6c9E75418D7E5a536ADe08f0218196BB3eBa4)
@@ -26,6 +27,9 @@
 
 
 ## DAO contracts (not using)
+
+| Name     | Address | link |
+|----------|------|-------------------------------|
 |  DAOCommittee_V1        |  0xDC7e4c6cAe2123758f17D17572c6f6e820D2b431    | [link](https://sepolia.etherscan.io/address/0xDC7e4c6cAe2123758f17D17572c6f6e820D2b431)
 |  DAOCommitteeOwner        |  0xDB0755b606d15C011A03b1C968E54F96bBdDd1D7    | [link](https://sepolia.etherscan.io/address/0xDB0755b606d15C011A03b1C968E54F96bBdDd1D7)
 

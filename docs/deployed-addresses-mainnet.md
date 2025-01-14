@@ -9,6 +9,7 @@
 
 
 ## DAO contracts
+
 | Name     | Address | link |
 |----------|------|-------------------------------|
 |  DAOVault |   0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303    | [link](https://etherscan.io/address/0x2520CD65BAa2cEEe9E6Ad6EBD3F45490C42dd303)
@@ -21,12 +22,18 @@
 |  DAOCommittee_V1        | 0xdF2eCda32970DB7dB3428FC12Bc1697098418815     | [link](https://etherscan.io/address/0xdF2eCda32970DB7dB3428FC12Bc1697098418815)
 
 ## DAO contracts (will update)
+
+| Name     | Address | link |
+|----------|------|-------------------------------|
 |  DAOCommitteeProxy2        | 0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a     |[link](https://etherscan.io/address/0xD6175F575F4d32392508Ee2FBbDec9a2E8B3c01a)
 |  DAOCommitteeOwner        | 0x5991Aebb5271522d33C457bf6DF26d83c0dAa221     | [link](https://etherscan.io/address/0x5991Aebb5271522d33C457bf6DF26d83c0dAa221)
 |  DAOCommittee_V1        | 0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe     | [link](https://etherscan.io/address/0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe)
 
 
 ## DAO contracts (not using)
+
+| Name     | Address | link |
+|----------|------|-------------------------------|
 |  DAOCommitteeExtend        |  0x72655449e82211624d5f4d2abb235bb6fe2fe989    | [link](https://etherscan.io/address/0x72655449e82211624d5f4d2abb235bb6fe2fe989)
 |  DAOCommitteeOwner        |  0xe070fFD0E25801392108076ed5291fA9524c3f44    | [link](https://etherscan.io/address/0xe070fFD0E25801392108076ed5291fA9524c3f44)
 |  CandidateFactory        |  0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942    | [link](https://etherscan.io/address/0xE6713aF11aDB0cFD3C60e15b23E43f5548C32942)
