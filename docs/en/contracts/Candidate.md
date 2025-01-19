@@ -51,7 +51,7 @@ Retire a member
 ---
 
 ### castVote (uint256 _agendaID, uint256 _vote, string _comment)
-Challenge the member with the index number to replace it.
+Vote on the agenda.
  - Parameters
    -  _agendaID (uint256) : The agenda ID
    - _vote (uint256) : voting type (0: abstainVotes, 1:yesVotes, 2:noVotes)
