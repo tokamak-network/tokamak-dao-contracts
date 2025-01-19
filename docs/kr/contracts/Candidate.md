@@ -84,6 +84,6 @@ agenda에 대해서 투표합니다.
  - Parameters
    -  _account (address) : 검색할 account를 입력합니다.
  - Result
-   - (bool) : 이 Candidate에서 account의 stake 되어얐는 양을 리턴합니다.
+   - (bool) : 이 Candidate에서 account의 stake 되어있는 양을 리턴합니다.
 
 ---
