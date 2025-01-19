@@ -4,19 +4,20 @@ Tokamak Network DAO는 Tokamak Network Contract의 모든 기능을 지원합니
 
 ## Overview Of Contracts
 
-- DAO의 Agenda 생성은 누구나 할 수 있습니다. Agenda를 생성할때 Agenda 생성자는 Agenda Create Fee로 10TON을 Burn하게 됩니다.
 - DAO의 Candidate는 누구나 될 수 있습니다.
+- DAO의 Agenda 생성은 누구나 할 수 있습니다. 
+- Agenda를 생성할때 Agenda 생성자는 Agenda Create Fee로 10TON을 Burn하게 됩니다.
 - Candidate로써 역할을 하기 위해서는 SeigManager의 minimumAmount값 이상으로 Candidate에 operator가 staking해야합니다.
-- DAO의 Member는 DAO의 Candidate라면 누구나 challenge를 통해 Member가 될 수 있습니다. Candidate의 Staking이 더 많이 되어있는 Candidate가 Member가 됩니다.
+- DAO의 Member는 DAO의 Candidate라면 누구나 challenge를 통해 Member가 될 수 있습니다. (Candidate의 Staking이 더 많이 되어있는 Candidate가 Member가 됩니다.)
 - DAO의 Member는 언제든 retireMember함수를 통해 retire할 수 있고 retire하게 되면 해당 Member자리는 공석이 됩니다.
 - Member는 활동하는 기간동안 reward로 TON을 받게되며 claimActivityReward함수를 통해서 reward를 claim할 수 있습니다.
 
 **Table of Contracts**
-- [DAOCommittee]
-- [DAOVault]
-- [DAOAgendaManager]
-- [CandidateFactory]
-- [Candidate]
+- [DAOCommittee](./contracts/DAOCommittee.md)
+- [DAOVault](./contracts/DAOVault.md)
+- [DAOAgendaManager](./contracts/DAOAgendaManager.md)
+- [CandidateFactory](./contracts/CandidateFactory.md)
+- [Candidate](./contracts/Candidate.md)
 
 ## Agenda Rules
 
