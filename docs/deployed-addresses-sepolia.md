@@ -20,8 +20,8 @@
 |  DAOCommittee        | 0x79cfbEaCB5470bBe3B8Fe76db2A61Fc59e588C38     | [link](https://sepolia.etherscan.io/address/0x79cfbEaCB5470bBe3B8Fe76db2A61Fc59e588C38)
 |  DAOCommitteeProxy        |  0xA2101482b28E3D99ff6ced517bA41EFf4971a386    |[link](https://sepolia.etherscan.io/address/0xA2101482b28E3D99ff6ced517bA41EFf4971a386)
 |  DAOCommitteeProxy2        |  0x0cb4E974302864D1059028de86757Ca55D121Cb8    |[link](https://sepolia.etherscan.io/address/0x0cb4E974302864D1059028de86757Ca55D121Cb8)
-|  DAOCommittee_V1        | 0xB800a42D9A8e5036B75246aeDA578DCe58f85B18     | [link](https://sepolia.etherscan.io/address/0xB800a42D9A8e5036B75246aeDA578DCe58f85B18)
-|  DAOCommitteeOwner        | 0x34B6e334D88436Fbbb9c316865A1BA454769C090     | [link](https://sepolia.etherscan.io/address/0x34B6e334D88436Fbbb9c316865A1BA454769C090)
+|  DAOCommittee_V1        | 0x1E44122E3230957309B29636938e223705C0Da35     | [link](https://sepolia.etherscan.io/address/0x1E44122E3230957309B29636938e223705C0Da35)
+|  DAOCommitteeOwner        | 0x84868ca4DD708cC035bcE0578054aa62c663e309     | [link](https://sepolia.etherscan.io/address/0x84868ca4DD708cC035bcE0578054aa62c663e309)
 |  Layer2CandidateFactory        | 0x770739A468D9262960ee0669f9Eaf0db6E21F81A     | [link](https://sepolia.etherscan.io/address/0x770739A468D9262960ee0669f9Eaf0db6E21F81A)
 |  Layer2Manager        | 0x0237839A14194085B5145D1d1e1E77dc92aCAF06     | [link](https://sepolia.etherscan.io/address/0x0237839A14194085B5145D1d1e1E77dc92aCAF06)
 
