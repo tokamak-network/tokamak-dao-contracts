@@ -2,7 +2,7 @@
 
 ## Changes to the Contract structure of DAOCommitteProxy
 
-The existing Proxy structure had a problem in that it could only refer to one logic, so the addition of DAO logic was limited. As TON Staking was upgraded to TON StakingV2, functions needed to be added, and the situation arose where existing functions had to be deleted. Therefore, we changed the Proxy structure to maintain existing functions while adding new functions, and improved the structure to enable continuous upgrades in the future.
+The existing Proxy structure had a problem in that it could only refer to one logic, so the addition of DAO logic was limited. As TON Staking was upgraded to TON StakingV2, functions needed to be added, and the situation arose where existing functions had to be deleted. Therefore, changed the Proxy structure to maintain existing functions while adding new functions, and improved the structure to enable continuous upgrades in the future.
 
 > Original DAO structure
 ![DAO_Original](https://github.com/tokamak-network/ton-staking-v2/blob/NewDAOStructure/doc/img/DAO_Original.jpg)
@@ -14,35 +14,37 @@ The existing Proxy structure had a problem in that it could only refer to one lo
 
 ## Changes from the existing DAOCommittee
 
-### 1. Added createLayer2Candidate function
-In TON StakingV2, a Layer2Candidate different from the existing Candidate has been added.
-Accordingly, the Layer2Candidate can be added in the DAO.
-For more information,You can check it at the following [Link](https://github.com/tokamak-network/ton-staking-v2/blob/codeReview/docs/en/ton-staking-v2.md#add-layer2candidate).
+### 1. Added createCandidateAddOn function
+In TONStakingV2, a Candidate of Layer2 different from the existing Candidate has been added. When the function is executed, 
+a Candidate is created in the CandidateAddOnFactory registered in the DAO. 
+You can check the details of the process of registering a new Candidate using the createCandidateAddOn function on the following [Link](https://github.com/tokamak-network/ton-staking-v2/blob/ton-staking-v2/docs/en/ton-staking-v2.md#register-candidateaddon).
 
 ### 2. Added setCandidateAddOnFactory function
-With the addition of CandidateAddOn in TON StakingV2, the candidateAddOnFactory used in the function must be set. Accordingly, a new function setCandidateAddOnFactory has been added to set the value.
+In TONStakingV2, a candidate from Layer2 that is different from the existing candidate has been added. Accordingly, 
+the factory address is set so that the candidate can be added using the corresponding CandidateAddOn function in DAO. 
+You can check the details of the CandidateAddOnFactory Contract on the following [Link](https://github.com/tokamak-network/ton-staking-v2/blob/ton-staking-v2/docs/kr/ton-staking-v2.md#candidateaddonfactory).
 
 ### 3. Added setLayer2Manager function
-When creating a Layer2Candidate via the createLayer2Candidate function, the permission to call the function is restricted to only Layer2ManagerContract. Set the Layer2Manager address to verify that the call was actually made from Layer2ManagerContract.
+When creating a Layer2Candidate using the createCandidateAddOn function, the authority to call the function is limited to only those from Layer2ManagerContract. 
+By setting the Layer2Manager address, check whether the call was made from Layer2ManagerContract.
 
-### 4. Added setTargetSetLayer2Manager function
-With the update to TON StakingV2, SeigManagerContract now interacts with Layer2ManagerContract. 
-Accordingly, we have enabled layer2Manager to be set up so that SeigManagerContract can call functions of Layer2ManagerContract.
+### 4. Added setBurntAmountAtDAO function
+Added a function to allow DAO to modify the setBurntAmountAtDAO function of the SeigManager Contract via the Agenda.
 
-### 5. Added setTargetSetL1BridgeRegistry function
-With the update to TON StakingV2, SeigManagerContract now interacts with L1BridgeRegistryContract. 
-Accordingly, we have enabled setting l1BridgeRegistry so that SeigManagerContract can call functions of L1BridgeRegistryContract.
+### 5. Added setCooldownTime function
+found an exploitable point when changeMember is included multiple times in a single transaction. 
+To prevent this from being exploited, implemented a cooldownTime period when executing changeMember to ensure that it is executed again.
  
-### 6. Added setTargetLayer2StartBlock function
-With the update to TON StakingV2, it is now possible to designate a specific block in Layer2 as a reference point.
-From this reference point onwards, seigniorage can be calculated.
-For this function, a function that sets the value of the reference block has been added.
+### 6. Added daoExecuteTransaction function
+In order to change the current state through DAO Agenda, there is a Minimum Notice and Minimum Voting period, so it takes at least 2 weeks. 
+So created this function so that it can be changed immediately in an emergency. 
+This function is available in MultiSigWallet. 
+You can check the details of MultiSigWallet Contract on the following Link(https://github.com/tokamak-network/tokamak-multisig-wallet).
 
-### 7. Added setTargetSetImplementation2 function
-Added a function to allow modifying the logic of a Proxy Contract where the DAO acts as the Owner via the Agenda.
-
-### 8. Added setTargetSetSelectorImplementations2 function
-We added a function to enable DAO to manage the logic function of the Proxy Contract, which acts as the Owner, through the Agenda.
+### 7. Added removeFromBlacklist function
+If a DAO Member has more stakes than other Members, it is possible to maliciously remove other Members by calling the retireMember function and then calling the changeMember function. 
+To prevent this, when the retireMember function is called, it is registered in the blackList and is prohibited from being used as a DAO Candidate any longer. 
+This function is used to remove a Candidate registered in the blacklist from the blacklist.
 
 
 # Use Case
