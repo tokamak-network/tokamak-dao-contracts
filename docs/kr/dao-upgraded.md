@@ -16,38 +16,37 @@
 
 ## 기존 DAOCommittee에서 변경점
 
-### 1. createLayer2Candidate 함수 추가
-TON StakingV2에서 기존 Candidate와 다른 Layer2Candidate가 추가되었습니다.
-그에 따라서 DAO에서 해당 Layer2Candidate를 추가할 수 있도록 하였습니다.
-자세한 내용은 [다음페이지](https://github.com/tokamak-network/ton-staking-v2/blob/codeReview/docs/en/ton-staking-v2.md#add-layer2candidate)에서 확인하실 수 있습니다.
+### 1. createCandidateAddOn 함수 추가
+TON StakingV2에서 기존 Candidate와 다른 Layer2의 Candidate가 추가되었습니다.
+해당 함수를 실행하면 DAO에 등록된 CandidateAddOnFactory에서 Candidate를 생성하게 됩니다.
+createCandidateAddOn의 함수를 이용해서 새로운 Candidate를 등록하는 과정의 자세한 내용은 [다음페이지](https://github.com/tokamak-network/ton-staking-v2/blob/ton-staking-v2/docs/kr/ton-staking-v2.md#register-candidateaddon)에서 확인하실 수 있습니다.
 
 ### 2. setCandidateAddOnFactory 함수 추가
-TON StakingV2에서 CandidateAddOn 추가되면서 해당 함수에서 사용하는 candidateAddOnFactory를 설정하여야합니다.
-그에 따라서 해당 값을 설정할 수 있는 setCandidateAddOnFactory 함수가 추가 되었습니다.
+TON StakingV2에서 기존 Candidate와 다른 Layer2의 Candidate가 추가되었습니다.
+그에 따라서 DAO에서 해당 CandidateAddOn 함수를 이용하여서 Candidate를 추가할 수 있도록 Factory 주소를 설정합니다.
+CandidateAddOnFactory Contract 관련 자세한 내용은 [다음페이지](https://github.com/tokamak-network/ton-staking-v2/blob/ton-staking-v2/docs/kr/ton-staking-v2.md#candidateaddonfactory)에서 확인하실 수 있습니다.
 
 ### 3. setLayer2Manager 함수 추가
-createLayer2Candidate함수를 통해서 Layer2Candidate를 생성하고자할때 해당 함수를 호출할 수 있는 권한은 Layer2ManagerContract에서만 호출할 수 있도록 하였습니다.
+createCandidateAddOn함수를 통해서 Layer2Candidate를 생성하고자할때 해당 함수를 호출할 수 있는 권한은 Layer2ManagerContract에서만 호출할 수 있도록 하였습니다.
 Layer2Manager주소를 설정하여서 해당 호출이 Layer2ManagerContract에서 호출이 되었는지 체크합니다.
 
-### 4. setTargetSetLayer2Manager 함수 추가
-TONStakingV2로 업데이트 되면서 SeigManagerContract에서 Layer2ManagerContract와 상호작용하게 되었습니다.
-그래서 SeigManagerContract에서 Layer2ManagerContract의 함수를 호출하기 위해서 layer2Manager를 설정할 수 있도록 하였습니다.
+### 4. setBurntAmountAtDAO 함수 추가
+DAO가 SeigManager Contract의 setBurntAmountAtDAO함수를 Agenda를 통해 수정할 수 있도록 함수를 추가했습니다.
 
-### 5. setTargetSetL1BridgeRegistry 함수 추가
-TONStakingV2로 업데이트 되면서 SeigManagerContract에 L1BridgeRegistryContract와 상호작용하게 되었습니다.
-그래서 SeigManagerContract에 L1BridgeRegistryContract의 함수를 호출하기 위해서 l1BridgeRegistry를 설정할 수 있도록 하였습니다.
+### 5. setCooldownTime 함수 추가
+changeMember를 한 트랜잭션에 여러번 담았을때 악용할 수 있는점을 발견하였습니다. 
+이 점을 악용할 수 없도록 changeMember를 실행하였을때 다시 실행하기 위해서 cooldownTime 시간을 가지도록 하였습니다.
  
-### 6. setTargetLayer2StartBlock 함수 추가
-TON StakingV2로 업데이트되면서 Layer2의 특정 블록을 기준점으로 지정할 수 있게 되었습니다. 
-이 기준점 이후부터 시뇨리지(seigniorage)를 계산할 수 있게 되었습니다. 
-이 기능을 위해 기준이 되는 블록의 값을 설정하는 함수가 추가되었습니다.
+### 6. daoExecuteTransaction 함수 추가
+DAO Agenda를 통해서 현재 상태를 변경하기 위해서는 Minimum Notice와 Minimum Voting기간이 있어서 최소 2주 이상 걸리게 됩니다.
+그래서 위급한 상황에서 바로 변경할 수 있도록 해당 함수를 만들었습니다.
+해당 함수는 MultiSigWallet에서 사용가능 합니다.
+MultiSigWallet Contract 관련 자세한 내용은 [다음페이지](https://github.com/tokamak-network/tokamak-multisig-wallet)에서 확인하실 수 있습니다.
 
-### 7. setTargetSetImplementation2 함수 추가
-DAO가 Owner 역할을 하는 Proxy Contract의 로직을 Agenda를 통해 수정할 수 있도록 함수를 추가했습니다.
-
-### 8. setTargetSetSelectorImplementations2 함수 추가
-DAO가 Owner 역할을 하는 Proxy Contract의 로직 function을 Agenda를 통해서 관리할 수 있도록 함수를 추가하였습니다.
-
+### 7. removeFromBlacklist 함수 추가
+DAO의 Member가 다른 Member들보다 Staking이 많이 되어 있다면 retireMember 함수를 호출 후 changeMember 함수를 호출하여서 악의적으로 다른 Member를 탈락시킬 수 있었습니다.
+이를 방지하기 위해서 retireMember 함수를 호출하면 blackList에 등록되어서 더 이상 DAO의 Candidate로써 활동을 금지시켰습니다.
+해당 함수는 blackList에 등록된 Candidate를 blacklist에서 삭제시킬때 사용합니다.
 
 # Use Case
 
@@ -164,6 +163,17 @@ claimActivityReward 함수는 현재 Member와 과거 Member였던 Candidate들�
     address public wton;
     address public layer2Manager;
     address public candidateAddOnFactory;
+
+    mapping(uint256 => address) public proxyImplementation;
+    mapping(address => bool) public aliveImplementation;
+    mapping(bytes4 => address) public selectorImplementation;
+
+    mapping(address => bool) public blacklist;
+    mapping(address => bool) public privateLayer2;
+
+    mapping(address => uint256) public cooldown;
+
+    uint256 public cooldownTime;
     ```
 
 
