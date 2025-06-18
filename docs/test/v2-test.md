@@ -9,7 +9,7 @@ git clone https://github.com/tokamak-network/ton-staking-v2.git
 
 Checkout the branch
 ```
-git checkout NewDAOStructure
+git checkout deploy-candidateAndDAO
 ```
 
 install the repo
