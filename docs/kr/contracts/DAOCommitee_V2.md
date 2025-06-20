@@ -298,3 +298,44 @@ await daoCommittee.claimActivityReward(receiverAddress);
 // 아젠다 상태 조회
 const [result, status] = await daoCommittee.currentAgendaStatus(agendaId);
 ``` 
+
+## 오류 처리
+
+### CreateCandiateError
+```solidity
+error CreateCandiateError(uint x);
+```
+- `x = 1`: 배포된 candidateContract가 0입니다.
+- `x = 2`: 해당 candidate가 이미 계약을 가지고 있습니다.
+- `x = 3`: registerAndDeployCoinage에 실패했습니다.
+
+### PermissionError
+```solidity
+error PermissionError();
+```
+- 호출자에게 필요한 권한이 없는 경우 발생합니다.
+
+### ZeroAddressError
+```solidity
+error ZeroAddressError();
+```
+- 허용되지 않는 곳에 0개의 주소가 제공된 경우 발생합니다.
+
+### ClaimTONError
+```solidity
+error ClaimTONError();
+```
+- TON을 클레임하려고 할 때 발생합니다.
+
+### ClaimWTONError
+```solidity
+error ClaimWTONError();
+```
+- WTON을 청구하려고 할 때 오류가 발생합니다.
+
+## 중요 참고 사항
+
+1. **가스 최적화**: 이 계약은 중요한 작업에 효율적인 저장 패턴과 어셈블리 코드를 사용합니다.
+2. **보안**: 다층적인 액세스 제어 및 검증을 통해 안전한 운영을 보장합니다.
+3. **업그레이드 가능성**: 이 계약은 프록시 패턴을 통해 업그레이드할 수 있도록 설계되었습니다.
+4. **호환성**: 새로운 기능을 추가하는 동시에 기존 DAO 인프라와의 호환성을 유지합니다.
