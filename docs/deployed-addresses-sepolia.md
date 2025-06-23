@@ -20,7 +20,7 @@
 |  DAOCommittee        | 0x79cfbEaCB5470bBe3B8Fe76db2A61Fc59e588C38     | [link](https://sepolia.etherscan.io/address/0x79cfbEaCB5470bBe3B8Fe76db2A61Fc59e588C38)
 |  DAOCommitteeProxy        |  0xA2101482b28E3D99ff6ced517bA41EFf4971a386    |[link](https://sepolia.etherscan.io/address/0xA2101482b28E3D99ff6ced517bA41EFf4971a386)
 |  DAOCommitteeProxy2        |  0x0cb4E974302864D1059028de86757Ca55D121Cb8    |[link](https://sepolia.etherscan.io/address/0x0cb4E974302864D1059028de86757Ca55D121Cb8)
-|  DAOCommittee_V2        | 0xF955b73431ba9B411E41A13Bf29787BCD087FA6E     | [link](https://sepolia.etherscan.io/address/0xF955b73431ba9B411E41A13Bf29787BCD087FA6E)
+|  DAOCommittee_V2        | 0x890cb514BFc112dd4Ca991c30c0ab3e96E65E4d8     | [link](https://sepolia.etherscan.io/address/0x890cb514BFc112dd4Ca991c30c0ab3e96E65E4d8)
 |  DAOCommitteeOwner        | 0xf26D736db6a259AfD93ffDa027b0d7DD9748e3FB     | [link](https://sepolia.etherscan.io/address/0xf26D736db6a259AfD93ffDa027b0d7DD9748e3FB)
 |  Layer2CandidateFactory        | 0x770739A468D9262960ee0669f9Eaf0db6E21F81A     | [link](https://sepolia.etherscan.io/address/0x770739A468D9262960ee0669f9Eaf0db6E21F81A)
 |  Layer2Manager        | 0x0237839A14194085B5145D1d1e1E77dc92aCAF06     | [link](https://sepolia.etherscan.io/address/0x0237839A14194085B5145D1d1e1E77dc92aCAF06)
@@ -34,4 +34,5 @@
 |  DAOCommitteeOwner        |  0xDB0755b606d15C011A03b1C968E54F96bBdDd1D7    | [link](https://sepolia.etherscan.io/address/0xDB0755b606d15C011A03b1C968E54F96bBdDd1D7)
 |  DAOCommittee_V1        | 0x1E44122E3230957309B29636938e223705C0Da35     | [link](https://sepolia.etherscan.io/address/0x1E44122E3230957309B29636938e223705C0Da35)
 |  DAOCommitteeOwner        | 0x84868ca4DD708cC035bcE0578054aa62c663e309     | [link](https://sepolia.etherscan.io/address/0x84868ca4DD708cC035bcE0578054aa62c663e309)
+|  DAOCommittee_V2        | 0xF955b73431ba9B411E41A13Bf29787BCD087FA6E     | [link](https://sepolia.etherscan.io/address/0xF955b73431ba9B411E41A13Bf29787BCD087FA6E)
 
