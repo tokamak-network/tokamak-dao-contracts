@@ -52,3 +52,4 @@ All repositories related to development for TokamakDAO is provided here.
 ## How-to-test
 - [Original Test](/docs/test/original-test.md)
 - [V1 Test](/docs/test/v1-test.md)
+- [V2 Test](/docs/test/v2-test.md)
