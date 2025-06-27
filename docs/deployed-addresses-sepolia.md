@@ -25,6 +25,12 @@
 |  Layer2CandidateFactory        | 0x770739A468D9262960ee0669f9Eaf0db6E21F81A     | [link](https://sepolia.etherscan.io/address/0x770739A468D9262960ee0669f9Eaf0db6E21F81A)
 |  Layer2Manager        | 0x0237839A14194085B5145D1d1e1E77dc92aCAF06     | [link](https://sepolia.etherscan.io/address/0x0237839A14194085B5145D1d1e1E77dc92aCAF06)
 
+## MultiSigWallet Contracts
+
+| Name     | Address | link |
+|----------|------|-------------------------------|
+|  MultiSigWallet |   0x82460E7D90e19cF778a2C09DcA75Fc9f79Da877C    | [link](https://sepolia.etherscan.io/address/0x82460E7D90e19cF778a2C09DcA75Fc9f79Da877C)
+
 
 ## DAO contracts (not using)
 

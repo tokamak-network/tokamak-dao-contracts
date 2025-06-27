@@ -23,6 +23,13 @@
 |  DAOCommittee_V1        | 0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe     | [link](https://etherscan.io/address/0xcC88dFa531512f24A8a5CbCB88F7B6731807EEFe)
 |  DAOCommitteeOwner        | 0x5991Aebb5271522d33C457bf6DF26d83c0dAa221     | [link](https://etherscan.io/address/0x5991Aebb5271522d33C457bf6DF26d83c0dAa221)
 
+
+## MultiSigWallet contracts
+| Name     | Address | link |
+|----------|------|-------------------------------|
+|  MultiSigWallet |   0xE3F72E959834d0A72aFb2ea79F5ec2b4243d2d95    | [link](https://etherscan.io/address/0xE3F72E959834d0A72aFb2ea79F5ec2b4243d2d95)
+
+
 ## DAO contracts (will update)
 
 | Name     | Address | link |
