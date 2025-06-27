@@ -35,7 +35,7 @@ function retireMember() external returns (bool) {
 
 ### Blacklist에서 제거하기
 
-Blacklist에서 후보자를 제거하는 것은 오직 DAO 위원회의 소유자(Owner)만 가능합니다:
+Blacklist에서 후보자를 제거하는 것은 오직 DAO의 다음 함수를 통해 가능합니다:
 
 ```solidity
 function removeFromBlacklist(address _candidate) external onlyOwner {
@@ -75,7 +75,7 @@ require(cooldown[candidateInfo.candidateContract] < block.timestamp, "DAOCommitt
 
 ### CooldownTime 설정
 
-CooldownTime은 DAO 위원회 소유자가 설정할 수 있습니다:
+CooldownTime은 DAO의 다음 함수를 통해 설정할 수 있습니다:
 
 ```solidity
 function setCooldownTime(uint256 _cooltime) external onlyOwner {
@@ -297,33 +297,11 @@ comprehensiveStatusCheck()
 
 ## 주의사항
 
-1. **권한 확인**: `removeFromBlacklist()`와 `setCooldownTime()`은 오직 DAO 소유자만 실행할 수 있습니다.
+1. **권한 확인**: `removeFromBlacklist()`와 `setCooldownTime()`은 오직 DAO Agenda와 MultiSigWallet에서만 실행할 수 있습니다.
 
 2. **Blacklist 제거 전 확인**: Blacklist에서 제거하기 전에 해당 후보자가 정말로 제재를 해제받아야 하는지 신중히 검토해야 합니다.
 
 3. **CooldownTime 설정**: CooldownTime을 너무 짧게 설정하면 시스템이 불안정해질 수 있고, 너무 길게 설정하면 후보자들의 활동을 과도하게 제한할 수 있습니다.
 
-4. **가스비 고려**: 블록체인 트랜잭션이므로 충분한 가스비를 확보해야 합니다.
 
-## 이벤트 모니터링
-
-다음 이벤트들을 모니터링하여 상태 변화를 추적할 수 있습니다:
-
-```javascript
-// Blacklist 관련 이벤트
-daoCommittee.on("MemberBlacklisted", (member, timestamp) => {
-    console.log(`후보자 ${member}가 blacklist에 등록됨: ${new Date(timestamp * 1000)}`);
-});
-
-// CooldownTime 변경 이벤트
-daoCommittee.on("SetCooldownTime", (cooldownTime) => {
-    console.log(`CooldownTime이 ${cooldownTime}초로 변경됨`);
-});
-
-// 멤버 변경 이벤트
-daoCommittee.on("ChangedMember", (slotIndex, prevMember, newMember) => {
-    console.log(`멤버 변경: 슬롯 ${slotIndex}, ${prevMember} → ${newMember}`);
-});
-```
-
-이 가이드를 통해 TON Staking V2 시스템의 blacklist와 cooldownTime 메커니즘을 효과적으로 관리할 수 있습니다. 
+이 가이드를 통해 TON Staking V2 시스템의 blacklist와 cooldownTime 메커니즘을 이해하고 테스트할 수 있습니다. 
