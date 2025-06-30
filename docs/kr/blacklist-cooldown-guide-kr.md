@@ -107,187 +107,265 @@ uint256 public cooldownTime;
 
 ### 1. Blacklist 상태 확인 및 제거 스크립트
 
+### 1-1. BlackList를 제거하는 아젠다 생성 스크립트
+
+
 ```javascript
 const { ethers } = require("hardhat");
 
-async function checkAndRemoveFromBlacklist() {
-    // DAO 위원회 계약 주소
-    const daoCommitteeAddress = "0x..."; // 실제 주소로 변경
-    const candidateAddress = "0x..."; // 확인할 후보자 주소로 변경
+async function main() {
+        // removeBlackList Candidate contract address (enter manually)
+    const CANDIDATE_ADDRESS = "0xF078AE62eA4740E19ddf6c0c5e17Ecdb820BbEe1"; // Enter the Candidate contract address you want to remove from the blacklist here
+    const CANDIDATE_ADDRESS2 = "0xAbD15C021942Ca54aBd944C91705Fe70FEA13f0d"; // Enter the Candidate contract address you want to remove from the blacklist here
     
-    // DAO 위원회 계약 인스턴스 생성
-    const daoCommittee = await ethers.getContractAt("DAOCommittee_V2", daoCommitteeAddress);
+    // 네트워크 확인
+    const network = await ethers.provider.getNetwork();
+    console.log("Network:", network.name);
+    console.log("Chain ID:", network.chainId);
     
-    console.log("=== Blacklist 상태 확인 ===");
+    let daoCommitteeProxyAddr = "0xA2101482b28E3D99ff6ced517bA41EFf4971a386";
+    let daoAgendaManagerAddr = "0x1444f7a8bC26a3c9001a13271D56d6fF36B44f08";
+    let tonAddr = "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044";
+
+
+    // signer는 Candidate Contract의 operator여야함
+    const [signer] = await ethers.getSigners();
+    console.log("Signer address:", signer.address);
     
-    // 1. 현재 blacklist 상태 확인
-    const isBlacklisted = await daoCommittee.blacklist(candidateAddress);
-    console.log(`후보자 ${candidateAddress}의 blacklist 상태: ${isBlacklisted}`);
-    
-    if (isBlacklisted) {
-        console.log("후보자가 blacklist에 등록되어 있습니다.");
-        
-        // 2. DAO 소유자 계정 가져오기 (실제 소유자 주소로 변경)
-        const [owner] = await ethers.getSigners();
-        
-        try {
-            // 3. Blacklist에서 제거
-            console.log("Blacklist에서 제거 중...");
-            const tx = await daoCommittee.connect(owner).removeFromBlacklist(candidateAddress);
-            await tx.wait();
-            
-            console.log("✅ Blacklist에서 성공적으로 제거되었습니다.");
-            
-            // 4. 제거 후 상태 재확인
-            const newBlacklistStatus = await daoCommittee.blacklist(candidateAddress);
-            console.log(`제거 후 blacklist 상태: ${newBlacklistStatus}`);
-            
-        } catch (error) {
-            console.error("❌ Blacklist 제거 실패:", error.message);
-        }
-    } else {
-        console.log("후보자는 blacklist에 등록되어 있지 않습니다.");
+    //==== Set DAOCommitteeProxy =================================
+    let daoCommitteeProxy = new ethers.Contract(
+        daoCommitteeProxyAddr,
+        DAOCommitteeProxyABI,
+        ethers.provider
+    )
+
+    //==== Set DAOCommitteeV2 =================================
+    let daoCommitteeV2 = new ethers.Contract(
+        daoCommitteeProxyAddr,
+        DAOCommittee_V2ABI,
+        ethers.provider
+    )
+
+    //==== Set DAOAgendaManager =================================
+    let daoagendaManager = new ethers.Contract(
+        daoAgendaManagerAddr,
+        DAOAgendaManagerABI,
+        ethers.provider
+    )
+
+    //==== Set TON =================================
+    let ton = new ethers.Contract(
+        tonAddr,
+        TonABI,
+        ethers.provider
+    )
+
+    //==== Create Agenda =================================
+    let targets = []
+    let params = []
+    let callDtata
+
+    // =========================================
+    // 1. removeFromBlacklist daoCommitteeProxy2Contract
+
+    console.log("=== Check Blacklist Status ===");
+
+    let isBlacklisted = await daoCommittee.blacklist(CANDIDATE_ADDRESS);
+
+    if(isBlacklisted) {
+        console.log("Candidate 1 is blacklisted.");
+        targets.push(daoCommitteeProxyAddr)
+        callDtata = daoCommitteeV2.interface.encodeFunctionData("removeFromBlacklist", [CANDIDATE_ADDRESS])
+        params.push(callDtata)
     }
+
+
+    // =========================================
+    // 2. removeFromBlacklist daoCommitteeProxy2Contract
+
+    isBlacklisted = await daoCommittee.blacklist(CANDIDATE_ADDRESS);
+
+    if(isBlacklisted) {
+        console.log("Candidate 2 is blacklisted.");
+        targets.push(daoCommitteeProxyAddr)
+        callDtata = daoCommitteeV2.interface.encodeFunctionData("removeFromBlacklist", [CANDIDATE_ADDRESS2])
+        params.push(callDtata)
+    }
+  
+    
+    // =========================================
+    // . make an agenda
+    const memo = ""
+    const noticePeriod = await daoagendaManager.minimumNoticePeriodSeconds();
+    const votingPeriod = await daoagendaManager.minimumVotingPeriodSeconds();
+    const agendaFee = await daoagendaManager.createAgendaFees();
+    const param = Web3EthAbi.encodeParameters(
+        ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
+        [
+            targets,
+            noticePeriod.toString(),
+            votingPeriod.toString(),
+            true,
+            params,
+            memo
+        ]
+    )
+
+
+    // =========================================
+    // Propose an agenda
+    console.log("deployerAddr :", signer.address)
+    let receipt = await ton.connect(signer).approveAndCall(
+        daoCommitteeProxy.address,
+        agendaFee,
+        param
+    )
+    console.log("tx Hash :", receipt.hash)
+    console.log(receipt)
+    console.log(receipt.nonce)
 }
 
 // 스크립트 실행
-checkAndRemoveFromBlacklist()
+main()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
         process.exit(1);
     });
 ```
+
+### 1-2. MultiSigWallet를 이용해서 BlackList를 제거
 
 ### 2. CooldownTime 확인 및 설정 스크립트
 
 ```javascript
 const { ethers } = require("hardhat");
 
-async function checkAndSetCooldownTime() {
-    // DAO 위원회 계약 주소
-    const daoCommitteeAddress = "0x..."; // 실제 주소로 변경
-    const candidateAddress = "0x..."; // 확인할 후보자 주소로 변경
-    
-    // DAO 위원회 계약 인스턴스 생성
-    const daoCommittee = await ethers.getContractAt("DAOCommittee_V2", daoCommitteeAddress);
-    
-    console.log("=== CooldownTime 상태 확인 ===");
-    
-    // 1. 현재 설정된 cooldownTime 확인
-    const currentCooldownTime = await daoCommittee.cooldownTime();
-    console.log(`현재 설정된 cooldownTime: ${currentCooldownTime}초`);
-    
-    // 2. 특정 후보자의 cooldown 상태 확인
-    const candidateCooldown = await daoCommittee.cooldown(candidateAddress);
-    const currentTime = Math.floor(Date.now() / 1000);
-    
-    console.log(`후보자 ${candidateAddress}의 cooldown 시간: ${candidateCooldown}`);
-    console.log(`현재 시간: ${currentTime}`);
-    
-    if (candidateCooldown > currentTime) {
-        const remainingTime = candidateCooldown - currentTime;
-        console.log(`⏰ Cooldown 남은 시간: ${remainingTime}초`);
-        console.log(`Cooldown 만료 예정: ${new Date(candidateCooldown * 1000)}`);
-    } else {
-        console.log("✅ Cooldown이 만료되어 changeMember를 실행할 수 있습니다.");
-    }
-    
-    // 3. CooldownTime 변경 (DAO 소유자만 가능)
-    const newCooldownTime = 3600; // 1시간으로 설정
-    
-    try {
-        const [owner] = await ethers.getSigners();
-        
-        console.log(`\n=== CooldownTime을 ${newCooldownTime}초로 변경 ===");
-        const tx = await daoCommittee.connect(owner).setCooldownTime(newCooldownTime);
-        await tx.wait();
-        
-        console.log("✅ CooldownTime이 성공적으로 변경되었습니다.");
-        
-        // 4. 변경 후 cooldownTime 확인
-        const updatedCooldownTime = await daoCommittee.cooldownTime();
-        console.log(`변경된 cooldownTime: ${updatedCooldownTime}초`);
-        
-    } catch (error) {
-        console.error("❌ CooldownTime 변경 실패:", error.message);
-    }
-}
+async function main() {
+    // Address of candidate who wants to check cooldown time (enter manually)
+    const CANDIDATE_ADDRESS = "0xF078AE62eA4740E19ddf6c0c5e17Ecdb820BbEe1"; 
 
-// 스크립트 실행
-checkAndSetCooldownTime()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
-```
 
-### 3. 종합 상태 확인 스크립트
+    // make the Cooldown Agenda
+    let createAgenda = false
+    
+    // 네트워크 확인
+    const network = await ethers.provider.getNetwork();
+    console.log("Network:", network.name);
+    console.log("Chain ID:", network.chainId);
+    
+    let daoCommitteeProxyAddr = "0xA2101482b28E3D99ff6ced517bA41EFf4971a386";
+    let daoAgendaManagerAddr = "0x1444f7a8bC26a3c9001a13271D56d6fF36B44f08";
+    let tonAddr = "0xa30fe40285b8f5c0457dbc3b7c8a280373c40044";
 
-```javascript
-const { ethers } = require("hardhat");
 
-async function comprehensiveStatusCheck() {
-    // DAO 위원회 계약 주소
-    const daoCommitteeAddress = "0x..."; // 실제 주소로 변경
-    const candidateAddresses = [
-        "0x...", // 후보자 1
-        "0x...", // 후보자 2
-        "0x..."  // 후보자 3
-    ];
+    // signer는 Candidate Contract의 operator여야함
+    const [signer] = await ethers.getSigners();
+    console.log("Signer address:", signer.address);
     
-    // DAO 위원회 계약 인스턴스 생성
-    const daoCommittee = await ethers.getContractAt("DAOCommittee_V2", daoCommitteeAddress);
-    
-    console.log("=== 종합 상태 확인 ===");
-    
-    // 1. 전체 cooldownTime 확인
-    const globalCooldownTime = await daoCommittee.cooldownTime();
-    console.log(`\n📋 전체 cooldownTime: ${globalCooldownTime}초`);
-    
-    const currentTime = Math.floor(Date.now() / 1000);
-    console.log(`현재 시간: ${currentTime} (${new Date(currentTime * 1000)})`);
-    
-    // 2. 각 후보자별 상태 확인
-    for (let i = 0; i < candidateAddresses.length; i++) {
-        const candidateAddress = candidateAddresses[i];
-        console.log(`\n--- 후보자 ${i + 1}: ${candidateAddress} ---`);
+    //==== Set DAOCommitteeProxy =================================
+    let daoCommitteeProxy = new ethers.Contract(
+        daoCommitteeProxyAddr,
+        DAOCommitteeProxyABI,
+        ethers.provider
+    )
+
+    //==== Set DAOCommitteeOwner =================================
+    let daoCommitteeOwner = new ethers.Contract(
+        daoCommitteeProxyAddr,
+        DAOCommitteeOwnerABI,
+        ethers.provider
+    )
+
+    //==== Set DAOAgendaManager =================================
+    let daoagendaManager = new ethers.Contract(
+        daoAgendaManagerAddr,
+        DAOAgendaManagerABI,
+        ethers.provider
+    )
+
+    //==== Set TON =================================
+    let ton = new ethers.Contract(
+        tonAddr,
+        TonABI,
+        ethers.provider
+    )
+
+    //==== Create Agenda =================================
+    let targets = []
+    let params = []
+    let callDtata
+
+    // =========================================
+    // 1. Check the currently set cooldownTime
+
+    console.log("=== Check CooldownTime Status ===");
+
+    let currentCooldownTime = await daoCommitteeOwner.cooldownTime();
+    console.log(`Now Setting cooldownTime: ${currentCooldownTime} seconds`);
+
+
+    // =========================================
+    // 2. Check the cooldown status of a specific candidate
+    if(CANDIDATE_ADDRESS != "") {
+        let candidateCooldown = await daoCommitteeOwner.cooldown(CANDIDATE_ADDRESS);
+        const currentTime = Math.floor(Date.now() / 1000);
         
-        // Blacklist 상태 확인
-        const isBlacklisted = await daoCommittee.blacklist(candidateAddress);
-        console.log(`Blacklist 상태: ${isBlacklisted ? "🔴 등록됨" : "🟢 정상"}`);
+        console.log(`Cooldown time for candidate ${CANDIDATE_ADDRESS}: ${candidateCooldown}`);
         
-        // Cooldown 상태 확인
-        const cooldownTime = await daoCommittee.cooldown(candidateAddress);
-        if (cooldownTime > 0) {
-            if (cooldownTime > currentTime) {
-                const remainingTime = cooldownTime - currentTime;
-                console.log(`Cooldown 상태: ⏰ ${remainingTime}초 남음`);
-                console.log(`만료 예정: ${new Date(cooldownTime * 1000)}`);
-            } else {
-                console.log(`Cooldown 상태: ✅ 만료됨`);
-            }
+        if (candidateCooldown > currentTime) {
+            const remainingTime = candidateCooldown - currentTime;
+            console.log(`⏰ Cooldown remaining time: ${remainingTime} seconds`);
+            console.log(`Cooldown is about to expire: ${new Date(candidateCooldown * 1000)}`);
         } else {
-            console.log(`Cooldown 상태: 🟢 설정되지 않음`);
+            console.log("✅ Cooldown has expired and changeMember can be executed.");
         }
-        
-        // 멤버 상태 확인
-        try {
-            const candidateInfo = await daoCommittee._candidateInfos(candidateAddress);
-            if (candidateInfo.memberJoinedTime > 0) {
-                console.log(`멤버 상태: 👑 현재 멤버 (인덱스: ${candidateInfo.indexMembers})`);
-            } else {
-                console.log(`멤버 상태: 👤 후보자`);
-            }
-        } catch (error) {
-            console.log(`멤버 상태: ❓ 정보 없음`);
-        }
+    }
+
+
+    
+    // =========================================
+    // . make an agenda
+    if (createAgenda) {
+        let changedcooldownTime = 300
+    
+        targets.push(daoCommitteeProxyAddr)
+        callDtata = daoCommitteeOwner.interface.encodeFunctionData("setCooldownTime", [changedcooldownTime])
+        params.push(callDtata)
+    
+        const memo = ""
+        const noticePeriod = await daoagendaManager.minimumNoticePeriodSeconds();
+        const votingPeriod = await daoagendaManager.minimumVotingPeriodSeconds();
+        const agendaFee = await daoagendaManager.createAgendaFees();
+        const param = Web3EthAbi.encodeParameters(
+            ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
+            [
+                targets,
+                noticePeriod.toString(),
+                votingPeriod.toString(),
+                true,
+                params,
+                memo
+            ]
+        )
+    
+    
+        // =========================================
+        // Propose an agenda
+        console.log("deployerAddr :", signer.address)
+        let receipt = await ton.connect(signer).approveAndCall(
+            daoCommitteeProxy.address,
+            agendaFee,
+            param
+        )
+        console.log("tx Hash :", receipt.hash)
+        console.log(receipt)
+        console.log(receipt.nonce)
     }
 }
 
 // 스크립트 실행
-comprehensiveStatusCheck()
+main()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
@@ -304,4 +382,4 @@ comprehensiveStatusCheck()
 3. **CooldownTime 설정**: CooldownTime을 너무 짧게 설정하면 시스템이 불안정해질 수 있고, 너무 길게 설정하면 후보자들의 활동을 과도하게 제한할 수 있습니다.
 
 
-이 가이드를 통해 TON Staking V2 시스템의 blacklist와 cooldownTime 메커니즘을 이해하고 테스트할 수 있습니다. 
+이 가이드를 통해 Tokamak DAO 시스템의 blacklist와 cooldownTime 메커니즘을 이해하고 테스트할 수 있습니다. 
