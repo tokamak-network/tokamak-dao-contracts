@@ -108,6 +108,7 @@ uint256 public cooldownTime;
 ### 1. Blacklist 상태 확인 및 제거 스크립트
 
 ### 1-1. BlackList를 제거하는 아젠다 생성 스크립트
+Script Link : [https://github.com/tokamak-network/ton-staking-v2/blob/deploy-candidateAndDAO/scripts/related-dao/2.removeblackListAgenda.js](https://github.com/tokamak-network/ton-staking-v2/blob/deploy-candidateAndDAO/scripts/related-dao/2.removeblackListAgenda.js)
 
 ```
 npx hardhat run scripts/related-dao/2.removeblackListAgenda.js --network sepolia
@@ -241,6 +242,13 @@ main()
 ### 1-2. MultiSigWallet를 이용해서 BlackList를 제거
 
 ### 2. CooldownTime 확인 및 설정 스크립트
+
+### 2-1. CooldownTime을 변경 및 확인하는 아젠다 생성 스크립트
+Script Link : [https://github.com/tokamak-network/ton-staking-v2/blob/deploy-candidateAndDAO/scripts/related-dao/5.cooldownTimeAgenda.js](https://github.com/tokamak-network/ton-staking-v2/blob/deploy-candidateAndDAO/scripts/related-dao/5.cooldownTimeAgenda.js)
+
+```
+npx hardhat run scripts/related-dao/5.cooldownTimeAgenda.js --network sepolia
+```
 
 ```javascript
 const { ethers } = require("hardhat");
