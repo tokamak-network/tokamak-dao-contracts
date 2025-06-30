@@ -2,7 +2,7 @@
 
 ## 개요
 
-TON Staking V2 시스템에서 `blacklist`와 `cooldownTime`은 DAO 위원회의 안정성과 공정성을 보장하는 중요한 메커니즘입니다. 이 문서에서는 이 두 기능이 언제 적용되고, 어떻게 작동하는지, 그리고 실제 사용 예제를 설명합니다.
+`blacklist`와 `cooldownTime`은 DAO 위원회의 안정성과 공정성을 보장하는 중요한 메커니즘입니다. 이 문서에서는 이 두 기능이 언제 적용되고, 어떻게 작동하는지, 그리고 실제 사용 예제를 설명합니다.
 
 ## Blacklist 시스템
 
@@ -108,6 +108,10 @@ uint256 public cooldownTime;
 ### 1. Blacklist 상태 확인 및 제거 스크립트
 
 ### 1-1. BlackList를 제거하는 아젠다 생성 스크립트
+
+```
+npx hardhat run scripts/related-dao/2.removeblackListAgenda.js --network sepolia
+```
 
 
 ```javascript
