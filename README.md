@@ -33,7 +33,7 @@ All repositories related to development for TokamakDAO is provided here.
 | Type     | Name | Branch | Status                        |
 |----------|------|--------|-----------------------|
 |     Contract    |   [tokamakDAO](https://github.com/tokamak-network/plasma-evm-contracts) |  `tokamakDAO` | :heavy_check_mark: Completed on Original Version 
-|     Contract    |   [tokamakDAOV1](https://github.com/tokamak-network/ton-staking-v2/tree/mainnet-agenda-test/contracts/dao) |  `tokamakDAOV1` | :heavy_exclamation_mark: External audit in preparation on Version 1.0
+|     Contract    |   [tokamakDAOV1](https://github.com/tokamak-network/ton-staking-v2/tree/mainnet-agenda-test/contracts/dao) |  `tokamakDAOV1` | :heavy_check_mark: External audit in preparation on Version 1.0
 
 ## Deployed Contracts Addresses
 - [Mainnet Deployed Addresses](/docs/deployed-addresses-mainnet.md)
