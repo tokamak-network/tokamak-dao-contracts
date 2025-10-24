@@ -15,9 +15,9 @@ body:
     validations:
       required: true
   - type: textarea
-    id: Background & Motivation
+    id: Background&Motivation
     attributes:
-      label: Background & Motivation
+      label: Background&Motivation
       description: "Describe in detail the background to your proposal, the problem you identified, and why improvements are needed."
       render: bash
     validations:
