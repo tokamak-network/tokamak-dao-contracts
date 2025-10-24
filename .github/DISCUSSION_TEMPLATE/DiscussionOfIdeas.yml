@@ -1,5 +1,5 @@
-title: "[General] "
-labels: ["General Introduction"]
+title: "[Discussion] "
+labels: ["Discussion Introduction"]
 body:
   - type: input
     id: Author
