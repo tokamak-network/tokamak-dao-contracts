@@ -14,23 +14,3 @@ body:
       description: "Summarize the core content of your proposal in two or three sentences. Briefly explain what you're proposing so it's easy to understand at a glance."
     validations:
       required: true
-  - type: textarea
-    id: Background & Motivation
-    attributes:
-      label: Background & Motivation
-      description: "Describe in detail the background to your proposal, the problem you identified, and why improvements are needed."
-      render: bash
-    validations:
-      required: true
-  - type: markdown
-    attributes:
-      value: |
-        ## Proposal Details
-  - type: textarea
-    id: Specification
-    attributes:
-      label: Specification
-      description: "Describe a detailed, step-by-step plan for implementing or executing the proposal."
-      render: bash
-    validations:
-      required: true
