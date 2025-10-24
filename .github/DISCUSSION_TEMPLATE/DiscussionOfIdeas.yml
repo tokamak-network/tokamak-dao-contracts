@@ -38,20 +38,22 @@ body:
     id: BackwardsCompatibility
     attributes:
       label: Backwards Compatibility
+      description: "When implementing this upgrade, explain the compatibility with previous versions."
   - type: textarea
     id: ReferenceImplementation
     attributes:
       label: Reference Implementation
+      description: "Please provide an example of how newly developed code can be used externally."
       render: bash
   - type: textarea
     id: ExpectedImpact
     attributes:
       label: Expected Impact
+      description: "Describe a detailed, step-by-step plan for implementing or executing the proposal."
+    validations:
+      required: true
   - type: textarea
     id: SecurityConsiderations
     attributes:
       label: Security Considerations
-  - type: textarea
-    id: Copyright
-    attributes:
-      label: Copyright
+      description: "Describe about security issues to consider."
