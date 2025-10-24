@@ -38,3 +38,20 @@ body:
     id: BackwardsCompatibility
     attributes:
       label: Backwards Compatibility
+  - type: textarea
+    id: ReferenceImplementation
+    attributes:
+      label: Reference Implementation
+      render: bash
+  - type: textarea
+    id: ExpectedImpact
+    attributes:
+      label: Expected Impact
+  - type: textarea
+    id: SecurityConsiderations
+    attributes:
+      label: Security Considerations
+  - type: textarea
+    id: Copyright
+    attributes:
+      label: Copyright
