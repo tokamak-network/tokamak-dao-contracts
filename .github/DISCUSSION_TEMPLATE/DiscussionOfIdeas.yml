@@ -2,7 +2,7 @@ title: "[General] "
 labels: ["General Introduction"]
 body:
   - type: input
-    id: has-id
+    id: Author
     attributes:
       label: Author
     validations:
