@@ -35,6 +35,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: Backwards Compatibility
+    id: BackwardsCompatibility
     attributes:
       label: Backwards Compatibility
