@@ -54,7 +54,7 @@ body:
     attributes:
       label: Security Considerations
       description: "Describe about security issues to consider."
-    - type: markdown
+  - type: markdown
     attributes:
       value: |
         ### Period
