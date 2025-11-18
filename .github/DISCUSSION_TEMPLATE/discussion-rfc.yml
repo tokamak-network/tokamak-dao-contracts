@@ -1,5 +1,4 @@
-title: "[RFC]"
-labels: ["Discussion Introduction"]
+
 body:
   - type: input
     id: Author
