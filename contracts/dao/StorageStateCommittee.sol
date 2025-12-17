@@ -70,7 +70,7 @@ contract StorageStateCommittee is IStorageStateCommittee {
         return _candidateInfos[_candidate].candidateContract;
     }
 
-    function candidateInfos(address _candidate) external override returns (CandidateInfo memory) {
+    function candidateInfos(address _candidate) external view override returns (CandidateInfo memory) {
         return _candidateInfos[_candidate];
     }
 
